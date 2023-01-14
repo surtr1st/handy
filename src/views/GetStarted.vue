@@ -8,11 +8,7 @@ import { NEmpty, NButton } from 'naive-ui';
 			description="Welcome to Handy! The Iteration Agile Management Tool."
 		>
 			<template #extra>
-				<NButton
-					size="large"
-					type="primary"
-					@click="$router.replace('/home')"
-				>
+				<NButton size="large" type="primary" @click="$router.replace('/home')">
 					Create Iteration
 				</NButton>
 			</template>

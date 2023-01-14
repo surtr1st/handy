@@ -67,24 +67,10 @@ const range = ref<[number, number]>();
 			size="large"
 		>
 			<NGrid x-gap="12" y-gap="12" cols="4">
-				<NFormItemGi
-					span="2"
-					label="Iteration Title"
-					path="input"
-					size="large"
-				>
-					<NInput
-						v-model:value="model.input"
-						placeholder="Title"
-						clearable
-					/>
+				<NFormItemGi span="2" label="Iteration Title" path="input" size="large">
+					<NInput v-model:value="model.input" placeholder="Title" clearable />
 				</NFormItemGi>
-				<NFormItemGi
-					span="2"
-					label="Participants"
-					size="large"
-					path="select"
-				>
+				<NFormItemGi span="2" label="Participants" size="large" path="select">
 					<NSelect
 						v-model:value="model.select"
 						multiple
@@ -101,12 +87,7 @@ const range = ref<[number, number]>();
 						style="width: 100%"
 					/>
 				</NFormItemGi>
-				<NFormItemGi
-					span="10"
-					label="Goals"
-					path="textarea"
-					size="large"
-				>
+				<NFormItemGi span="10" label="Goals" path="textarea" size="large">
 					<NInput
 						v-model:value="model.textarea"
 						placeholder="Description"
