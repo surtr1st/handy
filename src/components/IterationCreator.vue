@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { invoke } from '@tauri-apps/api/tauri';
+import { DocumentAdd24Filled } from '@vicons/fluent';
 import {
   NIcon,
   NButton,
@@ -14,27 +16,13 @@ import {
   FormRules,
   useNotification,
 } from 'naive-ui';
-import { DocumentAdd24Filled } from '@vicons/fluent';
 
+// Variables
 const duration = 3000;
-const notification = useNotification();
-
-function notifySuccess() {
-  notification.success({
-    content: 'Iteration created successfully!',
-    meta: '201',
-    duration: duration,
-  });
-}
-function notifyError() {
-  notification!.error({
-    content: 'Iteration created failed!',
-    meta: '500',
-    duration: duration,
-  });
-}
+const { success, error } = useNotification();
 
 const form = ref<FormInst | null>(null);
+const range = ref<[number, number]>();
 const model = ref({
   input: null,
   textarea: null,
@@ -67,7 +55,28 @@ const rules = ref<FormRules>({
     },
   },
 });
-const range = ref<[number, number]>();
+
+// Functionality
+function notifySuccess() {
+  success({
+    content: 'Iteration created successfully!',
+    meta: '201',
+    duration: duration,
+  });
+}
+function notifyError() {
+  error({
+    content: 'Iteration created failed!',
+    meta: '500',
+    duration: duration,
+  });
+}
+
+function createIteration() {
+  invoke('create_iteration')
+    .then(() => notifySuccess())
+    .catch(() => notifyError());
+}
 </script>
 
 <template>
@@ -148,7 +157,7 @@ const range = ref<[number, number]>();
           <NButton
             primary
             type="primary"
-            @click="notifySuccess"
+            @click="createIteration()"
           >
             <template #icon>
               <NIcon size="20">

@@ -3,15 +3,23 @@
     windows_subsystem = "windows"
 )]
 
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+mod progress;
+use progress::{select_all, Progress};
+
 #[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
+fn progress_data() -> String {
+    let mut data = String::from("");
+    let list = select_all();
+    for item in list {
+        let Progress { id, name } = item;
+        data.push_str(format!("{}, ", name).as_str());
+    }
+    format!("{}", data).into()
 }
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet])
+        .invoke_handler(tauri::generate_handler![progress_data])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
