@@ -3,5 +3,5 @@ import IterationCreator from '../components/IterationCreator.vue';
 </script>
 
 <template>
-	<IterationCreator />
+  <IterationCreator />
 </template>
