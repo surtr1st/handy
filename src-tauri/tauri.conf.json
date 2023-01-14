@@ -60,10 +60,10 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 720,
+        "height": 900,
         "resizable": true,
         "title": "handy",
-        "width": 1280
+        "width": 1366
       }
     ]
   }

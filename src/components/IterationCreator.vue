@@ -12,8 +12,27 @@ import {
   NFormItemGi,
   FormInst,
   FormRules,
+  useNotification,
 } from 'naive-ui';
 import { DocumentAdd24Filled } from '@vicons/fluent';
+
+const duration = 3000;
+const notification = useNotification();
+
+function notifySuccess() {
+  notification.success({
+    content: 'Iteration created successfully!',
+    meta: '201',
+    duration: duration,
+  });
+}
+function notifyError() {
+  notification!.error({
+    content: 'Iteration created failed!',
+    meta: '500',
+    duration: duration,
+  });
+}
 
 const form = ref<FormInst | null>(null);
 const model = ref({
@@ -127,8 +146,9 @@ const range = ref<[number, number]>();
         </NFormItemGi>
         <NFormItemGi span="10">
           <NButton
+            primary
             type="primary"
-            color="#6719ff"
+            @click="notifySuccess"
           >
             <template #icon>
               <NIcon size="20">
