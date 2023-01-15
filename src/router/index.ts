@@ -25,15 +25,11 @@ const routes = [
   },
   {
     path: '/iterations',
-    name: 'iterations',
     component: Iterations,
-    children: [
-      {
-        path: '/iterations/i',
-        name: 'iteration',
-        component: Iteration,
-      },
-    ],
+  },
+  {
+    path: '/iterations/:id',
+    component: Iteration,
   },
 ];
 

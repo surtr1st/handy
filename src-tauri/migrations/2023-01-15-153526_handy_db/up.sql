@@ -11,6 +11,8 @@ CREATE TABLE
     id serial primary key not null,
     title text not null,
     goals text not null,
+    current_point int,
+    total_point int,
     created_date date not null,
     end_date date not null
   );
@@ -30,6 +32,7 @@ CREATE TABLE
     goals text not null,
     priority int not null,
     hours int,
+    points int,
     created_date date not null,
     iteration_id serial references iterations (id),
     progress_id serial references progresses (id),

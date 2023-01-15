@@ -16,6 +16,7 @@ diesel::table! {
         goals -> Text,
         priority -> Int4,
         hours -> Nullable<Int4>,
+        points -> Nullable<Int4>,
         created_date -> Date,
         iteration_id -> Int4,
         progress_id -> Int4,
@@ -37,6 +38,8 @@ diesel::table! {
         id -> Int4,
         title -> Text,
         goals -> Text,
+        current_point -> Nullable<Int4>,
+        total_point -> Nullable<Int4>,
         created_date -> Date,
         end_date -> Date,
     }
