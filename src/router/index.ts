@@ -5,20 +5,35 @@ const GetStarted = defineAsyncComponent(
   () => import('../views/GetStarted.vue'),
 );
 const Home = defineAsyncComponent(() => import('../views/Home.vue'));
-const Iteration = defineAsyncComponent(() => import('../views/Iteration.vue'));
+const Iterations = defineAsyncComponent(
+  () => import('../views/Iterations.vue'),
+);
+const Iteration = defineAsyncComponent(
+  () => import('../components/Iteration.vue'),
+);
 
 const routes = [
   {
     path: '/',
+    name: 'getting-started',
     component: GetStarted,
   },
   {
     path: '/home',
+    name: 'home',
     component: Home,
   },
   {
     path: '/iterations',
-    component: Iteration,
+    name: 'iterations',
+    component: Iterations,
+    children: [
+      {
+        path: '/iterations/i',
+        name: 'iteration',
+        component: Iteration,
+      },
+    ],
   },
 ];
 

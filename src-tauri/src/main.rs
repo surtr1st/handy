@@ -3,19 +3,8 @@
     windows_subsystem = "windows"
 )]
 
-mod progress;
-use progress::{select_all, Progress};
-
 #[tauri::command]
-fn progress_data() -> String {
-    let mut data = String::from("");
-    let list = select_all();
-    for item in list {
-        let Progress { id, name } = item;
-        data.push_str(format!("{}, ", name).as_str());
-    }
-    format!("{}", data).into()
-}
+fn progress_data() {}
 
 fn main() {
     tauri::Builder::default()
