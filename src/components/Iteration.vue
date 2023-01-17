@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import BurndownChart from './BurndownChart.vue';
-import { h, Component } from 'vue';
 import {
   NPageHeader,
   NGrid,
@@ -12,11 +11,18 @@ import {
   NButton,
   NIcon,
 } from 'naive-ui';
-import { ChartMultiple24Filled } from '@vicons/fluent';
+import {
+  DocumentBulletList24Filled,
+  DocumentCheckmark24Filled,
+  DocumentDismiss24Filled,
+  Pulse32Filled,
+} from '@vicons/fluent';
 import { RefreshCircle } from '@vicons/ionicons5';
 
-function renderIcon(icon: Component) {
-  return () => h(NIcon, null, { default: () => h(icon) });
+enum StatusColors {
+  DONE = 'rgb(16, 185, 129)',
+  PARTIALLY_DONE = 'rgb(251, 191, 36)',
+  UNDONE = 'rgb(225, 29, 72)',
 }
 </script>
 
@@ -27,31 +33,59 @@ function renderIcon(icon: Component) {
         <NStatistic
           label="Backlogs"
           value="0"
-        />
+        >
+          <template #prefix>
+            <NIcon> <DocumentBulletList24Filled /> </NIcon>
+          </template>
+        </NStatistic>
       </NGi>
       <NGi>
         <NStatistic
           label="Done"
           value="0"
-        />
+        >
+          <template #prefix>
+            <NIcon :color="StatusColors.DONE">
+              <DocumentCheckmark24Filled />
+            </NIcon>
+          </template>
+        </NStatistic>
       </NGi>
       <NGi>
         <NStatistic
           label="Partially Done"
           value="0"
-        />
+        >
+          <template #prefix>
+            <NIcon :color="StatusColors.PARTIALLY_DONE">
+              <DocumentCheckmark24Filled />
+            </NIcon>
+          </template>
+        </NStatistic>
       </NGi>
       <NGi>
         <NStatistic
           label="Undone"
           value="0"
-        />
+        >
+          <template #prefix>
+            <NIcon :color="StatusColors.UNDONE">
+              <DocumentDismiss24Filled />
+            </NIcon>
+          </template>
+        </NStatistic>
       </NGi>
       <NGi>
         <NStatistic
           label="Velocity"
           value="0"
-        />
+        >
+          <template #prefix>
+            <NIcon color="rgb(79, 70, 229)">
+              <Pulse32Filled />
+            </NIcon>
+          </template>
+        </NStatistic>
       </NGi>
     </NGrid>
     <template #title>
@@ -89,9 +123,7 @@ function renderIcon(icon: Component) {
       name="backlogs"
       tab="Backlogs"
     >
-      <NThing>
-        <h1>Backlogs</h1>
-      </NThing>
+      <NThing> </NThing>
     </NTabPane>
     <NTabPane
       name="goals"
