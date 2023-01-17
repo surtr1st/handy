@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import BurndownChart from './BurndownChart.vue';
+import Backlogs from './Backlogs.vue';
 import {
+  NScrollbar,
   NPageHeader,
   NGrid,
   NGi,
@@ -12,6 +14,7 @@ import {
   NIcon,
 } from 'naive-ui';
 import {
+  TextBulletListSquare24Filled,
   DocumentBulletList24Filled,
   DocumentCheckmark24Filled,
   DocumentDismiss24Filled,
@@ -95,7 +98,7 @@ enum StatusColors {
     </template>
     <template #avatar>
       <NIcon size="large">
-        <TaskListSquareLtr24Filled />
+        <TextBulletListSquare24Filled />
       </NIcon>
     </template>
     <template #extra>
@@ -123,7 +126,21 @@ enum StatusColors {
       name="backlogs"
       tab="Backlogs"
     >
-      <NThing> </NThing>
+      <NGrid
+        :cols="12"
+        :x-gap="12"
+      >
+        <NGi :span="3">
+          <NThing>
+            <NScrollbar style="max-height: 600px">
+              <Backlogs v-for="i in 10" />
+            </NScrollbar>
+          </NThing>
+        </NGi>
+        <NGi :span="9">
+          <RouterView />
+        </NGi>
+      </NGrid>
     </NTabPane>
     <NTabPane
       name="goals"

@@ -11,16 +11,16 @@ const Iterations = defineAsyncComponent(
 const Iteration = defineAsyncComponent(
   () => import('../components/Iteration.vue'),
 );
+const Backlog = defineAsyncComponent(() => import('../components/Backlog.vue'));
+const Tasks = defineAsyncComponent(() => import('../views/Tasks.vue'));
 
 const routes = [
   {
     path: '/',
-    name: 'getting-started',
     component: GetStarted,
   },
   {
     path: '/home',
-    name: 'home',
     component: Home,
   },
   {
@@ -30,6 +30,16 @@ const routes = [
   {
     path: '/iterations/:id',
     component: Iteration,
+    children: [
+      {
+        path: 'backlogs/:bid',
+        component: Backlog,
+      },
+      {
+        path: 'backlogs/:bid/tasks',
+        component: Tasks,
+      },
+    ],
   },
 ];
 
