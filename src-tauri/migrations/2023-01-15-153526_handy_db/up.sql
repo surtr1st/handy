@@ -51,8 +51,9 @@ CREATE TABLE
   tasks (
     id serial primary key not null,
     name text not null,
-    estimated_time bigint,
-    completed_time bigint,
+    created_date bigint,
+    hours int,
+    actual_hours int,
     progress text not null,
     mode boolean not null,
     pic text references participants (id),
