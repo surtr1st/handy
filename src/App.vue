@@ -13,7 +13,11 @@ import {
 import { RouterLink } from 'vue-router';
 import type { MenuOption } from 'naive-ui';
 import { Home } from '@vicons/ionicons5';
-import { ClipboardTaskListRtl24Filled, Apps28Filled } from '@vicons/fluent';
+import {
+  ClipboardTaskListRtl24Filled,
+  Apps28Filled,
+  PersonCircle24Filled,
+} from '@vicons/fluent';
 import { themeOverrides } from './configs/theme';
 
 function renderIcon(icon: Component) {
@@ -64,9 +68,24 @@ const menuOptions: MenuOption[] = [
     key: 'iterations',
     icon: renderIcon(ClipboardTaskListRtl24Filled),
   },
+  {
+    label: () =>
+      h(
+        RouterLink,
+        {
+          to: {
+            path: '/user',
+          },
+        },
+
+        { default: () => 'Me' },
+      ),
+    key: 'user',
+    icon: renderIcon(PersonCircle24Filled),
+  },
 ];
 const activeKey = ref<string | null>(null);
-const collapsed = ref(false);
+const collapsed = ref(true);
 </script>
 
 <template>

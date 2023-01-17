@@ -1,5 +1,13 @@
 <script setup lang="ts">
-import { NThing, NSpace, NList, NListItem, NTabs, NTabPane } from 'naive-ui';
+import {
+  NThing,
+  NSpace,
+  NList,
+  NListItem,
+  NTabs,
+  NTabPane,
+  NDivider,
+} from 'naive-ui';
 import { RouterLink } from 'vue-router';
 </script>
 
@@ -26,10 +34,8 @@ import { RouterLink } from 'vue-router';
             to="/iterations/:id"
             style="text-decoration: none"
           >
-            <NThing
-              title="Title"
-              content-style="margin-top: 10px; font-size: 18px"
-            >
+            <NThing content-style="margin-top: 10px; font-size: 18px">
+              <NDivider title-placement="left">Title</NDivider>
               <NSpace justify="space-around">
                 <h4>Iteration Id</h4>
                 <h4>Iteration Goals</h4>
@@ -56,10 +62,8 @@ import { RouterLink } from 'vue-router';
             to="/iterations/:id"
             style="text-decoration: none"
           >
-            <NThing
-              title="Title"
-              content-style="margin-top: 10px; font-size: 18px"
-            >
+            <NThing content-style="margin-top: 10px; font-size: 18px">
+              <NDivider title-placement="left">Title</NDivider>
               <NSpace justify="space-around">
                 <h4>Iteration Id</h4>
                 <h4>Iteration Goals</h4>
