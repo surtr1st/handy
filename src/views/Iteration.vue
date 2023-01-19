@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import BurndownChart from './BurndownChart.vue';
-import Backlogs from './Backlogs.vue';
+import Goals from '../components/Goals.vue';
+import BurndownChart from '../components/BurndownChart.vue';
+import Backlogs from '../components/Backlogs.vue';
 import {
+  NSpace,
   NScrollbar,
   NPageHeader,
   NGrid,
@@ -146,9 +148,13 @@ enum StatusColors {
       name="goals"
       tab="Goals"
     >
-      <NThing>
-        <h1>Goals</h1>
-      </NThing>
+      <NSpace
+        justify="center"
+        align="center"
+        style="height: 50vh"
+      >
+        <Goals />
+      </NSpace>
     </NTabPane>
     <NTabPane
       name="burndown-chart"

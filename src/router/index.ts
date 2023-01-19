@@ -8,10 +8,8 @@ const Home = defineAsyncComponent(() => import('../views/Home.vue'));
 const Iterations = defineAsyncComponent(
   () => import('../views/Iterations.vue'),
 );
-const Iteration = defineAsyncComponent(
-  () => import('../components/Iteration.vue'),
-);
-const Backlog = defineAsyncComponent(() => import('../components/Backlog.vue'));
+const Iteration = defineAsyncComponent(() => import('../views/Iteration.vue'));
+const Backlog = defineAsyncComponent(() => import('../views/Backlog.vue'));
 const Tasks = defineAsyncComponent(() => import('../views/Tasks.vue'));
 
 const routes = [

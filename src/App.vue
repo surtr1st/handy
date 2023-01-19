@@ -120,7 +120,7 @@ const collapsed = ref(true);
           </NLayoutSider>
           <NLayout
             :native-scrollbar="false"
-            content-style="padding: 24px;"
+            content-style="padding: 1rem;"
             style="display: grid; place-items: center"
           >
             <RouterView />

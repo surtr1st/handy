@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { invoke } from '@tauri-apps/api/tauri';
 import { DocumentAdd24Filled } from '@vicons/fluent';
+import { useDebounce } from '../hooks';
 import {
   NIcon,
   NButton,
@@ -77,6 +78,8 @@ function createIteration() {
     .then(() => notifySuccess())
     .catch(() => notifyError());
 }
+
+const debounce = useDebounce(createIteration);
 </script>
 
 <template>
@@ -157,7 +160,7 @@ function createIteration() {
           <NButton
             primary
             type="primary"
-            @click="createIteration()"
+            @click="debounce"
           >
             <template #icon>
               <NIcon size="20">

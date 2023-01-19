@@ -70,7 +70,7 @@ import {
       </NGi>
       <NGi :span="6">
         <NCard title="Criteria Acceptances">
-          <NScrollbar style="max-height: 30vh; min-height: 15vh">
+          <NScrollbar style="max-height: 29vh; min-height: 15vh">
             <NSpace vertical>
               <NCheckbox v-for="i in 15">Criteria Acceptance {{ i }}</NCheckbox>
             </NSpace>
@@ -105,7 +105,11 @@ import {
             <NDivider />
           </template>
           <template #action>
-            <NSpace justify="center">
+            <NSpace
+              justify="center"
+              align="center"
+              style="height: 9.5vh"
+            >
               <NButton
                 type="primary"
                 @click="$router.push('/iterations/:id/backlogs/:bid/tasks')"
