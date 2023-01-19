@@ -145,10 +145,6 @@ function onEnter(event: KeyboardEvent) {
           "
         >
           <NText strong>{{ task.name }}</NText>
-          <TaskNameModal
-            :value="taskState.name"
-            :close-on-enter="onEnter"
-          />
         </td>
         <td
           @dblclick="

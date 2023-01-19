@@ -14,7 +14,10 @@ import {
   NIcon,
 } from 'naive-ui';
 import { Status20Filled } from '@vicons/fluent';
+import { useIterationRoute } from '../store';
 
+const { iterationId } = useIterationRoute();
+const id = 1;
 enum StatusOptions {
   DONE = 'done',
   PARTIALLY_DONE = 'partially_done',
@@ -60,7 +63,7 @@ function changeStatus(value: string) {
 
 <template>
   <RouterLink
-    to="/iterations/:id/backlogs/:bid"
+    :to="`/iterations/${iterationId}/backlogs/${id}`"
     style="text-decoration: none"
   >
     <NCard
@@ -77,8 +80,9 @@ function changeStatus(value: string) {
         <NText
           type="success"
           strong
-          >100</NText
         >
+          100
+        </NText>
       </template>
       <template #action>
         <NSpace justify="space-evenly">

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { inject } from 'vue';
 import {
   NGrid,
   NGi,
@@ -11,12 +12,19 @@ import {
   NSpace,
   NStatistic,
   NDivider,
+  NInput,
 } from 'naive-ui';
 import {
   CheckmarkCircle24Filled,
   ClipboardTaskListRtl24Filled,
   ArrowStepInRight12Regular,
 } from '@vicons/fluent';
+import { Backlog } from '../types';
+import { useIterationRoute, useBacklogRoute } from '../store';
+
+const { iterationId: iid } = useIterationRoute();
+const { backlogId: bid } = useBacklogRoute();
+defineProps<{ props: Backlog }>();
 </script>
 
 <template>
@@ -70,11 +78,17 @@ import {
       </NGi>
       <NGi :span="6">
         <NCard title="Criteria Acceptances">
-          <NScrollbar style="max-height: 29vh; min-height: 15vh">
+          <NScrollbar style="max-height: 20vh; min-height: 15vh">
             <NSpace vertical>
               <NCheckbox v-for="i in 15">Criteria Acceptance {{ i }}</NCheckbox>
             </NSpace>
           </NScrollbar>
+          <template #action>
+            <NInput
+              type="text"
+              placeholder="Enter new CA"
+            />
+          </template>
         </NCard>
       </NGi>
       <NGi :span="6">
@@ -108,11 +122,13 @@ import {
             <NSpace
               justify="center"
               align="center"
-              style="height: 9.5vh"
+              style="height: 9vh"
             >
               <NButton
                 type="primary"
-                @click="$router.push('/iterations/:id/backlogs/:bid/tasks')"
+                @click="
+                  $router.push(`/iterations/${iid}/backlogs/${bid}/tasks`)
+                "
               >
                 <NIcon size="large">
                   <ArrowStepInRight12Regular />

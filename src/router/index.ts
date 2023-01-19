@@ -26,16 +26,19 @@ const routes = [
     component: Iterations,
   },
   {
-    path: '/iterations/:id',
+    path: '/iterations/:iid',
     component: Iteration,
+    props: true,
     children: [
       {
         path: 'backlogs/:bid',
         component: Backlog,
+        props: true,
       },
       {
         path: 'backlogs/:bid/tasks',
         component: Tasks,
+        props: true,
       },
     ],
   },

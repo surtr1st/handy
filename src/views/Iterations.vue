@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import {
   NThing,
   NSpace,
@@ -9,6 +10,10 @@ import {
   NDivider,
 } from 'naive-ui';
 import { RouterLink } from 'vue-router';
+import { useIterationRoute } from '../store';
+
+const { setIterationId } = useIterationRoute();
+const iid = ref<number>(1);
 </script>
 
 <template>
@@ -31,7 +36,8 @@ import { RouterLink } from 'vue-router';
       >
         <NListItem>
           <RouterLink
-            to="/iterations/:id"
+            :to="`/iterations/${iid}`"
+            @click="setIterationId(iid)"
             style="text-decoration: none"
           >
             <NThing content-style="margin-top: 10px; font-size: 18px">
@@ -59,7 +65,7 @@ import { RouterLink } from 'vue-router';
       >
         <NListItem>
           <RouterLink
-            to="/iterations/:id"
+            :to="`/iterations/${iid}`"
             style="text-decoration: none"
           >
             <NThing content-style="margin-top: 10px; font-size: 18px">

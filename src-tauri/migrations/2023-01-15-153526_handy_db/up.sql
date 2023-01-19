@@ -76,6 +76,15 @@ CREATE TABLE
     backlog_id serial references backlogs (id)
   );
 
+CREATE TABLE
+  burndowns (
+    id serial primary key not null,
+    ideal int,
+    actual int,
+    from_day date
+    iteration_id serial references iterations (id)
+  );
+
 
 INSERT INTO progresses (name) VALUES ('Undone'), ('Partially Done'), ('Done');
 INSERT INTO backlog_types (name, backlog_id) VALUES ('Fixed', null), ('Flexible', null);
