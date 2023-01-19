@@ -1,10 +1,29 @@
 <script setup lang="ts">
 import dayjs from 'dayjs';
-import { Task } from '../types';
-import { CSSProperties, reactive, ref } from 'vue';
-import { NGrid, NGi, NCard, NSpace, NText, NTable, NSwitch } from 'naive-ui';
 import TaskCreator from '../components/TaskCreator.vue';
-import TaskNameModal from '../components/TaskNameModal.vue';
+import Logwork from '../components/Logwork.vue';
+import { Task, EditTaskProps } from '../types';
+import { reactive, ref } from 'vue';
+import {
+  NButton,
+  NGrid,
+  NGi,
+  NCard,
+  NSpace,
+  NText,
+  NTable,
+  NModal,
+  NInput,
+  NDatePicker,
+  NInputNumber,
+  NSelect,
+} from 'naive-ui';
+
+const taskModal = reactive({
+  open: false,
+  type: '',
+  title: '',
+});
 
 const taskState = reactive({
   name: '',
@@ -12,13 +31,7 @@ const taskState = reactive({
   hours: 0,
   pic: '',
 });
-const taskModal = reactive({
-  open: false,
-  cellNameOpen: false,
-  cellDateOpen: false,
-  cellHoursOpen: false,
-  cellPicOpen: false,
-});
+
 const task = reactive<Task>({
   id: 0,
   name: '',
@@ -28,7 +41,8 @@ const task = reactive<Task>({
   progress: '',
   pic: '',
 });
-const tasks = ref<Task[]>([
+
+const tasks = ref<Array<Task>>([
   {
     id: 1,
     name: 'A du dark wa 123 456 Wy Seg',
@@ -49,62 +63,25 @@ const tasks = ref<Task[]>([
   },
 ]);
 
-const railStyle = ({
-  focused,
-  checked,
-}: {
-  focused: boolean;
-  checked: boolean;
-}) => {
-  const style: CSSProperties = {};
-  style.fontWeight = 'bolder';
-  if (checked) {
-    style.background = 'rgb(16, 185, 129)';
-    if (focused) {
-      style.boxShadow = '0 0 0 2px #d0305040';
-    }
-  } else {
-    style.background = 'rgb(225, 29, 72)';
-    if (focused) {
-      style.boxShadow = '0 0 0 2px #2080f040';
-    }
-  }
-  return style;
-};
-
 // Function
 const getTask = (id: number) =>
   tasks.value.find((task: Task) => task.id === id);
 
-function editTask(id: number) {
-  const task = getTask(id);
-}
-
-function editTaskName(id: number) {
-  taskState.name = getTask(id)?.name as string;
-  taskModal.cellNameOpen = !taskModal.cellNameOpen;
-}
-
-function editTaskDate(id: number) {
-  taskState.date = getTask(id)?.createdDate as number;
-  taskModal.cellDateOpen = !taskModal.cellDateOpen;
-}
-
-function editTaskHours(id: number) {
-  taskState.hours = getTask(id)?.createdDate as number;
-  taskModal.cellHoursOpen = !taskModal.cellHoursOpen;
-}
-
-function editTaskPIC(id: number) {
-  taskState.pic = getTask(id)?.pic as string;
-  taskModal.cellPicOpen = !taskModal.cellPicOpen;
+function editTaskIndividually({ id, type, title }: EditTaskProps) {
+  if (type === 'name') taskState.name = getTask(id)?.name as string;
+  if (type === 'date') taskState.date = getTask(id)?.createdDate as number;
+  if (type === 'hours') taskState.hours = getTask(id)?.hours as number;
+  if (type === 'pic') taskState.pic = getTask(id)?.pic as string;
+  taskModal.open = !taskModal.open;
+  taskModal.type = type;
+  taskModal.title = title;
 }
 
 function onEnter(event: KeyboardEvent) {
   const ENTER = 'Enter';
-  if (event.key === ENTER && taskModal.cellNameOpen) {
+  if (event.key === ENTER && taskModal.open) {
     event.preventDefault();
-    taskModal.cellNameOpen = false;
+    taskModal.open = false;
   }
 }
 </script>
@@ -147,6 +124,7 @@ function onEnter(event: KeyboardEvent) {
         <th>Hours</th>
         <th>PIC</th>
         <th>Progress</th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
@@ -157,30 +135,95 @@ function onEnter(event: KeyboardEvent) {
         <td>
           <NText strong>{{ task.id }}</NText>
         </td>
-        <td @dblclick="editTaskName(task.id)">
+        <td
+          @dblclick="
+            editTaskIndividually({
+              id: task.id,
+              type: 'name',
+              title: 'Edit Name',
+            })
+          "
+        >
           <NText strong>{{ task.name }}</NText>
           <TaskNameModal
             :value="taskState.name"
             :close-on-enter="onEnter"
           />
         </td>
-        <td @dblclick="editTaskDate(task.id)">
+        <td
+          @dblclick="
+            editTaskIndividually({
+              id: task.id,
+              type: 'date',
+              title: 'Edit Date',
+            })
+          "
+        >
           {{ dayjs(new Date(task.createdDate)).format('DD-MM-YYYY') }}
         </td>
-        <td @dblclick="editTaskHours(task.id)">
+        <td
+          @dblclick="
+            editTaskIndividually({
+              id: task.id,
+              type: 'hours',
+              title: 'Edit Hours',
+            })
+          "
+        >
           {{ task.actualHours }}/{{ task.hours }}
         </td>
-        <td @dblclick="editTaskPIC(task.id)">{{ task.pic }}</td>
+        <td
+          @dblclick="
+            editTaskIndividually({
+              id: task.id,
+              type: 'pic',
+              title: 'Edit Person-In-Charge',
+            })
+          "
+        >
+          {{ task.pic }}
+        </td>
+        <td style="width: 100px">
+          <Logwork
+            :hours="task.hours"
+            :pic="task.pic"
+          />
+        </td>
         <td>
-          <NSwitch
-            size="large"
-            :rail-style="railStyle"
+          <NButton
+            primary
+            type="primary"
+            >Edit</NButton
           >
-            <template #checked> Done </template>
-            <template #unchecked> Undone </template>
-          </NSwitch>
         </td>
       </tr>
     </tbody>
   </NTable>
+  <NModal v-model:show="taskModal.open">
+    <NCard
+      style="width: 600px"
+      :title="taskModal.title"
+      role="dialog"
+    >
+      <NInput
+        v-show="taskModal.type === 'name'"
+        v-model:value="taskState.name"
+        @keydown="onEnter"
+      />
+      <NDatePicker
+        v-show="taskModal.type === 'date'"
+        v-model:value="taskState.date"
+        @keydown="onEnter"
+      />
+      <NInputNumber
+        v-show="taskModal.type === 'hours'"
+        v-model:value="taskState.hours"
+        @keydown="onEnter"
+      />
+      <NSelect
+        v-show="taskModal.type === 'pic'"
+        :options="[{ label: taskState.pic, value: taskState.pic }]"
+      />
+    </NCard>
+  </NModal>
 </template>

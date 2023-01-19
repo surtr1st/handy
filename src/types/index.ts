@@ -7,3 +7,9 @@ export type Task = {
   progress: string;
   pic: string;
 };
+
+export type EditTaskProps = {
+  id: number;
+  type: 'name' | 'date' | 'hours' | 'pic';
+  title: string;
+};

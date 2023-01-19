@@ -70,7 +70,7 @@ import {
       </NGi>
       <NGi :span="6">
         <NCard title="Criteria Acceptances">
-          <NScrollbar style="max-height: 35vh; min-height: 15vh">
+          <NScrollbar style="max-height: 30vh; min-height: 15vh">
             <NSpace vertical>
               <NCheckbox v-for="i in 15">Criteria Acceptance {{ i }}</NCheckbox>
             </NSpace>
@@ -78,10 +78,7 @@ import {
         </NCard>
       </NGi>
       <NGi :span="6">
-        <NCard
-          title="Tasks"
-          style="height: 315px"
-        >
+        <NCard title="Tasks">
           <NSpace justify="space-evenly">
             <NStatistic
               label="Total"
