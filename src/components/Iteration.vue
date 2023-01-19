@@ -132,7 +132,7 @@ enum StatusColors {
       >
         <NGi :span="3">
           <NThing>
-            <NScrollbar style="max-height: 600px">
+            <NScrollbar style="max-height: 71vh">
               <Backlogs v-for="i in 10" />
             </NScrollbar>
           </NThing>

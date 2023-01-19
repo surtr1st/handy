@@ -15,7 +15,6 @@ import {
 import {
   CheckmarkCircle24Filled,
   ClipboardTaskListRtl24Filled,
-  Clock32Filled,
   ArrowStepInRight12Regular,
 } from '@vicons/fluent';
 </script>
@@ -71,9 +70,9 @@ import {
       </NGi>
       <NGi :span="6">
         <NCard title="Criteria Acceptances">
-          <NScrollbar style="height: 225px">
+          <NScrollbar style="max-height: 35vh; min-height: 15vh">
             <NSpace vertical>
-              <NCheckbox v-for="i in 10">Criteria Acceptance {{ i }}</NCheckbox>
+              <NCheckbox v-for="i in 15">Criteria Acceptance {{ i }}</NCheckbox>
             </NSpace>
           </NScrollbar>
         </NCard>

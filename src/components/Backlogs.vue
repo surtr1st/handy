@@ -13,11 +13,7 @@ import {
   NProgress,
   NIcon,
 } from 'naive-ui';
-import {
-  Status20Filled,
-  ClipboardTaskListRtl24Filled,
-  Clock32Filled,
-} from '@vicons/fluent';
+import { Status20Filled } from '@vicons/fluent';
 
 enum StatusOptions {
   DONE = 'done',
