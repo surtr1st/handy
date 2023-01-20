@@ -1,6 +1,13 @@
 -- Your SQL goes here
 
 CREATE TABLE
+  users (
+    id serial primary key not null,
+    username text not null,
+    password text not null
+  );
+
+CREATE TABLE
   progresses (
     id serial primary key not null,
     name text not null
@@ -13,8 +20,9 @@ CREATE TABLE
     goals text not null,
     current_point int,
     total_point int,
-    created_date date not null,
-    end_date date not null
+    created_by text not null,
+    created_date bigint not null,
+    end_date bigint not null
   );
 
 CREATE TABLE
@@ -33,7 +41,7 @@ CREATE TABLE
     priority int not null,
     hours int,
     points int,
-    created_date date not null,
+    created_date bigint not null,
     iteration_id serial references iterations (id),
     progress_id serial references progresses (id),
     type_id serial references backlog_types (id)
@@ -53,7 +61,7 @@ CREATE TABLE
     name text not null,
     created_date bigint,
     hours int,
-    actual_hours int,
+    worked_hours int,
     progress text not null,
     mode boolean not null,
     pic text references participants (id),
@@ -64,6 +72,8 @@ CREATE TABLE
 CREATE TABLE
   worklogs (
     id serial primary key not null,
+    description text not null,
+    total_hour int not null,
     task_id serial references tasks (id),
     participant_id text references participants (id)
   );
@@ -81,10 +91,11 @@ CREATE TABLE
     id serial primary key not null,
     ideal int,
     actual int,
-    from_day date
+    from_day bigint,
     iteration_id serial references iterations (id)
   );
 
 
 INSERT INTO progresses (name) VALUES ('Undone'), ('Partially Done'), ('Done');
 INSERT INTO backlog_types (name, backlog_id) VALUES ('Fixed', null), ('Flexible', null);
+INSERT INTO users (username, password) VALUES ('admin', '123')

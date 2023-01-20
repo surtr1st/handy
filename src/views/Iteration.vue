@@ -2,6 +2,7 @@
 import Goals from '../components/Goals.vue';
 import BurndownChart from '../components/BurndownChart.vue';
 import Backlogs from '../components/Backlogs.vue';
+import BacklogCreator from '../components/BacklogCreator.vue';
 import { RefreshCircle } from '@vicons/ionicons5';
 import { useIterationRoute } from '../store';
 import { Backlog } from '../types';
@@ -170,8 +171,27 @@ const backlogs: Array<Backlog> = [
   </NPageHeader>
   <NTabs
     type="segment"
+    default-value="backlogs"
     animated
   >
+    <NTabPane
+      name="backlog-creator"
+      tab="Backlog Creator"
+    >
+      <NGrid
+        responsive="self"
+        :cols="12"
+        :x-gap="12"
+      >
+        <NGi :span="3">
+          <NThing>
+            <NScrollbar style="max-height: 69.5vh">
+              <BacklogCreator />
+            </NScrollbar>
+          </NThing>
+        </NGi>
+      </NGrid>
+    </NTabPane>
     <NTabPane
       name="backlogs"
       tab="Backlogs"

@@ -46,119 +46,65 @@ const rules = ref<FormRules>({
     trigger: ['blur', 'input'],
     message: 'Please input!',
   },
-  select: {
-    required: true,
-    trigger: ['change'],
-    message: 'Please select who will joining this iteration!',
-  },
 });
 
 // Functionality
-function notifySuccess() {
+function notifySuccess(message: string) {
   success({
-    content: 'Iteration created successfully!',
+    content: message,
     meta: '201',
     duration: duration,
   });
 }
-function notifyError() {
+function notifyError(message: string) {
   error({
-    content: 'Iteration created failed!',
+    content: message,
     meta: '500',
     duration: duration,
   });
 }
 
 function createIteration() {
-  invoke('create_iteration')
-    .then(() => notifySuccess())
-    .catch(() => notifyError());
+  const iteration = {
+    title: model.value.input,
+    goals: model.value.textarea,
+    createdBy: model.value.select.at(0),
+    createdDate: range.value?.at(0),
+    endDate: range.value?.at(1),
+  }
+  invoke('create_iteration', { ...iteration })
+    .then((msg) => notifySuccess(msg as string))
+    .catch((e) => notifyError(e as string));
 }
 
 const debounce = useDebounceFn(createIteration, 300);
 </script>
 
 <template>
-  <NCard
-    title="Create a Iteration"
-    :segmented="{
-      content: true,
-      footer: 'soft',
-    }"
-  >
-    <NForm
-      ref="form"
-      :model="model"
-      :rules="rules"
-      label-placement="top"
-      size="large"
-    >
-      <NGrid
-        responsive="screen"
-        x-gap="12"
-        y-gap="12"
-        cols="4"
-      >
-        <NFormItemGi
-          span="2"
-          label="Iteration Title"
-          path="input"
-          size="large"
-        >
-          <NInput
-            v-model:value="model.input"
-            placeholder="Title"
-            clearable
-          />
+  <NCard title="Create a Iteration" :segmented="{
+    content: true,
+    footer: 'soft',
+  }">
+    <NForm ref="form" :model="model" :rules="rules" label-placement="top" size="large">
+      <NGrid responsive="screen" x-gap="12" y-gap="12" cols="4">
+        <NFormItemGi span="2" label="Iteration Title" path="input" size="large">
+          <NInput v-model:value="model.input" placeholder="Title" clearable />
         </NFormItemGi>
-        <NFormItemGi
-          span="2"
-          label="Participants"
-          size="large"
-          path="select"
-        >
-          <NSelect
-            v-model:value="model.select"
-            multiple
-            placeholder="Who will join this iteration"
-            :options="mentions"
-          />
+        <NFormItemGi span="2" label="Participants" size="large" path="select">
+          <NSelect v-model:value="model.select" multiple placeholder="Who will join this iteration"
+            :options="mentions" />
         </NFormItemGi>
-        <NFormItemGi
-          span="4"
-          label="Timeline"
-          size="large"
-        >
-          <NDatePicker
-            v-model:value="range"
-            type="daterange"
-            size="large"
-            clearable
-            style="width: 100%"
-          />
+        <NFormItemGi span="4" label="Timeline" size="large">
+          <NDatePicker v-model:value="range" type="daterange" size="large" clearable style="width: 100%" />
         </NFormItemGi>
-        <NFormItemGi
-          span="10"
-          label="Goals"
-          path="textarea"
-          size="large"
-        >
-          <NInput
-            v-model:value="model.textarea"
-            placeholder="Description"
-            type="textarea"
-            :autosize="{
-              minRows: 3,
-              maxRows: 5,
-            }"
-          />
+        <NFormItemGi span="10" label="Goals" path="textarea" size="large">
+          <NInput v-model:value="model.textarea" placeholder="Description" type="textarea" :autosize="{
+            minRows: 3,
+            maxRows: 5,
+          }" />
         </NFormItemGi>
         <NFormItemGi span="10">
-          <NButton
-            primary
-            type="primary"
-            @click="debounce"
-          >
+          <NButton primary type="primary" @click="debounce">
             <template #icon>
               <NIcon size="20">
                 <DocumentAdd24Filled />
