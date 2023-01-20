@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import dayjs from 'dayjs';
 import { CSSProperties, ref } from 'vue';
+import { Logwork } from '../types';
+import { useFormattedDate } from '../constants';
 import {
   NGrid,
   NGi,
@@ -16,12 +17,9 @@ import {
   NDatePicker,
   NButton,
 } from 'naive-ui';
-import { Logwork } from '../types';
 
 const open = ref<boolean>(false);
 const completedTime = ref<number>(new Date().getTime());
-
-defineProps<{ props: Logwork }>();
 
 const railStyle = ({ checked }: { checked: boolean }) => {
   const style: CSSProperties = {};
@@ -34,9 +32,8 @@ const railStyle = ({ checked }: { checked: boolean }) => {
   return style;
 };
 
-function logWork() {
-  open.value = false;
-}
+const logWork = () => (open.value = false);
+defineProps<{ props: Partial<Logwork> }>();
 </script>
 
 <template>
@@ -80,7 +77,7 @@ function logWork() {
             <NStatistic label="Completed Date">
               <NInput
                 disabled
-                :value="dayjs(new Date(completedTime)).format('DD-MM-YYYY')"
+                :value="useFormattedDate(completedTime)"
               />
             </NStatistic>
             <NSpace justify="end">

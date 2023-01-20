@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useIterationRoute, backlogStore } from '../store';
 import {
   NGrid,
   NGi,
@@ -18,25 +19,21 @@ import {
   ClipboardTaskListRtl24Filled,
   ArrowStepInRight12Regular,
 } from '@vicons/fluent';
-import { Backlog } from '../types';
-import { useIterationRoute, useBacklogRoute } from '../store';
 
 const { iterationId: iid } = useIterationRoute();
-const { backlogId: bid } = useBacklogRoute();
-defineProps<{ props: Backlog }>();
 </script>
 
 <template>
   <NCard
-    title="[Id] Backlog Title"
+    :title="`[${backlogStore.id}] ${backlogStore.title}`"
     style="margin-bottom: 0.7rem"
   >
     <template #header-extra>
       <NText
         strong
         type="success"
-        >100</NText
-      >
+        >{{ backlogStore.priority }}
+      </NText>
     </template>
   </NCard>
   <NSpace>
@@ -46,13 +43,13 @@ defineProps<{ props: Backlog }>();
       :y-gap="12"
     >
       <NGi :span="6">
-        <NCard title="Goals">
+        <NCard
+          title="Goals"
+          style="width: 610px"
+        >
           <NScrollbar style="height: 100px">
             <NText>
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry's standard dummy text
-              ever since the 1500s, when an unknown printer took a galley of
-              type and scrambled it to make a type specimen book.
+              {{ backlogStore.goals }}
             </NText>
           </NScrollbar>
         </NCard>
@@ -61,16 +58,7 @@ defineProps<{ props: Backlog }>();
         <NCard title="Description">
           <NScrollbar style="height: 100px">
             <NText>
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry's standard dummy text
-              ever since the 1500s, when an unknown printer took a galley of
-              type and scrambled it to make a type specimen book. It has
-              survived not only five centuries, but also the leap into
-              electronic typesetting, remaining essentially unchanged. It was
-              popularised in the 1960s with the release of Letraset sheets
-              containing Lorem Ipsum passages, and more recently with desktop
-              publishing software like Aldus PageMaker including versions of
-              Lorem Ipsum.
+              {{ backlogStore.description }}
             </NText>
           </NScrollbar>
         </NCard>
@@ -126,7 +114,9 @@ defineProps<{ props: Backlog }>();
               <NButton
                 type="primary"
                 @click="
-                  $router.push(`/iterations/${iid}/backlogs/${bid}/tasks`)
+                  $router.push(
+                    `/iterations/${iid}/backlogs/${backlogStore.id}/tasks`,
+                  )
                 "
               >
                 <NIcon size="large">

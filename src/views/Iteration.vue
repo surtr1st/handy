@@ -2,6 +2,16 @@
 import Goals from '../components/Goals.vue';
 import BurndownChart from '../components/BurndownChart.vue';
 import Backlogs from '../components/Backlogs.vue';
+import { RefreshCircle } from '@vicons/ionicons5';
+import { useIterationRoute } from '../store';
+import { Backlog } from '../types';
+import {
+  TextBulletListSquare24Filled,
+  DocumentBulletList24Filled,
+  DocumentCheckmark24Filled,
+  DocumentDismiss24Filled,
+  Pulse32Filled,
+} from '@vicons/fluent';
 import {
   NSpace,
   NScrollbar,
@@ -15,15 +25,7 @@ import {
   NButton,
   NIcon,
 } from 'naive-ui';
-import {
-  TextBulletListSquare24Filled,
-  DocumentBulletList24Filled,
-  DocumentCheckmark24Filled,
-  DocumentDismiss24Filled,
-  Pulse32Filled,
-} from '@vicons/fluent';
-import { RefreshCircle } from '@vicons/ionicons5';
-import { useIterationRoute } from '../store';
+
 const { iterationId: iid } = useIterationRoute();
 
 enum StatusColors {
@@ -31,6 +33,29 @@ enum StatusColors {
   PARTIALLY_DONE = 'rgb(251, 191, 36)',
   UNDONE = 'rgb(225, 29, 72)',
 }
+
+const backlogs: Array<Backlog> = [
+  {
+    id: 1,
+    title: 'A du',
+    description: 'Dark wa',
+    goals: 'K Dark lam',
+    priority: 1,
+    hours: 3,
+    points: 3,
+    createdDate: 0,
+  },
+  {
+    id: 2,
+    title: 'A du Dark wa',
+    description: 'Vl vue dinh vl',
+    goals: 'Da qua',
+    priority: 2,
+    hours: 21,
+    points: 21,
+    createdDate: 0,
+  },
+];
 </script>
 
 <template>
@@ -135,7 +160,10 @@ enum StatusColors {
         <NGi :span="3">
           <NThing>
             <NScrollbar style="max-height: 71vh">
-              <Backlogs v-for="i in 5" />
+              <Backlogs
+                v-for="backlog in backlogs"
+                :props="{ ...backlog, list: backlogs }"
+              />
             </NScrollbar>
           </NThing>
         </NGi>

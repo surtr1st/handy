@@ -1,7 +1,10 @@
 <script setup lang="ts">
-import { colors } from '../configs/colors';
-import { RouterLink } from 'vue-router';
 import { ref } from 'vue';
+import { RouterLink } from 'vue-router';
+import { Status20Filled } from '@vicons/fluent';
+import { useIterationRoute, backlogStore } from '../store';
+import { colors } from '../configs/colors';
+import { Backlog } from '../types';
 import {
   NBadge,
   NPopselect,
@@ -13,11 +16,8 @@ import {
   NProgress,
   NIcon,
 } from 'naive-ui';
-import { Status20Filled } from '@vicons/fluent';
-import { useIterationRoute } from '../store';
 
 const { iterationId: iid } = useIterationRoute();
-const id = 1;
 enum StatusOptions {
   DONE = 'done',
   PARTIALLY_DONE = 'partially_done',
@@ -59,15 +59,34 @@ function changeStatus(value: string) {
       break;
   }
 }
+
+function calculatePointPercentage(workHours: number, point: number) {
+  return Math.round(workHours * 100) / 100;
+}
+
+const { props } = defineProps<{ props: Backlog & { list: Array<Backlog> } }>();
+
+function setBacklog(id: number) {
+  const backlog = props.list.find((bl: Backlog) => bl.id === id);
+  backlogStore.id = backlog?.id as number;
+  backlogStore.title = backlog?.title as string;
+  backlogStore.goals = backlog?.goals as string;
+  backlogStore.description = backlog?.description as string;
+  backlogStore.priority = backlog?.priority as number;
+  backlogStore.hours = backlog?.hours as number;
+  backlogStore.points = backlog?.points as number;
+  backlogStore.createdDate = backlog?.createdDate as number;
+}
 </script>
 
 <template>
   <RouterLink
-    :to="`/iterations/${iid}/backlogs/${id}`"
+    :to="`/iterations/${iid}/backlogs/${props.id}`"
+    @click="setBacklog(props.id)"
     style="text-decoration: none"
   >
     <NCard
-      title="Title"
+      :title="props.title"
       hoverable
       style="margin-bottom: 0.7rem"
     >
@@ -81,7 +100,7 @@ function changeStatus(value: string) {
           type="success"
           strong
         >
-          100
+          {{ props.priority }}
         </NText>
       </template>
       <template #action>
@@ -96,17 +115,19 @@ function changeStatus(value: string) {
             label="Hours"
             value="0"
           >
-            <template #suffix>/ 0</template>
+            <template #suffix>/ {{ props.hours }}</template>
           </NStatistic>
           <NStatistic label="Points">
             <template #prefix>
               <NProgress
                 type="circle"
                 :color="colors.primary"
-                :percentage="70"
+                :percentage="
+                  calculatePointPercentage(props.hours, props.points)
+                "
                 style="width: 40px"
               >
-                <span>7</span>
+                <span style="font-size: 12px">{{ props.points }}</span>
               </NProgress>
             </template>
           </NStatistic>

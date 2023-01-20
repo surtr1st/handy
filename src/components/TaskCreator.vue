@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import { Add28Filled } from '@vicons/fluent';
 import {
   NSpace,
@@ -12,7 +13,6 @@ import {
   NIcon,
   NCard,
 } from 'naive-ui';
-import { ref } from 'vue';
 
 const open = ref(false);
 const options = [
