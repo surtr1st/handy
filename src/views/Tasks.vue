@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import dayjs from 'dayjs';
 import TaskCreator from '../components/TaskCreator.vue';
 import Logwork from '../components/Logwork.vue';
+import { useFormattedDate } from '../constants';
 import { Task, EditTaskProps } from '../types';
 import { reactive, ref } from 'vue';
 import {
@@ -17,6 +17,7 @@ import {
   NDatePicker,
   NInputNumber,
   NSelect,
+  NSwitch,
 } from 'naive-ui';
 
 const taskModal = reactive({
@@ -155,7 +156,7 @@ function onEnter(event: KeyboardEvent) {
             })
           "
         >
-          {{ dayjs(new Date(task.createdDate)).format('DD-MM-YYYY') }}
+          {{ useFormattedDate(task.createdDate) }}
         </td>
         <td
           @dblclick="
@@ -180,10 +181,7 @@ function onEnter(event: KeyboardEvent) {
           {{ task.pic }}
         </td>
         <td style="width: 100px">
-          <Logwork
-            :hours="task.hours"
-            :pic="task.pic"
-          />
+          <Logwork :props="{ pic: task.pic, estimatedHours: task.hours }" />
         </td>
         <td>
           <NButton

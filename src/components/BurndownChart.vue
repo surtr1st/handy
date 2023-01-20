@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { colors } from '../configs/colors';
 import {
   Chart,
@@ -94,19 +94,12 @@ onMounted(() => {
     [200, 160, 160, 140, 90, 90, 80],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   );
-  window.addEventListener('resize', () => {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    const cv = canvas.value as HTMLCanvasElement;
-    cv.width = width;
-    cv.height = height;
-  });
-});
-onUnmounted(() => {
-  window.removeEventListener('resize', (e: Event) => {});
 });
 </script>
 
 <template>
-  <canvas ref="canvas" />
+  <canvas
+    v-once
+    ref="canvas"
+  />
 </template>

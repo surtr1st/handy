@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { invoke } from '@tauri-apps/api/tauri';
 import { DocumentAdd24Filled } from '@vicons/fluent';
-import { useDebounce } from '../hooks';
+import { useDebounceFn } from '@vueuse/core';
 import {
   NIcon,
   NButton,
@@ -75,7 +75,7 @@ function createIteration() {
     .catch(() => notifyError());
 }
 
-const debounce = useDebounce(createIteration);
+const debounce = useDebounceFn(createIteration, 300);
 </script>
 
 <template>

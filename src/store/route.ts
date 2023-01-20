@@ -1,8 +1,9 @@
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { defineStore } from 'pinia';
+import { useLocalStorage } from '@vueuse/core';
 
 export const useIterationRoute = defineStore('iteration', () => {
-  const id = ref<number>(0);
+  const id = useLocalStorage('iterationId', 0);
   const iterationId = computed(() => id.value);
   function setIterationId(value: number) {
     id.value = value;
@@ -14,7 +15,7 @@ export const useIterationRoute = defineStore('iteration', () => {
 });
 
 export const useBacklogRoute = defineStore('backlog', () => {
-  const id = ref<number>(0);
+  const id = useLocalStorage('backlogId', 0);
   const backlogId = computed(() => id.value);
   function setBacklogId(value: number) {
     id.value = value;
