@@ -88,7 +88,10 @@ function onEnter(event: KeyboardEvent) {
 </script>
 
 <template>
-  <NGrid :cols="12">
+  <NGrid
+    responsive="screen"
+    :cols="12"
+  >
     <NGi :span="11">
       <NCard
         title="Total Hour"

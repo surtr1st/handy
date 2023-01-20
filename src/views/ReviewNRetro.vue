@@ -58,7 +58,10 @@ function finish() {
 </script>
 <template>
   <NPageHeader subtitle="What do you feel about this iteration?">
-    <NGrid :cols="4">
+    <NGrid
+      responsive="screen"
+      :cols="4"
+    >
       <NGi>
         <NStatistic label="Which Iteration">
           <NSelect

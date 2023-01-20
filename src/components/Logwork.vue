@@ -53,6 +53,7 @@ defineProps<{ props: Partial<Logwork> }>();
       style="width: 650px"
     >
       <NGrid
+        responsive="self"
         :cols="6"
         :x-gap="12"
       >

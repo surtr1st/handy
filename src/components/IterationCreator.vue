@@ -94,6 +94,7 @@ const debounce = useDebounceFn(createIteration, 300);
       size="large"
     >
       <NGrid
+        responsive="screen"
         x-gap="12"
         y-gap="12"
         cols="4"

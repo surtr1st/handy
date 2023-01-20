@@ -15,7 +15,10 @@ import {
 
 <template>
   <NPageHeader subtitle="All of the iteration action">
-    <NGrid :cols="5">
+    <NGrid
+      responsive="screen"
+      :cols="5"
+    >
       <NGi>
         <NStatistic
           label="Current"

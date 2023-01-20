@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref, watch } from 'vue';
 import { useIterationRoute, backlogStore } from '../store';
 import {
   NGrid,
@@ -19,8 +20,17 @@ import {
   ClipboardTaskListRtl24Filled,
   ArrowStepInRight12Regular,
 } from '@vicons/fluent';
+import { useWindowSize } from '@vueuse/core';
 
+const { height } = useWindowSize();
 const { iterationId: iid } = useIterationRoute();
+
+const flexHeight = ref(20);
+
+watch(height, (newHeight) => {
+  if (newHeight > 700) flexHeight.value = 30;
+  else flexHeight.value = 20;
+});
 </script>
 
 <template>
@@ -38,16 +48,16 @@ const { iterationId: iid } = useIterationRoute();
   </NCard>
   <NSpace>
     <NGrid
+      responsive="self"
+      item-responsive
+      layout-shift-disabled
       :cols="12"
       :x-gap="12"
       :y-gap="12"
     >
       <NGi :span="6">
-        <NCard
-          title="Goals"
-          style="width: 610px"
-        >
-          <NScrollbar style="height: 100px">
+        <NCard title="Goals">
+          <NScrollbar style="height: 100px; width: 100%">
             <NText>
               {{ backlogStore.goals }}
             </NText>
@@ -56,16 +66,24 @@ const { iterationId: iid } = useIterationRoute();
       </NGi>
       <NGi :span="6">
         <NCard title="Description">
-          <NScrollbar style="height: 100px">
+          <NScrollbar style="height: 100px; width: 100%">
             <NText>
               {{ backlogStore.description }}
+              Lorem Ipsum is simply dummy text of the printing and typesetting
+              industry. Lorem Ipsum has been the industry's standard dummy text
+              ever since the 1500s, when an unknown printer took a galley of
+              type and scrambled it to make a type specimen book. Lorem Ipsum is
+              simply dummy text of the printing and typesetting industry. Lorem
+              Ipsum has been the industry's standard dummy text ever since the
+              1500s, when an unknown printer took a galley of type and scrambled
+              it to make a type specimen book.
             </NText>
           </NScrollbar>
         </NCard>
       </NGi>
       <NGi :span="6">
         <NCard title="Criteria Acceptances">
-          <NScrollbar style="max-height: 20vh; min-height: 15vh">
+          <NScrollbar style="height: 21.2vh; width: 100%">
             <NSpace vertical>
               <NCheckbox v-for="i in 15">Criteria Acceptance {{ i }}</NCheckbox>
             </NSpace>
@@ -79,7 +97,10 @@ const { iterationId: iid } = useIterationRoute();
         </NCard>
       </NGi>
       <NGi :span="6">
-        <NCard title="Tasks">
+        <NCard
+          title="Tasks"
+          style="min-height: 39vh"
+        >
           <NSpace justify="space-evenly">
             <NStatistic
               label="Total"
@@ -109,7 +130,6 @@ const { iterationId: iid } = useIterationRoute();
             <NSpace
               justify="center"
               align="center"
-              style="height: 9vh"
             >
               <NButton
                 type="primary"

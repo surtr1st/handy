@@ -55,12 +55,35 @@ const backlogs: Array<Backlog> = [
     points: 21,
     createdDate: 0,
   },
+  {
+    id: 3,
+    title: 'A du Dark wa',
+    description: 'Vl vue dinh vl',
+    goals: 'Da qua',
+    priority: 3,
+    hours: 5,
+    points: 5,
+    createdDate: 0,
+  },
+  {
+    id: 4,
+    title: 'A du Dark wa',
+    description: 'Vl vue dinh vl',
+    goals: 'Daaaa qua',
+    priority: 4,
+    hours: 5,
+    points: 5,
+    createdDate: 0,
+  },
 ];
 </script>
 
 <template>
   <NPageHeader>
-    <NGrid :cols="5">
+    <NGrid
+      responsive="screen"
+      :cols="5"
+    >
       <NGi>
         <NStatistic
           label="Backlogs"
@@ -154,12 +177,13 @@ const backlogs: Array<Backlog> = [
       tab="Backlogs"
     >
       <NGrid
+        responsive="self"
         :cols="12"
         :x-gap="12"
       >
         <NGi :span="3">
           <NThing>
-            <NScrollbar style="max-height: 71vh">
+            <NScrollbar style="max-height: 69.5vh">
               <Backlogs
                 v-for="backlog in backlogs"
                 :props="{ ...backlog, list: backlogs }"

@@ -49,6 +49,7 @@ const options = [
       <NSpace vertical>
         <NInput placeholder="Task Name" />
         <NGrid
+          responsive="self"
           :cols="12"
           :x-gap="12"
         >
