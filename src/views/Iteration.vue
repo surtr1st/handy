@@ -24,7 +24,7 @@ import {
 } from '@vicons/fluent';
 import { RefreshCircle } from '@vicons/ionicons5';
 import { useIterationRoute } from '../store';
-const { iterationId } = useIterationRoute();
+const { iterationId: iid } = useIterationRoute();
 
 enum StatusColors {
   DONE = 'rgb(16, 185, 129)',
@@ -97,7 +97,7 @@ enum StatusColors {
     </NGrid>
     <template #title>
       <h2 style="text-decoration: none; color: inherit">
-        [{{ iterationId }}] Iteration
+        [{{ iid }}] Iteration
       </h2>
     </template>
     <template #avatar>
@@ -118,9 +118,7 @@ enum StatusColors {
         </NButton>
       </NSpace>
     </template>
-    <template #footer>
-      <NDivider />
-    </template>
+    <template #footer> </template>
   </NPageHeader>
   <NTabs
     type="segment"

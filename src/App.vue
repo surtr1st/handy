@@ -17,11 +17,12 @@ import {
   ClipboardTaskListRtl24Filled,
   Apps28Filled,
   PersonCircle24Filled,
+  NotepadPerson24Filled,
 } from '@vicons/fluent';
 import { themeOverrides } from './configs/theme';
 
 function renderIcon(icon: Component) {
-  return () => h(NIcon, null, { default: () => h(icon) });
+  return () => h(NIcon, { size: 'large' }, { default: () => h(icon) });
 }
 
 const menuOptions: MenuOption[] = [
@@ -74,7 +75,22 @@ const menuOptions: MenuOption[] = [
         RouterLink,
         {
           to: {
-            path: '/user',
+            path: '/end-of-iteration',
+          },
+        },
+
+        { default: () => 'Review/Retro' },
+      ),
+    key: 'review',
+    icon: renderIcon(NotepadPerson24Filled),
+  },
+  {
+    label: () =>
+      h(
+        RouterLink,
+        {
+          to: {
+            path: '/me',
           },
         },
 

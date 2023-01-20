@@ -16,7 +16,7 @@ import {
 import { Status20Filled } from '@vicons/fluent';
 import { useIterationRoute } from '../store';
 
-const { iterationId } = useIterationRoute();
+const { iterationId: iid } = useIterationRoute();
 const id = 1;
 enum StatusOptions {
   DONE = 'done',
@@ -63,7 +63,7 @@ function changeStatus(value: string) {
 
 <template>
   <RouterLink
-    :to="`/iterations/${iterationId}/backlogs/${id}`"
+    :to="`/iterations/${iid}/backlogs/${id}`"
     style="text-decoration: none"
   >
     <NCard

@@ -16,15 +16,12 @@ import {
   NDatePicker,
   NButton,
 } from 'naive-ui';
+import { Logwork } from '../types';
 
 const open = ref<boolean>(false);
 const completedTime = ref<number>(new Date().getTime());
 
-type Logwork = {
-  pic: string;
-  hours: number;
-};
-defineProps<Logwork>();
+defineProps<{ props: Logwork }>();
 
 const railStyle = ({ checked }: { checked: boolean }) => {
   const style: CSSProperties = {};
@@ -72,10 +69,10 @@ function logWork() {
         <NGi :span="3">
           <NSpace vertical>
             <NStatistic label="Person-In-Charge">
-              <NText strong>{{ pic }}</NText>
+              <NText strong>{{ props.pic }}</NText>
             </NStatistic>
             <NStatistic label="Estimated Hours">
-              <NText>{{ hours }}</NText>
+              <NText>{{ props.estimatedHours }}</NText>
             </NStatistic>
             <NStatistic label="Worked Time">
               <NInputNumber placeholder="Total" />
@@ -84,7 +81,6 @@ function logWork() {
               <NInput
                 disabled
                 :value="dayjs(new Date(completedTime)).format('DD-MM-YYYY')"
-                placeholder=""
               />
             </NStatistic>
             <NSpace justify="end">

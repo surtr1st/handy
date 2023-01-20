@@ -32,3 +32,10 @@ export type Task = {
   progress: string;
   pic: string;
 };
+
+export type Logwork = {
+  pic: string;
+  estimatedHours: number;
+  workedHours: number;
+  completedDate: number;
+};

@@ -50,10 +50,6 @@ const rules = ref<FormRules>({
     required: true,
     trigger: ['change'],
     message: 'Please select who will joining this iteration!',
-    validator(rule: unknown, value: string[]) {
-      if (value.length >= 5) return new Error('Up to 4 tags');
-      return true;
-    },
   },
 });
 
