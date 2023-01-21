@@ -6,6 +6,14 @@ use diesel::*;
 #[tauri::command]
 pub fn authenticate(_username: String, _password: String) -> Result<String, String> {
     let connection = &mut establish_connection();
+
+    if _username.is_empty() {
+        return Err("Incorrect username!".into());
+    }
+    if _password.is_empty() {
+        return Err("Incorrect password!".into());
+    }
+
     users
         .filter(username.eq(_username))
         .filter(password.eq(_password))
