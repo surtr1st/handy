@@ -3,7 +3,7 @@ import { NEmpty, NButton } from 'naive-ui';
 </script>
 
 <template>
-  <div style="display: grid; place-items: center; height: 100vh">
+  <div style="display: grid; place-items: center; min-height: 90vh">
     <NEmpty
       description="Welcome to Handy! The Iteration Agile Management Tool."
     >

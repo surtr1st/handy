@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { invoke } from '@tauri-apps/api/tauri';
+import { DocumentAdd24Filled } from '@vicons/fluent';
+import { useDebounceFn } from '@vueuse/core';
+import { useNotifications } from '../constants';
 import {
   NIcon,
   NButton,
@@ -13,12 +17,16 @@ import {
   FormInst,
   FormRules,
 } from 'naive-ui';
-import { DocumentAdd24Filled } from '@vicons/fluent';
+
+// Variables
+const duration = 3000;
+const { notifySuccess, notifyError } = useNotifications();
 
 const form = ref<FormInst | null>(null);
+const range = ref<[number, number]>();
 const model = ref({
-  input: null,
-  textarea: null,
+  input: '',
+  textarea: '',
   select: [],
 });
 const mentions = [
@@ -38,17 +46,24 @@ const rules = ref<FormRules>({
     trigger: ['blur', 'input'],
     message: 'Please input!',
   },
-  select: {
-    required: true,
-    trigger: ['change'],
-    message: 'Please select who will joining this iteration!',
-    validator(rule: unknown, value: string[]) {
-      if (value.length >= 5) return new Error('Up to 4 tags');
-      return true;
-    },
-  },
 });
-const range = ref<[number, number]>();
+
+// Functionality
+
+function createIteration() {
+  const iteration = {
+    title: model.value.input,
+    goals: model.value.textarea,
+    createdBy: model.value.select[0] ?? '',
+    createdDate: range.value?.at(0) ?? -1,
+    endDate: range.value?.at(1) ?? -1,
+  };
+  invoke('create_iteration', { ...iteration })
+    .then((msg) => notifySuccess(msg as string, duration))
+    .catch((e) => notifyError(e as string, duration));
+}
+
+const debounce = useDebounceFn(createIteration, 300);
 </script>
 
 <template>
@@ -67,6 +82,7 @@ const range = ref<[number, number]>();
       size="large"
     >
       <NGrid
+        responsive="screen"
         x-gap="12"
         y-gap="12"
         cols="4"
@@ -127,8 +143,9 @@ const range = ref<[number, number]>();
         </NFormItemGi>
         <NFormItemGi span="10">
           <NButton
+            primary
             type="primary"
-            color="#6719ff"
+            @click="debounce"
           >
             <template #icon>
               <NIcon size="20">
