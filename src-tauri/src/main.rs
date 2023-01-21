@@ -8,11 +8,11 @@ pub mod iteration;
 pub mod models;
 pub mod schema;
 
-use auth::authenticate;
+use auth::{authenticate, registrate};
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use dotenvy::dotenv;
-use iteration::{create_iteration, find_all};
+use iteration::{create_iteration, get_iterations};
 use std::env;
 
 pub fn establish_connection() -> PgConnection {
@@ -27,7 +27,8 @@ fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             authenticate,
-            find_all,
+            registrate,
+            get_iterations,
             create_iteration
         ])
         .run(tauri::generate_context!())

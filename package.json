@@ -8,7 +8,7 @@
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "tauri": "tauri",
-    "repaint": "npx prettier --write . "
+    "repaint": "npx prettier --write ./src "
   },
   "dependencies": {
     "@tauri-apps/api": "^1.2.0",

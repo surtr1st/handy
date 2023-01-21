@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
+import { invoke } from '@tauri-apps/api';
+import { SnakeIteration } from '../types';
+import { useFormattedDate } from '../constants';
 import {
   NThing,
   NSpace,
@@ -8,12 +11,22 @@ import {
   NTabs,
   NTabPane,
   NDivider,
+  NStatistic,
 } from 'naive-ui';
 import { RouterLink } from 'vue-router';
 import { useIterationRoute } from '../store';
 
 const { setIterationId } = useIterationRoute();
 const iid = ref<number>(1);
+const iterations = ref<Array<SnakeIteration>>([]);
+
+onMounted(() => {
+  invoke('get_iterations')
+    .then((res) => (iterations.value = res as []))
+    .catch((e) => console.log(e));
+});
+
+onUnmounted(() => (iterations.value = []));
 </script>
 
 <template>
@@ -34,19 +47,38 @@ const iid = ref<number>(1);
         bordered
         style="margin-bottom: 1rem"
       >
-        <NListItem>
+        <NListItem
+          v-for="iteration in iterations"
+          :key="iteration.id"
+        >
           <RouterLink
             :to="`/iterations/${iid}`"
-            @click="setIterationId(iid)"
             style="text-decoration: none"
+            @click="setIterationId(iid)"
           >
-            <NThing content-style="margin-top: 10px; font-size: 18px">
-              <NDivider title-placement="left">Title</NDivider>
+            <NThing content-style="margin-top: 0px; font-size: 18px">
+              <NDivider title-placement="left">{{ iteration.title }}</NDivider>
               <NSpace justify="space-around">
-                <h4>Iteration Id</h4>
-                <h4>Iteration Goals</h4>
-                <h4>Participants</h4>
-                <h4>End Date</h4>
+                <NStatistic
+                  label="Id"
+                  :value="`Iteration #${iteration.id}`"
+                />
+                <NStatistic
+                  label="Current Point"
+                  :value="iteration.current_point"
+                />
+                <NStatistic
+                  label="Total Point"
+                  :value="iteration.total_point"
+                />
+                <NStatistic
+                  label="Created By"
+                  :value="iteration.created_by"
+                />
+                <NStatistic
+                  label="End Date"
+                  :value="useFormattedDate(iteration?.end_date)"
+                />
               </NSpace>
             </NThing>
           </RouterLink>
@@ -63,18 +95,21 @@ const iid = ref<number>(1);
         bordered
         style="margin-bottom: 1rem"
       >
-        <NListItem>
+        <NListItem
+          v-for="iteration in iterations"
+          :key="iteration.id"
+        >
           <RouterLink
             :to="`/iterations/${iid}`"
             style="text-decoration: none"
           >
             <NThing content-style="margin-top: 10px; font-size: 18px">
-              <NDivider title-placement="left">Title</NDivider>
+              <NDivider title-placement="left">{{ iteration.title }}</NDivider>
               <NSpace justify="space-around">
-                <h4>Iteration Id</h4>
-                <h4>Iteration Goals</h4>
-                <h4>Participants</h4>
-                <h4>End Date</h4>
+                <h4>{{ iteration.id }}</h4>
+                <h4>{{ iteration.goals }}</h4>
+                <h4>{{ iteration.created_by }}</h4>
+                <h4>{{ iteration.end_date }}</h4>
               </NSpace>
             </NThing>
           </RouterLink>

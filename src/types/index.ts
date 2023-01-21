@@ -8,7 +8,7 @@ export type Iteration = {
   id: number;
   title: string;
   goals: string;
-  participants: number;
+  createdBy: string;
   endDate: number;
 };
 
@@ -39,3 +39,5 @@ export type Logwork = {
   workedHours: number;
   completedDate: number;
 };
+
+export * from './snake_case';

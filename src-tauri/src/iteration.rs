@@ -4,13 +4,12 @@ use super::schema::iterations::dsl::*;
 use diesel::*;
 
 #[tauri::command]
-pub fn find_all() -> Vec<Iteration> {
+pub fn get_iterations() -> Vec<Iteration> {
     let connection = &mut establish_connection();
     iterations.load::<Iteration>(connection).unwrap()
 }
 
 #[tauri::command]
-
 pub fn create_iteration(
     _title: String,
     _goals: String,
@@ -19,6 +18,19 @@ pub fn create_iteration(
     _end_date: i64,
 ) -> Result<String, String> {
     let connection = &mut establish_connection();
+
+    if _title.is_empty() {
+        return Err("Title is empty!".into());
+    }
+    if _goals.is_empty() {
+        return Err("Goals is empty!".into());
+    }
+    if _created_by.is_empty() {
+        return Err("Need at least one participant!".into());
+    }
+    if _created_date.is_negative() || _end_date.is_negative() {
+        return Err("Timeline isn't set!".into());
+    }
 
     let iteration = (
         title.eq(_title),
@@ -30,10 +42,10 @@ pub fn create_iteration(
         end_date.eq(_end_date),
     );
 
-    let row_inserted = insert_into(iterations)
+    insert_into(iterations)
         .values(&iteration)
         .execute(connection)
         .unwrap_or_else(|_| panic!("Couldn't create iteration!"));
 
-    Ok("Created iteration successfully!").into()
+    Ok("Created iteration successfully!".into())
 }
