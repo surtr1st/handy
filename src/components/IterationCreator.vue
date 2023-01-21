@@ -59,7 +59,15 @@ function createIteration() {
     endDate: range.value?.at(1) ?? -1,
   };
   invoke('create_iteration', { ...iteration })
-    .then((msg) => notifySuccess(msg as string, duration))
+    .then((msg) => {
+      notifySuccess(msg as string, duration);
+      model.value = {
+        input: '',
+        textarea: '',
+        select: [],
+      };
+      range.value = [-1, -1];
+    })
     .catch((e) => notifyError(e as string, duration));
 }
 
