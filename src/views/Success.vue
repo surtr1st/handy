@@ -16,7 +16,9 @@ import { NThing, NResult, NButton } from 'naive-ui';
       description="Completed Review/Retro"
     >
       <template #footer>
-        <NButton @click="$router.push({ path: '/' })">Great!</NButton>
+        <NButton @click="$router.push({ path: '/mainpage/getting-started' })"
+          >Great!</NButton
+        >
       </template>
     </NResult>
   </NThing>
