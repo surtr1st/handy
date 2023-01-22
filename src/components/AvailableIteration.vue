@@ -35,7 +35,7 @@ onUnmounted(() => (iterations.value = []));
     :item-tag="NListItem"
   >
     <RouterLink
-      :to="`/iterations/${item.id}`"
+      :to="`/mainpage/iterations/${item.id}`"
       style="text-decoration: none"
       @click="setIterationId(item.id)"
     >

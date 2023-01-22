@@ -135,7 +135,7 @@ watch(height, (newHeight) => {
                 type="primary"
                 @click="
                   $router.push(
-                    `/iterations/${iid}/backlogs/${backlogStore.id}/tasks`,
+                    `/mainpage/iterations/${iid}/backlogs/${backlogStore.id}/tasks`,
                   )
                 "
               >

@@ -19,7 +19,6 @@ import {
 } from 'naive-ui';
 
 // Variables
-const duration = 3000;
 const { notifySuccess, notifyError } = useNotifications();
 
 const form = ref<FormInst | null>(null);
@@ -60,7 +59,7 @@ function createIteration() {
   };
   invoke('create_iteration', { ...iteration })
     .then((msg) => {
-      notifySuccess(msg as string, duration);
+      notifySuccess(msg as string);
       model.value = {
         input: '',
         textarea: '',
@@ -68,7 +67,7 @@ function createIteration() {
       };
       range.value = [-1, -1];
     })
-    .catch((e) => notifyError(e as string, duration));
+    .catch((e) => notifyError(e as string));
 }
 
 const debounce = useDebounceFn(createIteration, 300);

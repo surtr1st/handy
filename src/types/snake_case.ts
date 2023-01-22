@@ -1,3 +1,11 @@
+export type SnakeUser = {
+  id: number;
+  username: string;
+  password: string
+}
+
+export type AuthenticationResult = [message: string, user_id: string]
+
 export type SnakeIteration = {
   id: number;
   title: string;

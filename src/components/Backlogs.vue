@@ -81,7 +81,7 @@ function setBacklog(id: number) {
 
 <template>
   <RouterLink
-    :to="`/iterations/${iid}/backlogs/${props.id}`"
+    :to="`/mainpage/iterations/${iid}/backlogs/${props.id}`"
     @click="setBacklog(props.id)"
     style="text-decoration: none"
   >
