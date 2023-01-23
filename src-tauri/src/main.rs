@@ -12,7 +12,7 @@ use auth::{authenticate, registrate};
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use dotenvy::dotenv;
-use iteration::{create_iteration, get_iterations};
+use iteration::{create_iteration, get_iterations, join_iteration};
 use std::env;
 
 pub fn establish_connection() -> PgConnection {
@@ -29,7 +29,8 @@ fn main() {
             authenticate,
             registrate,
             get_iterations,
-            create_iteration
+            create_iteration,
+            join_iteration
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

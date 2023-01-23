@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { TaskListSquareLtr24Filled } from '@vicons/fluent';
-import { RefreshCircle } from '@vicons/ionicons5';
-import {
-  NPageHeader,
-  NGrid,
-  NSpace,
-  NButton,
-  NStatistic,
-  NGi,
-  NIcon,
-  NDivider,
-} from 'naive-ui';
+  import { TaskListSquareLtr24Filled } from '@vicons/fluent';
+  import { RefreshCircle } from '@vicons/ionicons5';
+  import {
+    NPageHeader,
+    NGrid,
+    NSpace,
+    NButton,
+    NStatistic,
+    NGi,
+    NIcon,
+    NDivider,
+  } from 'naive-ui';
 </script>
 
 <template>

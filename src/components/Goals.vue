@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { NInput, NText, NCard, NButton, NSpace } from 'naive-ui';
+  import { ref } from 'vue';
+  import { NInput, NText, NCard, NButton, NSpace } from 'naive-ui';
 
-const switchToInput = ref<boolean>(false);
+  const switchToInput = ref<boolean>(false);
 
-const content = `
+  const content = `
       Lorem Ipsum is simply dummy text of the printing and typesetting industry.
       Lorem Ipsum has been the industry's standard dummy text ever since the
       1500s, when an unknown printer took a galley of type and scrambled it to

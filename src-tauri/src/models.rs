@@ -14,22 +14,17 @@ pub struct Progress {
     name: String,
 }
 
-#[derive(Queryable, Debug, Serialize)]
-pub struct User {
-    id: i32,
-    username: String,
-    password: String,
-}
-
-#[derive(Queryable, Debug, Serialize)]
+#[derive(Queryable, Debug, Clone, Serialize, Deserialize)]
 pub struct Participant {
-    id: String,
-    name: String,
+    pub id: String,
+    pub alias: String,
+    pub username: String,
+    pub password: String,
 }
 
 #[derive(Queryable, Debug, Clone, Serialize, Deserialize)]
 pub struct Iteration {
-    id: i32,
+    pub id: i32,
     pub title: String,
     pub goals: String,
     pub current_point: Option<i32>,
@@ -37,6 +32,14 @@ pub struct Iteration {
     pub created_by: String,
     pub created_date: i64,
     pub end_date: i64,
+    pub status: Option<bool>,
+}
+
+#[derive(Queryable, Debug, Clone, Serialize, Deserialize)]
+pub struct IterationRoom {
+    pub id: i32,
+    pub iteration_id: i32,
+    pub participant_id: i32,
 }
 
 #[derive(Queryable, Debug, Serialize)]

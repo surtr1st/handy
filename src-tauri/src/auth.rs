@@ -1,5 +1,5 @@
 use super::establish_connection;
-use super::schema::users::dsl::*;
+use super::schema::participants::dsl::*;
 use diesel::*;
 
 #[tauri::command]
@@ -13,19 +13,19 @@ pub fn authenticate(_username: String, _password: String) -> Result<(String, Str
         return Err("Incorrect password!".into());
     }
 
-    let user_id = users
+    let participant_id = participants
         .select(id)
         .filter(username.eq(_username))
         .filter(password.eq(_password))
         .load::<i32>(connection)
         .unwrap_or_else(|_| panic!("Couldn't authenticate!"));
-    if user_id.is_empty() {
+    if participant_id.is_empty() {
         return Err("Wrong username or password!".into());
     }
 
     Ok((
         "Login successfully!".into(),
-        format!("{:?}", user_id).into(),
+        participant_id[0].to_string().into(),
     ))
 }
 
@@ -46,8 +46,12 @@ pub fn registrate(_username: String, _password: String) -> Result<String, String
         return Err("Password should be at least 3 characters!".into());
     }
 
-    let new_user = (username.eq(_username), password.eq(_password));
-    insert_into(users)
+    let new_user = (
+        alias.eq(format!("@{}", _username)),
+        username.eq(_username),
+        password.eq(_password),
+    );
+    insert_into(participants)
         .values(&new_user)
         .execute(connection)
         .unwrap_or_else(|_| panic!("Couldn't Registrate!"));

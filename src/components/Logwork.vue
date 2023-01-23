@@ -1,39 +1,39 @@
 <script setup lang="ts">
-import { CSSProperties, ref } from 'vue';
-import { Logwork } from '../types';
-import { useFormattedDate } from '../constants';
-import {
-  NGrid,
-  NGi,
-  NSpace,
-  NStatistic,
-  NInput,
-  NInputNumber,
-  NText,
-  NThing,
-  NSwitch,
-  NModal,
-  NCard,
-  NDatePicker,
-  NButton,
-} from 'naive-ui';
+  import { CSSProperties, ref } from 'vue';
+  import { Logwork } from '../types';
+  import { useFormattedDate } from '../constants';
+  import {
+    NGrid,
+    NGi,
+    NSpace,
+    NStatistic,
+    NInput,
+    NInputNumber,
+    NText,
+    NThing,
+    NSwitch,
+    NModal,
+    NCard,
+    NDatePicker,
+    NButton,
+  } from 'naive-ui';
 
-const open = ref<boolean>(false);
-const completedTime = ref<number>(new Date().getTime());
+  const open = ref<boolean>(false);
+  const completedTime = ref<number>(new Date().getTime());
 
-const railStyle = ({ checked }: { checked: boolean }) => {
-  const style: CSSProperties = {};
-  style.fontWeight = 'bolder';
-  if (checked) {
-    style.background = 'rgb(16, 185, 129)';
-  } else {
-    style.background = 'rgb(225, 29, 72)';
-  }
-  return style;
-};
+  const railStyle = ({ checked }: { checked: boolean }) => {
+    const style: CSSProperties = {};
+    style.fontWeight = 'bolder';
+    if (checked) {
+      style.background = 'rgb(16, 185, 129)';
+    } else {
+      style.background = 'rgb(225, 29, 72)';
+    }
+    return style;
+  };
 
-const logWork = () => (open.value = false);
-defineProps<{ props: Partial<Logwork> }>();
+  const logWork = () => (open.value = false);
+  defineProps<{ props: Partial<Logwork> }>();
 </script>
 
 <template>

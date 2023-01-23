@@ -36,4 +36,4 @@ export function useMessages() {
   return { onSuccess, onError };
 }
 
-export { POPUP_DURATION }
+export { POPUP_DURATION };

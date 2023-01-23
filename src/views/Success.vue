@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { NThing, NResult, NButton } from 'naive-ui';
+  import { NThing, NResult, NButton } from 'naive-ui';
 </script>
 <template>
   <NThing>

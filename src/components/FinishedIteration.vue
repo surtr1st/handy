@@ -1,26 +1,39 @@
 <script setup lang="ts">
-import { h, onMounted, onUnmounted, ref } from 'vue';
-import { invoke } from '@tauri-apps/api';
-import { SnakeIteration } from '../types';
-import { RouterLink } from 'vue-router';
-import { useFormattedDate } from '../constants';
-import { RecycleScroller } from 'vue-virtual-scroller';
-import { useIterationRoute } from '../store';
-import { NList, NListItem, NThing, NText, NSpace, NStatistic } from 'naive-ui';
+  import { defineAsyncComponent, h, onMounted, onUnmounted, ref } from 'vue';
+  import { invoke } from '@tauri-apps/api';
+  import { SnakeIteration } from '../types';
+  import { RouterLink } from 'vue-router';
+  import { useFormattedDate } from '../constants';
+  import { RecycleScroller } from 'vue-virtual-scroller';
+  import { useIterationRoute } from '../store';
+  import {
+    NList,
+    NListItem,
+    NThing,
+    NText,
+    NSpace,
+    NStatistic,
+  } from 'naive-ui';
 
-const { setIterationId } = useIterationRoute();
-const iterations = ref<Array<SnakeIteration>>([]);
+  const Empty = defineAsyncComponent(() => import('../components/Empty.vue'));
+  const { setIterationId } = useIterationRoute();
+  const iterations = ref<Array<SnakeIteration>>([]);
 
-onMounted(() => {
-  invoke('get_joining_iterations')
-    .then((res) => (iterations.value = res as []))
-    .catch((e) => console.log(e));
-});
-onUnmounted(() => (iterations.value = []));
+  onMounted(() => {
+    invoke<Array<SnakeIteration>>('get_finished_iterations')
+      .then((res) => (iterations.value = res))
+      .catch((e) => console.log(e));
+  });
+  onUnmounted(() => (iterations.value = []));
 </script>
 
 <template>
+  <Empty
+    v-if="iterations.length < 1"
+    description="You haven't finished any iteration!"
+  />
   <RecycleScroller
+    v-else
     class="scroller"
     :items="iterations"
     v-slot="{ item }"

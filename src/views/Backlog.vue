@@ -1,36 +1,36 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
-import { useIterationRoute, backlogStore } from '../store';
-import {
-  NGrid,
-  NGi,
-  NIcon,
-  NText,
-  NButton,
-  NScrollbar,
-  NCheckbox,
-  NCard,
-  NSpace,
-  NStatistic,
-  NDivider,
-  NInput,
-} from 'naive-ui';
-import {
-  CheckmarkCircle24Filled,
-  ClipboardTaskListRtl24Filled,
-  ArrowStepInRight12Regular,
-} from '@vicons/fluent';
-import { useWindowSize } from '@vueuse/core';
+  import { ref, watch } from 'vue';
+  import { useIterationRoute, backlogStore } from '../store';
+  import {
+    NGrid,
+    NGi,
+    NIcon,
+    NText,
+    NButton,
+    NScrollbar,
+    NCheckbox,
+    NCard,
+    NSpace,
+    NStatistic,
+    NDivider,
+    NInput,
+  } from 'naive-ui';
+  import {
+    CheckmarkCircle24Filled,
+    ClipboardTaskListRtl24Filled,
+    ArrowStepInRight12Regular,
+  } from '@vicons/fluent';
+  import { useWindowSize } from '@vueuse/core';
 
-const { height } = useWindowSize();
-const { iterationId: iid } = useIterationRoute();
+  const { height } = useWindowSize();
+  const { iterationId: iid } = useIterationRoute();
 
-const flexHeight = ref(20);
+  const flexHeight = ref(20);
 
-watch(height, (newHeight) => {
-  if (newHeight > 700) flexHeight.value = 30;
-  else flexHeight.value = 20;
-});
+  watch(height, (newHeight) => {
+    if (newHeight > 700) flexHeight.value = 30;
+    else flexHeight.value = 20;
+  });
 </script>
 
 <template>

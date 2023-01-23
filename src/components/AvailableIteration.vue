@@ -1,71 +1,100 @@
 <script setup lang="ts">
-import { h, onMounted, onUnmounted, ref } from 'vue';
-import { invoke } from '@tauri-apps/api';
-import { SnakeIteration } from '../types';
-import { RouterLink } from 'vue-router';
-import { useFormattedDate } from '../constants';
-import { RecycleScroller } from 'vue-virtual-scroller';
-import { useIterationRoute } from '../store';
-import { NList, NListItem, NThing, NText, NSpace, NStatistic } from 'naive-ui';
+  import { defineAsyncComponent, h, onMounted, onUnmounted, ref } from 'vue';
+  import { invoke } from '@tauri-apps/api';
+  import { SnakeIteration } from '../types';
+  import { useFormattedDate } from '../constants';
+  import { useDebounceFn } from '@vueuse/core';
+  import { useMessages } from '../constants';
+  import {
+    NCard,
+    NThing,
+    NSpace,
+    NStatistic,
+    NButton,
+    NGrid,
+    NGi,
+    NScrollbar,
+  } from 'naive-ui';
 
-const { setIterationId } = useIterationRoute();
-const iterations = ref<Array<SnakeIteration>>([]);
+  const Empty = defineAsyncComponent(() => import('../components/Empty.vue'));
+  const iterations = ref<Array<SnakeIteration>>([]);
+  const { onSuccess, onError } = useMessages();
 
-onMounted(() => {
-  invoke('get_iterations')
-    .then((res) => (iterations.value = res as []))
-    .catch((e) => console.log(e));
-});
-onUnmounted(() => (iterations.value = []));
+  function joinIteration(id: number) {
+    invoke<string>('join_iteration', {
+      iterationId: id,
+      participantId: parseInt(localStorage.getItem('PARTICIPANT_ID') as string),
+    })
+      .then((message) => onSuccess(message))
+      .catch((message) => onError(message));
+  }
+
+  const debounceJoin = useDebounceFn(joinIteration);
+
+  onMounted(() => {
+    invoke<Array<SnakeIteration>>('get_iterations')
+      .then((res) => (iterations.value = res))
+      .catch((e) => console.log(e));
+  });
+  onUnmounted(() => (iterations.value = []));
 </script>
 
 <template>
-  <RecycleScroller
-    class="scroller"
-    :items="iterations"
-    v-slot="{ item }"
-    :item-size="129"
-    :list-tag="
-      h(NList, {
-        hoverable: true,
-        clickable: true,
-        bordered: true,
-      })
-    "
-    :item-tag="NListItem"
+  <Empty v-if="iterations.length < 1" />
+  <NGrid
+    v-else
+    cols="3"
   >
-    <RouterLink
-      :to="`/mainpage/iterations/${item.id}`"
-      style="text-decoration: none"
-      @click="setIterationId(item.id)"
+    <NGi
+      span="1"
+      v-for="iteration in iterations"
     >
-      <NThing content-style="font-size: 18px">
-        <template #header>
-          <NText strong>{{ item.title }}</NText>
-        </template>
-        <NSpace justify="space-around">
-          <NStatistic
-            label="Id"
-            :value="`#${item.id}`"
-          />
-          <NStatistic
-            label="Current Point"
-            :value="item.current_point"
-          />
-          <NStatistic
-            label="Total Point"
-            :value="item.total_point"
-          />
-          <NStatistic
-            label="Created By"
-            :value="item.created_by"
-          />
-          <NStatistic
-            label="End Date"
-            :value="useFormattedDate(item?.end_date)"
-          />
-        </NSpace>
-      </NThing>
-    </RouterLink>
-  </RecycleScroller>
+      <NCard
+        :title="iteration.title"
+        hoverable
+        style="width: 430px"
+      >
+        <NThing content-style="font-size: 18px">
+          <NGrid :cols="4">
+            <NGi :span="2">
+              <NSpace vertical>
+                <NStatistic
+                  label="Id"
+                  :value="`#${iteration.id}`"
+                />
+
+                <NStatistic
+                  label="Created By"
+                  :value="iteration.created_by"
+                />
+                <NStatistic
+                  label="Start Date"
+                  :value="useFormattedDate(iteration?.start_date)"
+                />
+                <NStatistic
+                  label="End Date"
+                  :value="useFormattedDate(iteration?.end_date)"
+                />
+                <NButton
+                  primary
+                  type="primary"
+                  style="width: 150px"
+                  @click="debounceJoin(iteration.id)"
+                >
+                  Join
+                </NButton>
+              </NSpace>
+            </NGi>
+            <NGi :span="2">
+              <NStatistic label="Description">
+                <NScrollbar style="max-height: 300px">
+                  <NCard>{{ iteration?.goals }} </NCard>
+                </NScrollbar>
+              </NStatistic>
+            </NGi>
+          </NGrid>
+        </NThing>
+      </NCard>
+    </NGi>
+  </NGrid>
 </template>

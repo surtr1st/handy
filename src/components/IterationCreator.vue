@@ -1,76 +1,76 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { invoke } from '@tauri-apps/api/tauri';
-import { DocumentAdd24Filled } from '@vicons/fluent';
-import { useDebounceFn } from '@vueuse/core';
-import { useNotifications } from '../constants';
-import {
-  NIcon,
-  NButton,
-  NCard,
-  NInput,
-  NSelect,
-  NDatePicker,
-  NForm,
-  NGrid,
-  NFormItemGi,
-  FormInst,
-  FormRules,
-} from 'naive-ui';
+  import { ref } from 'vue';
+  import { invoke } from '@tauri-apps/api/tauri';
+  import { DocumentAdd24Filled } from '@vicons/fluent';
+  import { useDebounceFn } from '@vueuse/core';
+  import { useNotifications } from '../constants';
+  import {
+    NIcon,
+    NButton,
+    NCard,
+    NInput,
+    NSelect,
+    NDatePicker,
+    NForm,
+    NGrid,
+    NFormItemGi,
+    FormInst,
+    FormRules,
+  } from 'naive-ui';
 
-// Variables
-const { notifySuccess, notifyError } = useNotifications();
+  // Variables
+  const { notifySuccess, notifyError } = useNotifications();
 
-const form = ref<FormInst | null>(null);
-const range = ref<[number, number]>();
-const model = ref({
-  input: '',
-  textarea: '',
-  select: [],
-});
-const mentions = [
-  {
-    label: 'chi.tr',
-    value: 'chi.tr',
-  },
-];
-const rules = ref<FormRules>({
-  input: {
-    required: true,
-    trigger: ['blur', 'input'],
-    message: 'Please input!',
-  },
-  textarea: {
-    required: true,
-    trigger: ['blur', 'input'],
-    message: 'Please input!',
-  },
-});
+  const form = ref<FormInst | null>(null);
+  const range = ref<[number, number]>();
+  const model = ref({
+    input: '',
+    textarea: '',
+    select: [],
+  });
+  const mentions = [
+    {
+      label: 'chi.tr',
+      value: 'chi.tr',
+    },
+  ];
+  const rules = ref<FormRules>({
+    input: {
+      required: true,
+      trigger: ['blur', 'input'],
+      message: 'Please input!',
+    },
+    textarea: {
+      required: true,
+      trigger: ['blur', 'input'],
+      message: 'Please input!',
+    },
+  });
 
-// Functionality
+  // Functionality
 
-function createIteration() {
-  const iteration = {
-    title: model.value.input,
-    goals: model.value.textarea,
-    createdBy: model.value.select[0] ?? '',
-    createdDate: range.value?.at(0) ?? -1,
-    endDate: range.value?.at(1) ?? -1,
-  };
-  invoke('create_iteration', { ...iteration })
-    .then((msg) => {
-      notifySuccess(msg as string);
-      model.value = {
-        input: '',
-        textarea: '',
-        select: [],
-      };
-      range.value = [-1, -1];
-    })
-    .catch((e) => notifyError(e as string));
-}
+  function createIteration() {
+    const iteration = {
+      title: model.value.input,
+      goals: model.value.textarea,
+      createdBy: model.value.select[0] ?? '',
+      createdDate: range.value?.at(0) ?? -1,
+      endDate: range.value?.at(1) ?? -1,
+    };
+    invoke<string>('create_iteration', { ...iteration })
+      .then((msg) => {
+        notifySuccess(msg);
+        model.value = {
+          input: '',
+          textarea: '',
+          select: [],
+        };
+        range.value = [-1, -1];
+      })
+      .catch((e) => notifyError(e));
+  }
 
-const debounce = useDebounceFn(createIteration, 300);
+  const debounce = useDebounceFn(createIteration, 300);
 </script>
 
 <template>

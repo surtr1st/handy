@@ -1,90 +1,90 @@
 <script setup lang="ts">
-import TaskCreator from '../components/TaskCreator.vue';
-import Logwork from '../components/Logwork.vue';
-import { useFormattedDate } from '../constants';
-import { Task, EditTaskProps } from '../types';
-import { reactive, ref } from 'vue';
-import {
-  NButton,
-  NGrid,
-  NGi,
-  NCard,
-  NSpace,
-  NText,
-  NTable,
-  NModal,
-  NInput,
-  NDatePicker,
-  NInputNumber,
-  NSelect,
-  NSwitch,
-} from 'naive-ui';
+  import TaskCreator from '../components/TaskCreator.vue';
+  import Logwork from '../components/Logwork.vue';
+  import { useFormattedDate } from '../constants';
+  import { Task, EditTaskProps } from '../types';
+  import { reactive, ref } from 'vue';
+  import {
+    NButton,
+    NGrid,
+    NGi,
+    NCard,
+    NSpace,
+    NText,
+    NTable,
+    NModal,
+    NInput,
+    NDatePicker,
+    NInputNumber,
+    NSelect,
+    NSwitch,
+  } from 'naive-ui';
 
-const taskModal = reactive({
-  open: false,
-  type: '',
-  title: '',
-});
+  const taskModal = reactive({
+    open: false,
+    type: '',
+    title: '',
+  });
 
-const taskState = reactive({
-  name: '',
-  date: 0,
-  hours: 0,
-  pic: '',
-});
+  const taskState = reactive({
+    name: '',
+    date: 0,
+    hours: 0,
+    pic: '',
+  });
 
-const task = reactive<Task>({
-  id: 0,
-  name: '',
-  createdDate: 0,
-  hours: 0,
-  actualHours: 0,
-  progress: '',
-  pic: '',
-});
-
-const tasks = ref<Array<Task>>([
-  {
-    id: 1,
-    name: 'A du dark wa 123 456 Wy Seg',
-    createdDate: 1461110400000,
-    hours: 1,
+  const task = reactive<Task>({
+    id: 0,
+    name: '',
+    createdDate: 0,
+    hours: 0,
     actualHours: 0,
-    pic: '@chi.tr',
-    progress: 'Undone',
-  },
-  {
-    id: 2,
-    name: 'A du dark wa 13 46 Wy Seg',
-    createdDate: 1461110400000,
-    hours: 1,
-    actualHours: 0,
-    pic: '@chi.tr',
-    progress: 'Undone',
-  },
-]);
+    progress: '',
+    pic: '',
+  });
 
-// Function
-const getTask = (id: number) =>
-  tasks.value.find((task: Task) => task.id === id);
+  const tasks = ref<Array<Task>>([
+    {
+      id: 1,
+      name: 'A du dark wa 123 456 Wy Seg',
+      createdDate: 1461110400000,
+      hours: 1,
+      actualHours: 0,
+      pic: '@chi.tr',
+      progress: 'Undone',
+    },
+    {
+      id: 2,
+      name: 'A du dark wa 13 46 Wy Seg',
+      createdDate: 1461110400000,
+      hours: 1,
+      actualHours: 0,
+      pic: '@chi.tr',
+      progress: 'Undone',
+    },
+  ]);
 
-function editTaskIndividually({ id, type, title }: EditTaskProps) {
-  if (type === 'name') taskState.name = getTask(id)?.name as string;
-  if (type === 'date') taskState.date = getTask(id)?.createdDate as number;
-  if (type === 'hours') taskState.hours = getTask(id)?.hours as number;
-  if (type === 'pic') taskState.pic = getTask(id)?.pic as string;
-  taskModal.open = !taskModal.open;
-  taskModal.type = type;
-  taskModal.title = title;
-}
+  // Function
+  const getTask = (id: number) =>
+    tasks.value.find((task: Task) => task.id === id);
 
-function onEnter(event: KeyboardEvent) {
-  const ENTER = 'Enter';
-  if (event.key === ENTER && taskModal.open) {
-    event.preventDefault();
-    taskModal.open = false;
+  function editTaskIndividually({ id, type, title }: EditTaskProps) {
+    if (type === 'name') taskState.name = getTask(id)?.name as string;
+    if (type === 'date') taskState.date = getTask(id)?.createdDate as number;
+    if (type === 'hours') taskState.hours = getTask(id)?.hours as number;
+    if (type === 'pic') taskState.pic = getTask(id)?.pic as string;
+    taskModal.open = !taskModal.open;
+    taskModal.type = type;
+    taskModal.title = title;
   }
-}
+
+  function onEnter(event: KeyboardEvent) {
+    const ENTER = 'Enter';
+    if (event.key === ENTER && taskModal.open) {
+      event.preventDefault();
+      taskModal.open = false;
+    }
+  }
 </script>
 
 <template>
