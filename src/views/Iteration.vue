@@ -183,7 +183,7 @@
         :cols="12"
         :x-gap="12"
       >
-        <NGi :span="3">
+        <NGi :span="12">
           <NThing>
             <NScrollbar style="max-height: 69.5vh">
               <BacklogCreator />

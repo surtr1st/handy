@@ -20,8 +20,8 @@
   const iterations = ref<Array<SnakeIteration>>([]);
 
   onMounted(() => {
-    invoke<Array<SnakeIteration>>('get_joined_iterations', {
-      participantId: parseInt(localStorage.getItem('PARTICIPANT_ID') as string)
+    invoke<Array<SnakeIteration>>('get_iterations', {
+      participantId: parseInt(localStorage.getItem('PARTICIPANT_ID') as string),
     })
       .then((res) => (iterations.value = res))
       .catch((e) => console.log(e));
