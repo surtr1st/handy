@@ -2,6 +2,7 @@
   import { ref } from 'vue';
   import { Archive } from '@vicons/ionicons5';
   import {
+    NCard,
     NModal,
     NGrid,
     NGi,
@@ -18,6 +19,7 @@
     NButton,
   } from 'naive-ui';
 
+  const open = ref(false);
   const form = ref();
   const model = ref({
     title: '',
@@ -35,9 +37,16 @@
     <NGi :span="12">
       <NUpload>
         <NUploadDragger>
-          <div style="margin-bottom: 12px">
+          <div
+            style="
+              margin-bottom: 12px;
+              height: 20vh;
+              display: grid;
+              place-items: center;
+            "
+          >
             <NIcon
-              size="48"
+              size="96"
               :depth="3"
             >
               <Archive />
@@ -50,83 +59,103 @@
             depth="3"
             style="margin: 8px 0 0 0"
           >
-            Strictly prohibit from uploading sensitive information. For example,
-            your bank card PIN or your credit card expiry date.
+            Currently, only support for .CSV, .XLSX
           </NP>
         </NUploadDragger>
       </NUpload>
     </NGi>
     <NGi :span="12">
-      <NButton> Create </NButton>
+      <NButton
+        primary
+        type="primary"
+        size="large"
+        @click="open = true"
+      >
+        Create
+      </NButton>
     </NGi>
   </NGrid>
-
-  <NModal>
-    <NForm
-      ref="form"
-      :model="model"
-      size="large"
-      label-placement="top"
+  <NModal v-model:show="open">
+    <NCard
+      title="Add a backlog"
+      style="width: 600px"
     >
-      <NFormItemGi
-        :span="4"
-        label="Title"
+      <NForm
+        ref="form"
+        :model="model"
+        size="large"
+        label-placement="top"
       >
-        <NInput
-          v-model:value="model.title"
-          placeholder="Title"
-        />
-      </NFormItemGi>
-      <NFormItemGi
-        :span="4"
-        label="Priority"
-      >
-        <NInputNumber
-          v-model:value="model.priority"
-          placeholder="EX: 1"
-        />
-      </NFormItemGi>
-      <NFormItemGi
-        :span="4"
-        label="Hours"
-      >
-        <NInputNumber
-          v-model:value="model.hours"
-          placeholder="EX: 2"
-        />
-      </NFormItemGi>
-      <NFormItemGi
-        :span="4"
-        label="Points"
-      >
-        <NInputNumber
-          v-model:value="model.points"
-          placeholder="EX: 3"
-        />
-      </NFormItemGi>
-      <NFormItemGi
-        :span="12"
-        label="Goals"
-      >
-        <NInput
-          v-model:value="model.goals"
-          type="textarea"
-        />
-      </NFormItemGi>
-      <NFormItemGi
-        :span="12"
-        label="Description"
-      >
-        <NInput
-          v-model:value="model.description"
-          type="textarea"
-        />
-      </NFormItemGi>
-      <NFormItemGi>
-        <NSpace>
-          <NButton>Create</NButton>
-        </NSpace>
-      </NFormItemGi>
-    </NForm>
+        <NGrid
+          cols="6"
+          x-gap="6"
+        >
+          <NFormItemGi
+            :span="6"
+            label="Title"
+          >
+            <NInput
+              v-model:value="model.title"
+              placeholder=""
+            />
+          </NFormItemGi>
+          <NFormItemGi
+            :span="2"
+            label="Priority"
+          >
+            <NInputNumber
+              v-model:value="model.priority"
+              placeholder="EX: 1"
+            />
+          </NFormItemGi>
+          <NFormItemGi
+            :span="2"
+            label="Hours"
+          >
+            <NInputNumber
+              v-model:value="model.hours"
+              placeholder="EX: 2"
+            />
+          </NFormItemGi>
+          <NFormItemGi
+            :span="2"
+            label="Points"
+          >
+            <NInputNumber
+              v-model:value="model.points"
+              placeholder="EX: 3"
+            />
+          </NFormItemGi>
+          <NFormItemGi
+            :span="12"
+            label="Goals"
+          >
+            <NInput
+              v-model:value="model.goals"
+              type="textarea"
+              placeholder=""
+            />
+          </NFormItemGi>
+          <NFormItemGi
+            :span="12"
+            label="Description"
+          >
+            <NInput
+              v-model:value="model.description"
+              type="textarea"
+              placeholder=""
+            />
+          </NFormItemGi>
+        </NGrid>
+      </NForm>
+      <NSpace justify="end">
+        <NButton
+          size="large"
+          primary
+          type="primary"
+          >Create</NButton
+        >
+      </NSpace>
+    </NCard>
   </NModal>
 </template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ref } from 'vue';
+  import { onMounted, ref } from 'vue';
   import { invoke } from '@tauri-apps/api';
   import { useRouter } from 'vue-router';
   import { useMessages } from '../constants';
@@ -23,6 +23,7 @@
   const { replace } = useRouter();
   const { onError, onSuccess } = useMessages();
 
+  const authButton = ref<HTMLButtonElement | null>(null);
   const form = ref<FormInst | null>(null);
   const model = ref({
     username: '',
@@ -66,6 +67,10 @@
   }
 
   const handleAuthentication = useDebounceFn(signin);
+
+  function onEnter(event: KeyboardEvent) {
+    if (event.key === 'Enter') handleAuthentication();
+  }
 </script>
 
 <template>
@@ -87,7 +92,9 @@
           label="Username"
         >
           <NInput
+            ref="inputUsername"
             v-model:value="model.username"
+            @keydown="onEnter"
             size="large"
           />
         </NFormItem>
@@ -97,7 +104,9 @@
         >
           <NInput
             type="password"
+            ref="inputPassword"
             v-model:value="model.password"
+            @keydown="onEnter"
             size="large"
           />
         </NFormItem>
@@ -114,6 +123,7 @@
           >No account? Sign up here!</NText
         >
         <NButton
+          ref="authButton"
           primary
           type="primary"
           style="margin-top: 1rem"
