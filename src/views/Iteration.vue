@@ -1,82 +1,82 @@
 <script setup lang="ts">
-import Goals from '../components/Goals.vue';
-import BurndownChart from '../components/BurndownChart.vue';
-import Backlogs from '../components/Backlogs.vue';
-import BacklogCreator from '../components/BacklogCreator.vue';
-import { RefreshCircle } from '@vicons/ionicons5';
-import { useIterationRoute } from '../store';
-import { Backlog } from '../types';
-import {
-  TextBulletListSquare24Filled,
-  DocumentBulletList24Filled,
-  DocumentCheckmark24Filled,
-  DocumentDismiss24Filled,
-  Pulse32Filled,
-} from '@vicons/fluent';
-import {
-  NSpace,
-  NScrollbar,
-  NPageHeader,
-  NGrid,
-  NGi,
-  NStatistic,
-  NThing,
-  NTabs,
-  NTabPane,
-  NButton,
-  NIcon,
-} from 'naive-ui';
+  import Goals from '../components/Goals.vue';
+  import BurndownChart from '../components/BurndownChart.vue';
+  import Backlogs from '../components/Backlogs.vue';
+  import BacklogCreator from '../components/BacklogCreator.vue';
+  import { RefreshCircle } from '@vicons/ionicons5';
+  import { useIterationRoute } from '../store';
+  import { Backlog } from '../types';
+  import {
+    TextBulletListSquare24Filled,
+    DocumentBulletList24Filled,
+    DocumentCheckmark24Filled,
+    DocumentDismiss24Filled,
+    Pulse32Filled,
+  } from '@vicons/fluent';
+  import {
+    NSpace,
+    NScrollbar,
+    NPageHeader,
+    NGrid,
+    NGi,
+    NStatistic,
+    NThing,
+    NTabs,
+    NTabPane,
+    NButton,
+    NIcon,
+  } from 'naive-ui';
 
-const { iterationId: iid } = useIterationRoute();
+  const { iterationId: iid } = useIterationRoute();
 
-enum StatusColors {
-  DONE = 'rgb(16, 185, 129)',
-  PARTIALLY_DONE = 'rgb(251, 191, 36)',
-  UNDONE = 'rgb(225, 29, 72)',
-}
+  enum StatusColors {
+    DONE = 'rgb(16, 185, 129)',
+    PARTIALLY_DONE = 'rgb(251, 191, 36)',
+    UNDONE = 'rgb(225, 29, 72)',
+  }
 
-const backlogs: Array<Backlog> = [
-  {
-    id: 1,
-    title: 'A du',
-    description: 'Dark wa',
-    goals: 'K Dark lam',
-    priority: 1,
-    hours: 3,
-    points: 3,
-    createdDate: 0,
-  },
-  {
-    id: 2,
-    title: 'A du Dark wa',
-    description: 'Vl vue dinh vl',
-    goals: 'Da qua',
-    priority: 2,
-    hours: 21,
-    points: 21,
-    createdDate: 0,
-  },
-  {
-    id: 3,
-    title: 'A du Dark wa',
-    description: 'Vl vue dinh vl',
-    goals: 'Da qua',
-    priority: 3,
-    hours: 5,
-    points: 5,
-    createdDate: 0,
-  },
-  {
-    id: 4,
-    title: 'A du Dark wa',
-    description: 'Vl vue dinh vl',
-    goals: 'Daaaa qua',
-    priority: 4,
-    hours: 5,
-    points: 5,
-    createdDate: 0,
-  },
-];
+  const backlogs: Array<Backlog> = [
+    {
+      id: 1,
+      title: 'A du',
+      description: 'Dark wa',
+      goals: 'K Dark lam',
+      priority: 1,
+      hours: 3,
+      points: 3,
+      createdDate: 0,
+    },
+    {
+      id: 2,
+      title: 'A du Dark wa',
+      description: 'Vl vue dinh vl',
+      goals: 'Da qua',
+      priority: 2,
+      hours: 21,
+      points: 21,
+      createdDate: 0,
+    },
+    {
+      id: 3,
+      title: 'A du Dark wa',
+      description: 'Vl vue dinh vl',
+      goals: 'Da qua',
+      priority: 3,
+      hours: 5,
+      points: 5,
+      createdDate: 0,
+    },
+    {
+      id: 4,
+      title: 'A du Dark wa',
+      description: 'Vl vue dinh vl',
+      goals: 'Daaaa qua',
+      priority: 4,
+      hours: 5,
+      points: 5,
+      createdDate: 0,
+    },
+  ];
 </script>
 
 <template>

@@ -1,82 +1,84 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { RouterLink } from 'vue-router';
-import { Status20Filled } from '@vicons/fluent';
-import { useIterationRoute, backlogStore } from '../store';
-import { colors } from '../configs/colors';
-import { Backlog } from '../types';
-import {
-  NBadge,
-  NPopselect,
-  NButton,
-  NText,
-  NCard,
-  NStatistic,
-  NSpace,
-  NProgress,
-  NIcon,
-} from 'naive-ui';
+  import { ref } from 'vue';
+  import { RouterLink } from 'vue-router';
+  import { Status20Filled } from '@vicons/fluent';
+  import { useIterationRoute, backlogStore } from '../store';
+  import { colors } from '../configs/colors';
+  import { Backlog } from '../types';
+  import {
+    NBadge,
+    NPopselect,
+    NButton,
+    NText,
+    NCard,
+    NStatistic,
+    NSpace,
+    NProgress,
+    NIcon,
+  } from 'naive-ui';
 
-const { iterationId: iid } = useIterationRoute();
-enum StatusOptions {
-  DONE = 'done',
-  PARTIALLY_DONE = 'partially_done',
-  UNDONE = 'undone',
-}
-
-const options = [
-  {
-    label: 'Done',
-    value: 'done',
-  },
-  {
-    label: 'Partially Done',
-    value: 'partially_done',
-  },
-  {
-    label: 'Undone',
-    value: 'undone',
-  },
-];
-
-const option = ref<string>('');
-const statusLabel = ref<string>('Undone');
-const statusColor = ref();
-
-function changeStatus(value: string) {
-  switch (value) {
-    case StatusOptions.DONE:
-      statusColor.value = 'success';
-      statusLabel.value = 'Done';
-      break;
-    case StatusOptions.PARTIALLY_DONE:
-      statusColor.value = 'warning';
-      statusLabel.value = 'Partially Done';
-      break;
-    default:
-      statusColor.value = 'error';
-      statusLabel.value = 'Undone';
-      break;
+  const { iterationId: iid } = useIterationRoute();
+  enum StatusOptions {
+    DONE = 'done',
+    PARTIALLY_DONE = 'partially_done',
+    UNDONE = 'undone',
   }
-}
 
-function calculatePointPercentage(workHours: number, point: number) {
-  return Math.round(workHours * 100) / 100;
-}
+  const options = [
+    {
+      label: 'Done',
+      value: 'done',
+    },
+    {
+      label: 'Partially Done',
+      value: 'partially_done',
+    },
+    {
+      label: 'Undone',
+      value: 'undone',
+    },
+  ];
 
-const { props } = defineProps<{ props: Backlog & { list: Array<Backlog> } }>();
+  const option = ref<string>('');
+  const statusLabel = ref<string>('Undone');
+  const statusColor = ref();
 
-function setBacklog(id: number) {
-  const backlog = props.list.find((bl: Backlog) => bl.id === id);
-  backlogStore.id = backlog?.id as number;
-  backlogStore.title = backlog?.title as string;
-  backlogStore.goals = backlog?.goals as string;
-  backlogStore.description = backlog?.description as string;
-  backlogStore.priority = backlog?.priority as number;
-  backlogStore.hours = backlog?.hours as number;
-  backlogStore.points = backlog?.points as number;
-  backlogStore.createdDate = backlog?.createdDate as number;
-}
+  function changeStatus(value: string) {
+    switch (value) {
+      case StatusOptions.DONE:
+        statusColor.value = 'success';
+        statusLabel.value = 'Done';
+        break;
+      case StatusOptions.PARTIALLY_DONE:
+        statusColor.value = 'warning';
+        statusLabel.value = 'Partially Done';
+        break;
+      default:
+        statusColor.value = 'error';
+        statusLabel.value = 'Undone';
+        break;
+    }
+  }
+
+  function calculatePointPercentage(workHours: number, point: number) {
+    return Math.round(workHours * 100) / 100;
+  }
+
+  const { props } = defineProps<{
+    props: Backlog & { list: Array<Backlog> };
+  }>();
+
+  function setBacklog(id: number) {
+    const backlog = props.list.find((bl: Backlog) => bl.id === id);
+    backlogStore.id = backlog?.id as number;
+    backlogStore.title = backlog?.title as string;
+    backlogStore.goals = backlog?.goals as string;
+    backlogStore.description = backlog?.description as string;
+    backlogStore.priority = backlog?.priority as number;
+    backlogStore.hours = backlog?.hours as number;
+    backlogStore.points = backlog?.points as number;
+    backlogStore.createdDate = backlog?.createdDate as number;
+  }
 </script>
 
 <template>

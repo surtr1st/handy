@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { NTabs, NTabPane } from 'naive-ui';
-import { defineAsyncComponent } from 'vue';
+  import { NTabs, NTabPane, NScrollbar } from 'naive-ui';
+  import { defineAsyncComponent } from 'vue';
 
-const AvailableIteration = defineAsyncComponent(
-  () => import('../components/AvailableIteration.vue'),
-);
-const JoiningIteration = defineAsyncComponent(
-  () => import('../components/JoiningIteration.vue'),
-);
-const FinishedIteration = defineAsyncComponent(
-  () => import('../components/FinishedIteration.vue'),
-);
+  const AvailableIteration = defineAsyncComponent(
+    () => import('../components/AvailableIteration.vue'),
+  );
+  const JoinedIteration = defineAsyncComponent(
+    () => import('../components/JoinedIteration.vue'),
+  );
+  const FinishedIteration = defineAsyncComponent(
+    () => import('../components/FinishedIteration.vue'),
+  );
 </script>
 
 <template>
@@ -25,19 +25,25 @@ const FinishedIteration = defineAsyncComponent(
       name="all"
       tab="Available"
     >
-      <AvailableIteration />
+      <NScrollbar style="height: 90vh">
+        <AvailableIteration />
+      </NScrollbar>
     </NTabPane>
     <NTabPane
       name="current"
       tab="Current"
     >
-      <JoiningIteration />
+      <NScrollbar style="height: 90vh">
+        <JoinedIteration />
+      </NScrollbar>
     </NTabPane>
     <NTabPane
       name="finished"
       tab="Finished"
     >
-      <FinishedIteration />
+      <NScrollbar style="height: 90vh">
+        <FinishedIteration />
+      </NScrollbar>
     </NTabPane>
   </NTabs>
 </template>

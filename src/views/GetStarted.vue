@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { NEmpty, NButton } from 'naive-ui';
+  import { NEmpty, NButton } from 'naive-ui';
 </script>
 
 <template>

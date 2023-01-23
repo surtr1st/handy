@@ -1,26 +1,26 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { Add28Filled } from '@vicons/fluent';
-import {
-  NSpace,
-  NModal,
-  NInput,
-  NGrid,
-  NGi,
-  NDatePicker,
-  NSelect,
-  NButton,
-  NIcon,
-  NCard,
-} from 'naive-ui';
+  import { ref } from 'vue';
+  import { Add28Filled } from '@vicons/fluent';
+  import {
+    NSpace,
+    NModal,
+    NInput,
+    NGrid,
+    NGi,
+    NDatePicker,
+    NSelect,
+    NButton,
+    NIcon,
+    NCard,
+  } from 'naive-ui';
 
-const open = ref(false);
-const options = [
-  {
-    label: '@chi.tr',
-    value: '@chi.tr',
-  },
-];
+  const open = ref(false);
+  const options = [
+    {
+      label: '@chi.tr',
+      value: '@chi.tr',
+    },
+  ];
 </script>
 
 <template>

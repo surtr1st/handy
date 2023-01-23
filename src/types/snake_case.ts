@@ -1,10 +1,10 @@
 export type SnakeUser = {
   id: number;
   username: string;
-  password: string
-}
+  password: string;
+};
 
-export type AuthenticationResult = [message: string, user_id: string]
+export type AuthenticationResult = [message: string, participant_id: string];
 
 export type SnakeIteration = {
   id: number;
@@ -13,7 +13,9 @@ export type SnakeIteration = {
   created_by: string;
   current_point: number;
   total_point: number;
+  start_date: number;
   end_date: number;
+  status: boolean;
 };
 
 export type SnakeBacklog = {

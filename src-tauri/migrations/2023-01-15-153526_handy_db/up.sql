@@ -1,13 +1,6 @@
 -- Your SQL goes here
 
 CREATE TABLE
-  users (
-    id serial primary key not null,
-    username text not null,
-    password text not null
-  );
-
-CREATE TABLE
   progresses (
     id serial primary key not null,
     name text not null
@@ -22,7 +15,8 @@ CREATE TABLE
     total_point int,
     created_by text not null,
     created_date bigint not null,
-    end_date bigint not null
+    end_date bigint not null,
+    status boolean
   );
 
 CREATE TABLE
@@ -49,10 +43,10 @@ CREATE TABLE
 
 CREATE TABLE
   participants (
-    id text primary key not null,
-    name text not null,
-    backlog_id serial references backlogs (id),
-    iteration_id serial references iterations (id)
+    id serial primary key not null,
+    alias text not null,
+    username text not null,
+    password text not null
   );
 
 CREATE TABLE
@@ -64,9 +58,9 @@ CREATE TABLE
     worked_hours int,
     progress text not null,
     mode boolean not null,
-    pic text references participants (id),
-    backlog_id serial references backlogs (id),
-    progress_id serial references progresses (id)
+    status boolean,
+    pic serial references participants (id),
+    backlog_id serial references backlogs (id)
   );
 
 CREATE TABLE
@@ -75,7 +69,7 @@ CREATE TABLE
     description text not null,
     total_hour int not null,
     task_id serial references tasks (id),
-    participant_id text references participants (id)
+    participant_id serial references participants (id)
   );
 
 CREATE TABLE
@@ -95,7 +89,13 @@ CREATE TABLE
     iteration_id serial references iterations (id)
   );
 
+CREATE TABLE
+  iteration_rooms (
+    id serial primary key not null,
+    iteration_id serial references iterations (id),
+    participant_id serial references participants (id)
+  );
 
 INSERT INTO progresses (name) VALUES ('Undone'), ('Partially Done'), ('Done');
 INSERT INTO backlog_types (name, backlog_id) VALUES ('Fixed', null), ('Flexible', null);
-INSERT INTO users (username, password) VALUES ('admin', '123')
+INSERT INTO participants (alias, username, password) VALUES ('@admin','admin', '123')
