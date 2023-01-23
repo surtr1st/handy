@@ -1,88 +1,74 @@
-use super::establish_connection;
-use super::models::Iteration;
-use super::schema::iteration_rooms::dsl::*;
-use super::schema::iterations::dsl::*;
-use super::schema::participants::dsl::*;
+use crate::args::RequiredIterationFields;
+use crate::establish_connection;
+use crate::models::{Iteration, NewIteration};
 
-use diesel::*;
+use diesel::prelude::*;
 
 #[tauri::command]
-pub fn get_iterations() -> Vec<Iteration> {
+pub fn get_iterations(_participant_id: i32) -> Vec<Iteration> {
+    use crate::schema::iteration_rooms;
+    use crate::schema::iterations;
+    use crate::schema::participants;
     let connection = &mut establish_connection();
-    iterations.load::<Iteration>(connection).unwrap()
-    // filter iterations which participant haven't joined
-    //     iteration_rooms
-    //         .inner_join(iterations)
-    //         .inner_join(participants)
-    //         .select((
-    //             iid,
-    //             title,
-    //             current_point,
-    //             total_point,
-    //             created_date,
-    //             end_date,
-    //         ))
-    //         .group_by(iid)
-    //         .load(connection)
-    //         .unwrap()
-}
 
-#[derive(Clone)]
-struct JoinedIteration {
-    id: i32,
-    title: String,
-    current_point: i32,
-    total_point: i32,
-    created_date: i64,
-    end_date: i64,
-}
-
-#[tauri::command]
-pub fn get_joined_iterations(_participant_id: i32) -> Vec<Iteration> {
-    let connection = &mut establish_connection();
-    iteration_rooms
-        .inner_join(iterations)
-        .inner_join(participants)
-        .filter(participant_id.eq(_participant_id))
-        .group_by(super::schema::iterations::id)
+    iteration_rooms::table
+        .inner_join(iterations::table)
+        .inner_join(participants::table)
+        .select(iterations::all_columns)
+        .filter(iteration_rooms::participant_id.eq(_participant_id))
+        .group_by(iterations::id)
         .load::<Iteration>(connection)
         .unwrap()
 }
 
 #[tauri::command]
-pub fn create_iteration(
-    _title: String,
-    _goals: String,
-    _created_by: String,
-    _created_date: i64,
-    _end_date: i64,
-) -> Result<String, String> {
+pub fn get_finished_iterations(_participant_id: i32) -> Vec<Iteration> {
+    use crate::schema::iteration_rooms;
+    use crate::schema::iterations;
+    use crate::schema::participants;
     let connection = &mut establish_connection();
 
-    if _title.is_empty() {
+    iteration_rooms::table
+        .inner_join(iterations::table)
+        .inner_join(participants::table)
+        .select(iterations::all_columns)
+        .filter(iteration_rooms::participant_id.eq(_participant_id))
+        .filter(iterations::status.eq(true))
+        .group_by(iterations::id)
+        .load::<Iteration>(connection)
+        .unwrap()
+}
+
+#[tauri::command]
+pub fn create_iteration(fields: RequiredIterationFields) -> Result<String, String> {
+    use crate::schema::iterations::dsl::*;
+    let connection = &mut establish_connection();
+
+    if fields.title.is_empty() {
         return Err("Title is empty!".into());
     }
-    if _goals.is_empty() {
+    if fields.goals.is_empty() {
         return Err("Goals is empty!".into());
     }
-    if _created_by.is_empty() {
+    if fields.created_by.is_empty() {
         return Err("Need at least one participant!".into());
     }
-    if _created_date.is_negative() || _end_date.is_negative() {
+    if fields.created_date.is_negative() || fields.end_date.is_negative() {
         return Err("Timeline isn't set!".into());
     }
 
-    let iteration = (
-        title.eq(_title),
-        goals.eq(_goals),
-        current_point.eq(0),
-        total_point.eq(0),
-        created_by.eq(_created_by),
-        created_date.eq(_created_date),
-        end_date.eq(_end_date),
-    );
+    let iteration = NewIteration {
+        title: &fields.title,
+        goals: &fields.goals,
+        current_point: 0,
+        total_point: 0,
+        created_by: &fields.created_by,
+        created_date: fields.created_date,
+        end_date: fields.end_date,
+        status: false,
+    };
 
-    insert_into(iterations)
+    diesel::insert_into(iterations)
         .values(&iteration)
         .execute(connection)
         .unwrap_or_else(|_| panic!("Couldn't create iteration!"));
@@ -92,6 +78,7 @@ pub fn create_iteration(
 
 #[tauri::command]
 pub fn join_iteration(_iteration_id: i32, _participant_id: i32) -> Result<String, String> {
+    use crate::schema::iteration_rooms::dsl::*;
     let connection = &mut establish_connection();
 
     let room = (
@@ -99,7 +86,7 @@ pub fn join_iteration(_iteration_id: i32, _participant_id: i32) -> Result<String
         participant_id.eq(_participant_id),
     );
 
-    insert_into(iteration_rooms)
+    diesel::insert_into(iteration_rooms)
         .values(&room)
         .execute(connection)
         .unwrap_or_else(|_| panic!("Couldn't join iteration!"));

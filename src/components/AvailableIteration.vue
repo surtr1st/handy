@@ -32,7 +32,9 @@
   const debounceJoin = useDebounceFn(joinIteration);
 
   onMounted(() => {
-    invoke<Array<SnakeIteration>>('get_iterations')
+    invoke<Array<SnakeIteration>>('get_iterations', {
+      participantId: parseInt(localStorage.getItem('PARTICIPANT_ID') as string)
+    })
       .then((res) => (iterations.value = res))
       .catch((e) => console.log(e));
   });
@@ -89,7 +91,7 @@
               <NStatistic label="Description">
                 <NScrollbar style="max-height: 300px">
                   <NCard>{{ iteration?.goals }} </NCard>
-                </NScrollbar>
+               </NScrollbar>
               </NStatistic>
             </NGi>
           </NGrid>
