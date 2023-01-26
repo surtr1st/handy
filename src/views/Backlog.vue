@@ -1,36 +1,36 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
-import { useIterationRoute, backlogStore } from '../store';
-import {
-  NGrid,
-  NGi,
-  NIcon,
-  NText,
-  NButton,
-  NScrollbar,
-  NCheckbox,
-  NCard,
-  NSpace,
-  NStatistic,
-  NDivider,
-  NInput,
-} from 'naive-ui';
-import {
-  CheckmarkCircle24Filled,
-  ClipboardTaskListRtl24Filled,
-  ArrowStepInRight12Regular,
-} from '@vicons/fluent';
-import { useWindowSize } from '@vueuse/core';
+  import { ref, watch } from 'vue';
+  import { useIterationRoute, backlogStore } from '../store';
+  import {
+    NGrid,
+    NGi,
+    NIcon,
+    NText,
+    NButton,
+    NScrollbar,
+    NCheckbox,
+    NCard,
+    NSpace,
+    NStatistic,
+    NDivider,
+    NInput,
+  } from 'naive-ui';
+  import {
+    CheckmarkCircle24Filled,
+    ClipboardTaskListRtl24Filled,
+    ArrowStepInRight12Regular,
+  } from '@vicons/fluent';
+  import { useWindowSize } from '@vueuse/core';
 
-const { height } = useWindowSize();
-const { iterationId: iid } = useIterationRoute();
+  const { height } = useWindowSize();
+  const { iterationId: iid } = useIterationRoute();
 
-const flexHeight = ref(20);
+  const flexHeight = ref(20);
 
-watch(height, (newHeight) => {
-  if (newHeight > 700) flexHeight.value = 30;
-  else flexHeight.value = 20;
-});
+  watch(height, (newHeight) => {
+    if (newHeight > 700) flexHeight.value = 30;
+    else flexHeight.value = 20;
+  });
 </script>
 
 <template>
@@ -57,7 +57,7 @@ watch(height, (newHeight) => {
     >
       <NGi :span="6">
         <NCard title="Goals">
-          <NScrollbar style="height: 100px; width: 100%">
+          <NScrollbar style="height: 100px; width: 100vw">
             <NText>
               {{ backlogStore.goals }}
             </NText>
@@ -69,14 +69,6 @@ watch(height, (newHeight) => {
           <NScrollbar style="height: 100px; width: 100%">
             <NText>
               {{ backlogStore.description }}
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry's standard dummy text
-              ever since the 1500s, when an unknown printer took a galley of
-              type and scrambled it to make a type specimen book. Lorem Ipsum is
-              simply dummy text of the printing and typesetting industry. Lorem
-              Ipsum has been the industry's standard dummy text ever since the
-              1500s, when an unknown printer took a galley of type and scrambled
-              it to make a type specimen book.
             </NText>
           </NScrollbar>
         </NCard>
@@ -85,7 +77,7 @@ watch(height, (newHeight) => {
         <NCard title="Criteria Acceptances">
           <NScrollbar style="height: 21.2vh; width: 100%">
             <NSpace vertical>
-              <NCheckbox v-for="i in 15">Criteria Acceptance {{ i }}</NCheckbox>
+              <NCheckbox></NCheckbox>
             </NSpace>
           </NScrollbar>
           <template #action>
@@ -135,7 +127,7 @@ watch(height, (newHeight) => {
                 type="primary"
                 @click="
                   $router.push(
-                    `/iterations/${iid}/backlogs/${backlogStore.id}/tasks`,
+                    `/mainpage/iterations/${iid}/backlogs/${backlogStore.id}/tasks`,
                   )
                 "
               >

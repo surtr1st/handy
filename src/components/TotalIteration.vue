@@ -1,16 +1,27 @@
 <script setup lang="ts">
-import { TaskListSquareLtr24Filled } from '@vicons/fluent';
-import { RefreshCircle } from '@vicons/ionicons5';
-import {
-  NPageHeader,
-  NGrid,
-  NSpace,
-  NButton,
-  NStatistic,
-  NGi,
-  NIcon,
-  NDivider,
-} from 'naive-ui';
+  import { invoke } from '@tauri-apps/api';
+  import { reactive, onMounted } from 'vue';
+  import { TaskListSquareLtr24Filled } from '@vicons/fluent';
+  import { RefreshCircle } from '@vicons/ionicons5';
+  import {
+    NPageHeader,
+    NGrid,
+    NSpace,
+    NButton,
+    NStatistic,
+    NGi,
+    NIcon,
+    NDivider,
+  } from 'naive-ui';
+
+  const iterationStatus = reactive({
+    current: 0,
+    attended: 0,
+    finished: 0,
+    created: 0,
+  });
+
+  onMounted(() => {});
 </script>
 
 <template>
@@ -22,25 +33,25 @@ import {
       <NGi>
         <NStatistic
           label="Current"
-          value="0"
+          v-model:value="iterationStatus.current"
         />
       </NGi>
       <NGi>
         <NStatistic
           label="Attended"
-          value="0"
+          v-model:value="iterationStatus.attended"
         />
       </NGi>
       <NGi>
         <NStatistic
           label="Finished"
-          value="0"
+          v-model:value="iterationStatus.finished"
         />
       </NGi>
       <NGi>
         <NStatistic
           label="Created"
-          value="0"
+          v-model:value="iterationStatus.created"
         />
       </NGi>
     </NGrid>

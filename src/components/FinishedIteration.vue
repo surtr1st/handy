@@ -1,0 +1,84 @@
+<script setup lang="ts">
+  import { defineAsyncComponent, h, onMounted, onUnmounted, ref } from 'vue';
+  import { invoke } from '@tauri-apps/api';
+  import { SnakeIteration } from '../types';
+  import { RouterLink } from 'vue-router';
+  import { useFormattedDate } from '../constants';
+  import { RecycleScroller } from 'vue-virtual-scroller';
+  import { useIterationRoute } from '../store';
+  import {
+    NList,
+    NListItem,
+    NThing,
+    NText,
+    NSpace,
+    NStatistic,
+  } from 'naive-ui';
+
+  const Empty = defineAsyncComponent(() => import('../components/Empty.vue'));
+  const { setIterationId } = useIterationRoute();
+  const iterations = ref<Array<SnakeIteration>>([]);
+
+  onMounted(() => {
+    invoke<Array<SnakeIteration>>('get_finished_iterations')
+      .then((res) => (iterations.value = res))
+      .catch((e) => console.log(e));
+  });
+  onUnmounted(() => (iterations.value = []));
+</script>
+
+<template>
+  <Empty
+    v-if="iterations.length < 1"
+    description="You haven't finished any iteration!"
+  />
+  <RecycleScroller
+    v-else
+    class="scroller"
+    :items="iterations"
+    v-slot="{ item }"
+    :item-size="129"
+    :list-tag="
+      h(NList, {
+        hoverable: true,
+        clickable: true,
+        bordered: true,
+      })
+    "
+    :item-tag="NListItem"
+  >
+    <RouterLink
+      :to="`/mainpage/iterations/${item.id}`"
+      style="text-decoration: none"
+      @click="setIterationId(item.id)"
+    >
+      <NThing content-style="font-size: 18px">
+        <template #header>
+          <NText strong>{{ item.title }}</NText>
+        </template>
+        <NSpace justify="space-around">
+          <NStatistic
+            label="Id"
+            :value="`#${item.id}`"
+          />
+          <NStatistic
+            label="Current Point"
+            :value="item.current_point"
+          />
+          <NStatistic
+            label="Total Point"
+            :value="item.total_point"
+          />
+          <NStatistic
+            label="Created By"
+            :value="item.created_by"
+          />
+          <NStatistic
+            label="End Date"
+            :value="useFormattedDate(item?.end_date)"
+          />
+        </NSpace>
+      </NThing>
+    </RouterLink>
+  </RecycleScroller>
+</template>

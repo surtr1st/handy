@@ -14,41 +14,47 @@ pub struct Progress {
     name: String,
 }
 
-#[derive(Queryable, Debug, Serialize)]
-pub struct User {
+#[derive(Queryable, Debug, Serialize, Deserialize)]
+pub struct Participant {
     id: i32,
+    alias: String,
     username: String,
     password: String,
 }
 
-#[derive(Queryable, Debug, Serialize)]
-pub struct Participant {
-    id: String,
-    name: String,
-}
-
-#[derive(Queryable, Debug, Clone, Serialize, Deserialize)]
+#[derive(Queryable, Debug, Serialize, Deserialize)]
 pub struct Iteration {
     id: i32,
-    pub title: String,
-    pub goals: String,
-    pub current_point: Option<i32>,
-    pub total_point: Option<i32>,
-    pub created_by: String,
-    pub created_date: i64,
-    pub end_date: i64,
+    title: String,
+    goals: String,
+    current_point: Option<i32>,
+    total_point: Option<i32>,
+    created_by: String,
+    created_date: i64,
+    end_date: i64,
+    status: Option<bool>,
 }
 
-#[derive(Queryable, Debug, Serialize)]
+#[derive(Queryable, Debug, Serialize, Deserialize)]
+pub struct IterationRoom {
+    id: i32,
+    iteration_id: i32,
+    participant_id: i32,
+}
+
+#[derive(Queryable, Debug, Serialize, Deserialize)]
 pub struct Backlog {
     id: i32,
     title: String,
-    description: String,
+    description: Option<String>,
     goals: String,
     priority: i32,
     hours: i32,
     points: i32,
     created_date: i64,
+    iteration_id: i32,
+    progress_id: i32,
+    type_id: i32,
 }
 
 #[derive(Queryable, Debug, Serialize)]

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { QuillEditor } from '@vueup/vue-quill';
-import { retroStore } from '../store';
+  import { QuillEditor } from '@vueup/vue-quill';
+  import { retroStore } from '../store';
 </script>
 
 <template>

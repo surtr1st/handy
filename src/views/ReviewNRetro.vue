@@ -1,60 +1,60 @@
 <script setup lang="ts">
-import Review from '../components/Review.vue';
-import Retrospective from '../components/Retrospective.vue';
-import { reactive, ref, shallowRef } from 'vue';
-import { reviewStore, retroStore } from '../store';
-import { useRouter } from 'vue-router';
-import { TextDescription24Filled } from '@vicons/fluent';
-import {
-  NSelect,
-  NPageHeader,
-  NGrid,
-  NSpace,
-  NButton,
-  NStatistic,
-  NGi,
-  NIcon,
-  NDivider,
-  NInput,
-} from 'naive-ui';
+  import Review from '../components/Review.vue';
+  import Retrospective from '../components/Retrospective.vue';
+  import { reactive, ref, shallowRef } from 'vue';
+  import { reviewStore, retroStore } from '../store';
+  import { useRouter } from 'vue-router';
+  import { TextDescription24Filled } from '@vicons/fluent';
+  import {
+    NSelect,
+    NPageHeader,
+    NGrid,
+    NSpace,
+    NButton,
+    NStatistic,
+    NGi,
+    NIcon,
+    NDivider,
+    NInput,
+  } from 'naive-ui';
 
-const { replace } = useRouter();
-const current = shallowRef(Review);
-const title = ref('Review Iteration');
+  const { replace } = useRouter();
+  const current = shallowRef(Review);
+  const title = ref('Review Iteration');
 
-const components = shallowRef({
-  prev: Review,
-  next: Retrospective,
-});
+  const components = shallowRef({
+    prev: Review,
+    next: Retrospective,
+  });
 
-const stepFurther = reactive({
-  stepped: false,
-  finish: false,
-});
-const options = [
-  {
-    label: '[id] Iteration Name',
-    value: 'id',
-  },
-];
+  const stepFurther = reactive({
+    stepped: false,
+    finish: false,
+  });
+  const options = [
+    {
+      label: '[id] Iteration Name',
+      value: 'id',
+    },
+  ];
 
-function onStepBack() {
-  stepFurther.stepped = false;
-  stepFurther.finish = false;
-  current.value = components.value.prev;
-  title.value = 'Review Iteration';
-}
+  function onStepBack() {
+    stepFurther.stepped = false;
+    stepFurther.finish = false;
+    current.value = components.value.prev;
+    title.value = 'Review Iteration';
+  }
 
-function onStepFurther() {
-  stepFurther.stepped = true;
-  stepFurther.finish = true;
-  current.value = components.value.next;
-  title.value = 'Retrospective';
-}
+  function onStepFurther() {
+    stepFurther.stepped = true;
+    stepFurther.finish = true;
+    current.value = components.value.next;
+    title.value = 'Retrospective';
+  }
 
-function finish() {
-  replace('/review/retro/completed/200');
-}
+  function finish() {
+    replace('/review/retro/completed/200');
+  }
 </script>
 <template>
   <NPageHeader subtitle="What do you feel about this iteration?">

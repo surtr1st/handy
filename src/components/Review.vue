@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { QuillEditor } from '@vueup/vue-quill';
-import { reviewStore } from '../store';
+  import { QuillEditor } from '@vueup/vue-quill';
+  import { reviewStore } from '../store';
 </script>
 
 <template>

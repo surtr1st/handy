@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { NEmpty, NButton } from 'naive-ui';
+  import { NEmpty, NButton } from 'naive-ui';
 </script>
 
 <template>
@@ -11,7 +11,7 @@ import { NEmpty, NButton } from 'naive-ui';
         <NButton
           size="large"
           type="primary"
-          @click="$router.replace('/home')"
+          @click="$router.replace('/mainpage/getting-started')"
         >
           Create Iteration
         </NButton>
