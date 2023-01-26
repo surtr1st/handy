@@ -57,7 +57,7 @@
     >
       <NGi :span="6">
         <NCard title="Goals">
-          <NScrollbar style="height: 100px; width: 100%">
+          <NScrollbar style="height: 100px; width: 100vw">
             <NText>
               {{ backlogStore.goals }}
             </NText>
@@ -69,14 +69,6 @@
           <NScrollbar style="height: 100px; width: 100%">
             <NText>
               {{ backlogStore.description }}
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry's standard dummy text
-              ever since the 1500s, when an unknown printer took a galley of
-              type and scrambled it to make a type specimen book. Lorem Ipsum is
-              simply dummy text of the printing and typesetting industry. Lorem
-              Ipsum has been the industry's standard dummy text ever since the
-              1500s, when an unknown printer took a galley of type and scrambled
-              it to make a type specimen book.
             </NText>
           </NScrollbar>
         </NCard>
@@ -85,7 +77,7 @@
         <NCard title="Criteria Acceptances">
           <NScrollbar style="height: 21.2vh; width: 100%">
             <NSpace vertical>
-              <NCheckbox v-for="i in 15">Criteria Acceptance {{ i }}</NCheckbox>
+              <NCheckbox></NCheckbox>
             </NSpace>
           </NScrollbar>
           <template #action>

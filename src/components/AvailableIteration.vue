@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { defineAsyncComponent, h, onMounted, onUnmounted, ref } from 'vue';
+  import { defineAsyncComponent, onMounted, onUnmounted, ref } from 'vue';
   import { invoke } from '@tauri-apps/api';
   import { SnakeIteration } from '../types';
   import { useFormattedDate } from '../constants';
@@ -33,7 +33,7 @@
 
   onMounted(() => {
     invoke<Array<SnakeIteration>>('get_iterations', {
-      participantId: parseInt(localStorage.getItem('PARTICIPANT_ID') as string)
+      participantId: parseInt(localStorage.getItem('PARTICIPANT_ID') as string),
     })
       .then((res) => (iterations.value = res))
       .catch((e) => console.log(e));
@@ -91,7 +91,7 @@
               <NStatistic label="Description">
                 <NScrollbar style="max-height: 300px">
                   <NCard>{{ iteration?.goals }} </NCard>
-               </NScrollbar>
+                </NScrollbar>
               </NStatistic>
             </NGi>
           </NGrid>

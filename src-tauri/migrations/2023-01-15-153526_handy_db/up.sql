@@ -22,8 +22,7 @@ CREATE TABLE
 CREATE TABLE
   backlog_types (
     id serial primary key not null,
-    name text not null,
-    backlog_id int null
+    name text not null
   );
 
 CREATE TABLE
@@ -33,8 +32,8 @@ CREATE TABLE
     description text,
     goals text not null,
     priority int not null,
-    hours int,
-    points int,
+    hours int not null,
+    points int not null,
     created_date bigint not null,
     iteration_id serial references iterations (id),
     progress_id serial references progresses (id),
@@ -97,5 +96,5 @@ CREATE TABLE
   );
 
 INSERT INTO progresses (name) VALUES ('Undone'), ('Partially Done'), ('Done');
-INSERT INTO backlog_types (name, backlog_id) VALUES ('Fixed', null), ('Flexible', null);
+INSERT INTO backlog_types (name) VALUES ('Fixed'), ('Flexible');
 INSERT INTO participants (alias, username, password) VALUES ('@admin','admin', '123')

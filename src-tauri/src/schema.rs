@@ -4,7 +4,6 @@ diesel::table! {
     backlog_types (id) {
         id -> Int4,
         name -> Text,
-        backlog_id -> Nullable<Int4>,
     }
 }
 
@@ -15,8 +14,8 @@ diesel::table! {
         description -> Nullable<Text>,
         goals -> Text,
         priority -> Int4,
-        hours -> Nullable<Int4>,
-        points -> Nullable<Int4>,
+        hours -> Int4,
+        points -> Int4,
         created_date -> Int8,
         iteration_id -> Int4,
         progress_id -> Int4,
