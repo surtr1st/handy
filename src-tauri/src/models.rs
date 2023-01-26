@@ -1,3 +1,4 @@
+use crate::schema::tasks;
 #[allow(unused)]
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -57,15 +58,19 @@ pub struct Backlog {
     type_id: i32,
 }
 
-#[derive(Queryable, Debug, Serialize)]
+#[derive(Queryable, Debug, Serialize, Deserialize, AsChangeset)]
+#[diesel(table_name = tasks)]
 pub struct Task {
     id: i32,
     name: String,
-    created_date: i64,
-    hours: i32,
-    worked_hours: i32,
-    progress: String,
+    created_date: Option<i64>,
+    started_date: Option<i64>,
+    hours: Option<i32>,
+    worked_hours: Option<i32>,
     mode: bool,
+    status: bool,
+    pic: i32,
+    backlog_id: i32,
 }
 
 #[derive(Queryable, Debug, Serialize)]
@@ -75,11 +80,12 @@ pub struct Worklog {
     total_hour: i32,
 }
 
-#[derive(Queryable, Debug, Serialize)]
+#[derive(Queryable, Debug, Serialize, Deserialize)]
 pub struct CriteriaAcceptance {
     id: i32,
     title: String,
     status: bool,
+    backlog_id: i32,
 }
 
 #[derive(Queryable, Debug, Serialize)]

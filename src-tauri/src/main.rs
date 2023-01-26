@@ -6,11 +6,13 @@
 pub mod args;
 pub mod auth;
 pub mod backlog;
+pub mod criteria_acceptance;
 pub mod iteration;
 pub mod models;
 pub mod ops;
 pub mod participant;
 pub mod schema;
+pub mod task;
 
 use auth::{authenticate, registrate};
 use backlog::{create_backlog, get_backlogs, import_backlog};
@@ -23,6 +25,7 @@ use iteration::{
 };
 use participant::get_participants;
 use std::env;
+use task::{create_task, get_tasks, remove_task, update_task};
 
 pub fn establish_connection() -> PgConnection {
     dotenv().ok();
@@ -44,7 +47,11 @@ fn main() {
             join_iteration,
             create_backlog,
             import_backlog,
-            get_backlogs
+            get_backlogs,
+            create_task,
+            get_tasks,
+            update_task,
+            remove_task
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

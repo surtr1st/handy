@@ -24,3 +24,23 @@ pub struct RequiredBacklogFields {
     pub progress_id: i32,
     pub type_id: i32,
 }
+
+#[derive(Args, Serialize, Deserialize)]
+pub struct RequiredTaskFields {
+    pub id: i32,
+    pub name: String,
+    pub created_date: Option<i64>,
+    pub started_date: Option<i64>,
+    pub hours: Option<i32>,
+    pub worked_hours: Option<i32>,
+    pub status: bool,
+    pub mode: bool,
+    pub pic: i32,
+    pub backlog_id: i32,
+}
+
+#[derive(Args, Serialize, Deserialize)]
+pub struct RequiredCAFields {
+    pub title: String,
+    pub backlog_id: i32,
+}

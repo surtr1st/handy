@@ -7,10 +7,10 @@ use diesel::prelude::*;
 
 #[tauri::command]
 pub fn get_iterations(_participant_id: i32) -> Vec<Iteration> {
-    use crate::schema::iterations;
+    use crate::schema::iterations::dsl::*;
 
     let connection = &mut establish_connection();
-    iterations::table
+    iterations
         .load::<Iteration>(connection)
         .expect("all iteration should be returned!")
 }

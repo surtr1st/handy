@@ -41,6 +41,13 @@ CREATE TABLE
   );
 
 CREATE TABLE
+  completed_backlogs (
+    id serial primary key not null,
+    completed_at bigint,
+    backlog_id serial references backlogs (id)
+  );
+
+CREATE TABLE
   participants (
     id serial primary key not null,
     alias text not null,
@@ -53,13 +60,20 @@ CREATE TABLE
     id serial primary key not null,
     name text not null,
     created_date bigint,
+    started_date bigint,
     hours int,
     worked_hours int,
-    progress text not null,
     mode boolean not null,
-    status boolean,
+    status boolean not null,
     pic serial references participants (id),
     backlog_id serial references backlogs (id)
+  );
+
+CREATE TABLE
+  completed_tasks (
+    id serial primary key not null,
+    completed_at bigint,
+    task_id serial references tasks (id)
   );
 
 CREATE TABLE
@@ -75,16 +89,16 @@ CREATE TABLE
   criteria_acceptances (
     id serial primary key not null,
     title text not null,
-    status boolean,
+    status boolean not null,
     backlog_id serial references backlogs (id)
   );
 
 CREATE TABLE
   burndowns (
     id serial primary key not null,
-    ideal int,
-    actual int,
-    from_day bigint,
+    ideal int not null,
+    actual int not null,
+    from_day bigint not null,
     iteration_id serial references iterations (id)
   );
 

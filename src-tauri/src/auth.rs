@@ -1,5 +1,5 @@
-use super::establish_connection;
-use super::schema::participants::dsl::*;
+use crate::establish_connection;
+use crate::schema::participants::dsl::*;
 use diesel::*;
 
 #[tauri::command]
