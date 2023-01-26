@@ -4,14 +4,13 @@
 
   const switchToInput = ref<boolean>(false);
 
-  const content = `
-      Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-      Lorem Ipsum has been the industry's standard dummy text ever since the
-      1500s, when an unknown printer took a galley of type and scrambled it to
-      make a type specimen book. Lorem Ipsum is simply dummy text of the
-      printing and typesetting industry. Lorem Ipsum has been the industry's
-      standard dummy text ever since the 1500s, when an unknown printer took a
-      galley of type and scrambled it to make a type specimen book.`;
+  const props = defineProps({
+    content: {
+      type: String,
+      required: true,
+    },
+  });
+  const edit = ref<string>(props.content);
 </script>
 
 <template>
@@ -24,7 +23,7 @@
       v-else
       type="textarea"
       :resizable="false"
-      :value="content"
+      v-model:value="edit"
       style="height: 200px"
     />
     <NSpace

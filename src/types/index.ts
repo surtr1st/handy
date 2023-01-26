@@ -4,6 +4,11 @@ export type EditTaskProps = {
   title: string;
 };
 
+export type Participant = {
+  id: number;
+  alias: string;
+};
+
 export type Iteration = {
   id: number;
   title: string;

@@ -15,12 +15,18 @@
     NStatistic,
   } from 'naive-ui';
 
-  const { setIterationId } = useIterationRoute();
+  const { setIterationId, setIteration } = useIterationRoute();
   const Empty = defineAsyncComponent(() => import('./Empty.vue'));
   const iterations = ref<Array<SnakeIteration>>([]);
 
+  function handleIterationChosen(id: number) {
+    const iteration = iterations.value.find((i: SnakeIteration) => i.id === id);
+    setIterationId(id);
+    setIteration(iteration as SnakeIteration);
+  }
+
   onMounted(() => {
-    invoke<Array<SnakeIteration>>('get_iterations', {
+    invoke<Array<SnakeIteration>>('get_joined_iterations', {
       participantId: parseInt(localStorage.getItem('PARTICIPANT_ID') as string),
     })
       .then((res) => (iterations.value = res))
@@ -52,7 +58,7 @@
     <RouterLink
       :to="`/mainpage/iterations/${item.id}`"
       style="text-decoration: none"
-      @click="setIterationId(item.id)"
+      @click="handleIterationChosen(item.id)"
     >
       <NThing content-style="font-size: 18px">
         <template #header>

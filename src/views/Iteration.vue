@@ -3,9 +3,11 @@
   import BurndownChart from '../components/BurndownChart.vue';
   import Backlogs from '../components/Backlogs.vue';
   import BacklogCreator from '../components/BacklogCreator.vue';
+  import { ref, reactive, onMounted } from 'vue';
+  import { invoke } from '@tauri-apps/api';
   import { RefreshCircle } from '@vicons/ionicons5';
   import { useIterationRoute } from '../store';
-  import { Backlog } from '../types';
+  import { SnakeBacklog } from '../types';
   import {
     TextBulletListSquare24Filled,
     DocumentBulletList24Filled,
@@ -27,7 +29,14 @@
     NIcon,
   } from 'naive-ui';
 
-  const { iterationId: iid } = useIterationRoute();
+  const { iterationId: iid, getIteration } = useIterationRoute();
+  const backlogs = ref<Array<SnakeBacklog>>([]);
+  const backlogStatus = reactive({
+    total: 0,
+    done: 0,
+    partiallyDone: 0,
+    undone: 0,
+  });
 
   enum StatusColors {
     DONE = 'rgb(16, 185, 129)',
@@ -35,48 +44,11 @@
     UNDONE = 'rgb(225, 29, 72)',
   }
 
-  const backlogs: Array<Backlog> = [
-    {
-      id: 1,
-      title: 'A du',
-      description: 'Dark wa',
-      goals: 'K Dark lam',
-      priority: 1,
-      hours: 3,
-      points: 3,
-      createdDate: 0,
-    },
-    {
-      id: 2,
-      title: 'A du Dark wa',
-      description: 'Vl vue dinh vl',
-      goals: 'Da qua',
-      priority: 2,
-      hours: 21,
-      points: 21,
-      createdDate: 0,
-    },
-    {
-      id: 3,
-      title: 'A du Dark wa',
-      description: 'Vl vue dinh vl',
-      goals: 'Da qua',
-      priority: 3,
-      hours: 5,
-      points: 5,
-      createdDate: 0,
-    },
-    {
-      id: 4,
-      title: 'A du Dark wa',
-      description: 'Vl vue dinh vl',
-      goals: 'Daaaa qua',
-      priority: 4,
-      hours: 5,
-      points: 5,
-      createdDate: 0,
-    },
-  ];
+  onMounted(() => {
+    invoke<Array<SnakeBacklog>>('get_backlogs', { iterationId: iid })
+      .then((res) => (backlogs.value = res))
+      .catch();
+  });
 </script>
 
 <template>
@@ -88,7 +60,7 @@
       <NGi>
         <NStatistic
           label="Backlogs"
-          value="0"
+          v-model:value="backlogStatus.total"
         >
           <template #prefix>
             <NIcon> <DocumentBulletList24Filled /> </NIcon>
@@ -98,7 +70,7 @@
       <NGi>
         <NStatistic
           label="Done"
-          value="0"
+          v-model:value="backlogStatus.done"
         >
           <template #prefix>
             <NIcon :color="StatusColors.DONE">
@@ -110,7 +82,7 @@
       <NGi>
         <NStatistic
           label="Partially Done"
-          value="0"
+          v-model:value="backlogStatus.partiallyDone"
         >
           <template #prefix>
             <NIcon :color="StatusColors.PARTIALLY_DONE">
@@ -122,7 +94,7 @@
       <NGi>
         <NStatistic
           label="Undone"
-          value="0"
+          v-model:value="backlogStatus.undone"
         >
           <template #prefix>
             <NIcon :color="StatusColors.UNDONE">
@@ -225,7 +197,7 @@
         align="center"
         style="height: 50vh"
       >
-        <Goals />
+        <Goals :content="getIteration.goals" />
       </NSpace>
     </NTabPane>
     <NTabPane

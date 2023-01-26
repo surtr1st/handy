@@ -1,7 +1,11 @@
 <script setup lang="ts">
   import { ref } from 'vue';
-  import { Archive } from '@vicons/ionicons5';
+  import { invoke } from '@tauri-apps/api';
+  import { useMessages } from '../constants';
+  import { useIterationRoute } from '../store';
+  import { useDebounceFn } from '@vueuse/core';
   import {
+    NSelect,
     NCard,
     NModal,
     NGrid,
@@ -10,14 +14,12 @@
     NFormItemGi,
     NInput,
     NInputNumber,
-    NUpload,
-    NUploadDragger,
-    NP,
-    NIcon,
-    NText,
     NSpace,
     NButton,
   } from 'naive-ui';
+
+  const { iterationId } = useIterationRoute();
+  const { onSuccess, onError } = useMessages();
 
   const open = ref(false);
   const form = ref();
@@ -28,43 +30,67 @@
     description: '',
     hours: 0,
     points: 0,
-    iterationId: 0,
+    type: 0,
   });
+
+  const options = [
+    {
+      label: 'Fixed',
+      value: 1,
+    },
+    {
+      label: 'Flexible',
+      value: 2,
+    },
+  ];
+
+  function createBacklog() {
+    const fields = {
+      title: model.value.title,
+      priority: model.value.priority,
+      goals: model.value.goals,
+      description: model.value.description,
+      hours: model.value.hours,
+      points: model.value.points,
+      created_date: new Date().getTime(),
+      iteration_id: iterationId,
+      progress_id: 1, // default: Undone
+      type_id: model.value.type,
+    };
+    invoke<string>('create_backlog', { fields })
+      .then((message) => {
+        onSuccess(message);
+        open.value = false;
+      })
+      .catch((message) => onError(message));
+  }
+
+  const debounceCreateBacklog = useDebounceFn(createBacklog, 300);
 </script>
 
 <template>
   <NGrid :cols="12">
     <NGi :span="12">
-      <NUpload>
-        <NUploadDragger>
-          <div
-            style="
-              margin-bottom: 12px;
-              height: 20vh;
-              display: grid;
-              place-items: center;
-            "
-          >
-            <NIcon
-              size="96"
-              :depth="3"
-            >
-              <Archive />
-            </NIcon>
-          </div>
-          <NText style="font-size: 16px">
-            Click or drag a file to this area to upload
-          </NText>
-          <NP
-            depth="3"
-            style="margin: 8px 0 0 0"
-          >
-            Currently, only support for .CSV, .XLSX
-          </NP>
-        </NUploadDragger>
-      </NUpload>
+      <NButton
+        primary
+        type="primary"
+        size="large"
+        @click="open = true"
+      >
+        Create
+      </NButton>
     </NGi>
-    <NGi :span="12">
+    <NGi :span="6">
+      <NButton
+        primary
+        type="primary"
+        size="large"
+        @click="open = true"
+      >
+        Create
+      </NButton>
+    </NGi>
+    <NGi :span="6">
       <NButton
         primary
         type="primary"
@@ -146,6 +172,24 @@
               placeholder=""
             />
           </NFormItemGi>
+          <NFormItemGi
+            :span="3"
+            label="Type"
+          >
+            <NSelect
+              v-model:value="model.type"
+              :options="options"
+            />
+          </NFormItemGi>
+          <NFormItemGi
+            :span="3"
+            label="Progress"
+          >
+            <NInput
+              readonly
+              placeholder="Undone"
+            />
+          </NFormItemGi>
         </NGrid>
       </NForm>
       <NSpace justify="end">
@@ -153,6 +197,7 @@
           size="large"
           primary
           type="primary"
+          @click="debounceCreateBacklog"
           >Create</NButton
         >
       </NSpace>

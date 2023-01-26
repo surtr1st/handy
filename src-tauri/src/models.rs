@@ -16,7 +16,7 @@ pub struct Progress {
 
 #[derive(Queryable, Debug, Serialize, Deserialize)]
 pub struct Participant {
-    id: String,
+    id: i32,
     alias: String,
     username: String,
     password: String,
@@ -35,19 +35,6 @@ pub struct Iteration {
     status: Option<bool>,
 }
 
-#[derive(Insertable)]
-#[table_name = "crate::schema::iterations"]
-pub struct NewIteration<'a> {
-    pub title: &'a str,
-    pub goals: &'a str,
-    pub current_point: i32,
-    pub total_point: i32,
-    pub created_by: &'a str,
-    pub created_date: i64,
-    pub end_date: i64,
-    pub status: bool,
-}
-
 #[derive(Queryable, Debug, Serialize, Deserialize)]
 pub struct IterationRoom {
     id: i32,
@@ -55,16 +42,19 @@ pub struct IterationRoom {
     participant_id: i32,
 }
 
-#[derive(Queryable, Debug, Serialize)]
+#[derive(Queryable, Debug, Serialize, Deserialize)]
 pub struct Backlog {
     id: i32,
     title: String,
-    description: String,
+    description: Option<String>,
     goals: String,
     priority: i32,
     hours: i32,
     points: i32,
     created_date: i64,
+    iteration_id: i32,
+    progress_id: i32,
+    type_id: i32,
 }
 
 #[derive(Queryable, Debug, Serialize)]

@@ -2,9 +2,9 @@
   import { ref } from 'vue';
   import { RouterLink } from 'vue-router';
   import { Status20Filled } from '@vicons/fluent';
-  import { useIterationRoute, backlogStore } from '../store';
+  import { useIterationRoute, backlogStore, useBacklogRoute } from '../store';
   import { colors } from '../configs/colors';
-  import { Backlog } from '../types';
+  import { SnakeBacklog } from '../types';
   import {
     NBadge,
     NPopselect,
@@ -18,6 +18,7 @@
   } from 'naive-ui';
 
   const { iterationId: iid } = useIterationRoute();
+  const { setBacklogId } = useBacklogRoute();
   enum StatusOptions {
     DONE = 'done',
     PARTIALLY_DONE = 'partially_done',
@@ -65,26 +66,20 @@
   }
 
   const { props } = defineProps<{
-    props: Backlog & { list: Array<Backlog> };
+    props: SnakeBacklog & { list: Array<SnakeBacklog> };
   }>();
 
-  function setBacklog(id: number) {
-    const backlog = props.list.find((bl: Backlog) => bl.id === id);
-    backlogStore.id = backlog?.id as number;
-    backlogStore.title = backlog?.title as string;
-    backlogStore.goals = backlog?.goals as string;
-    backlogStore.description = backlog?.description as string;
-    backlogStore.priority = backlog?.priority as number;
-    backlogStore.hours = backlog?.hours as number;
-    backlogStore.points = backlog?.points as number;
-    backlogStore.createdDate = backlog?.createdDate as number;
+  function handleBacklogChosen(id: number) {
+    setBacklogId(id);
+    const backlog = props.list.find((bl: SnakeBacklog) => bl.id === id);
+    Object.assign(backlogStore.value, backlog);
   }
 </script>
 
 <template>
   <RouterLink
     :to="`/mainpage/iterations/${iid}/backlogs/${props.id}`"
-    @click="setBacklog(props.id)"
+    @click="handleBacklogChosen(props.id)"
     style="text-decoration: none"
   >
     <NCard
