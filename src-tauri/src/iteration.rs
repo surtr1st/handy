@@ -6,13 +6,21 @@ use crate::ops::{NewIteration, NewIterationRoom};
 use diesel::prelude::*;
 
 #[tauri::command]
-pub fn get_iterations(_participant_id: i32) -> Vec<Iteration> {
-    use crate::schema::iterations::dsl::*;
+pub fn get_iterations(_iteration_id: i32, _participant_id: i32) -> Vec<Iteration> {
+    use crate::schema::iteration_rooms;
+    use crate::schema::iterations;
+    use crate::schema::participants;
 
     let connection = &mut establish_connection();
-    iterations
+    iteration_rooms::table
+        .inner_join(iterations::table)
+        .inner_join(participants::table)
+        .select(iterations::all_columns)
+        .filter(iteration_rooms::iteration_id.ne(_iteration_id))
+        .filter(iteration_rooms::participant_id.ne(_participant_id))
+        .group_by(iterations::id)
         .load::<Iteration>(connection)
-        .expect("all iteration should be returned!")
+        .expect("all iteration beside joined iterations should be returned!")
 }
 
 #[tauri::command]

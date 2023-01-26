@@ -61,16 +61,16 @@ pub struct Backlog {
 #[derive(Queryable, Debug, Serialize, Deserialize, AsChangeset)]
 #[diesel(table_name = tasks)]
 pub struct Task {
-    id: i32,
-    name: String,
-    created_date: Option<i64>,
-    started_date: Option<i64>,
-    hours: Option<i32>,
-    worked_hours: Option<i32>,
-    mode: bool,
-    status: bool,
-    pic: i32,
-    backlog_id: i32,
+    pub id: i32,
+    pub name: String,
+    pub created_date: Option<i64>,
+    pub started_date: Option<i64>,
+    pub hours: Option<i32>,
+    pub worked_hours: Option<i32>,
+    pub mode: bool,
+    pub status: bool,
+    pub pic: i32,
+    pub backlog_id: i32,
 }
 
 #[derive(Queryable, Debug, Serialize)]
@@ -82,10 +82,10 @@ pub struct Worklog {
 
 #[derive(Queryable, Debug, Serialize, Deserialize)]
 pub struct CriteriaAcceptance {
-    id: i32,
-    title: String,
-    status: bool,
-    backlog_id: i32,
+    pub id: i32,
+    pub title: String,
+    pub status: bool,
+    pub backlog_id: i32,
 }
 
 #[derive(Queryable, Debug, Serialize)]

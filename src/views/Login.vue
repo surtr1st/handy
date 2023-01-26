@@ -3,7 +3,7 @@
   import { invoke } from '@tauri-apps/api';
   import { useRouter } from 'vue-router';
   import { useMessages } from '../constants';
-  import { useDebounceFn, useLocalStorage } from '@vueuse/core';
+  import { useDebounceFn, useSessionStorage } from '@vueuse/core';
   import { AuthenticationResult } from '../types';
   import {
     NCard,
@@ -53,7 +53,7 @@
           const message = auth[0];
           const participantId = auth[1];
           onSuccess(message);
-          useLocalStorage('PARTICIPANT_ID', participantId);
+          useSessionStorage('PARTICIPANT_ID', participantId);
           loading.finish();
           setTimeout(() => {
             replace('/mainpage/getting-started');

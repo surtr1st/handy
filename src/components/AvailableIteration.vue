@@ -15,15 +15,19 @@
     NGi,
     NScrollbar,
   } from 'naive-ui';
+  import { useIterationRoute } from '../store';
 
   const Empty = defineAsyncComponent(() => import('../components/Empty.vue'));
   const iterations = ref<Array<SnakeIteration>>([]);
   const { onSuccess, onError } = useMessages();
+  const { iterationId: iid } = useIterationRoute();
 
   function joinIteration(id: number) {
     invoke<string>('join_iteration', {
       iterationId: id,
-      participantId: parseInt(localStorage.getItem('PARTICIPANT_ID') as string),
+      participantId: parseInt(
+        sessionStorage.getItem('PARTICIPANT_ID') as string,
+      ),
     })
       .then((message) => onSuccess(message))
       .catch((message) => onError(message));
@@ -33,7 +37,10 @@
 
   onMounted(() => {
     invoke<Array<SnakeIteration>>('get_iterations', {
-      participantId: parseInt(localStorage.getItem('PARTICIPANT_ID') as string),
+      iterationId: iid,
+      participantId: parseInt(
+        sessionStorage.getItem('PARTICIPANT_ID') as string,
+      ),
     })
       .then((res) => (iterations.value = res))
       .catch((e) => console.log(e));

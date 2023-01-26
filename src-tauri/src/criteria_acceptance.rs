@@ -37,7 +37,7 @@ pub fn create_criteria_acceptance(fields: RequiredCAFields) -> Result<String, St
 }
 
 #[tauri::command]
-pub fn update_criteria_acceptance(_id: i32, _backlog_id: i32, value: bool) {
+pub fn update_criteria_acceptance(_id: i32, _backlog_id: i32, value: bool) -> Result<(), String> {
     use crate::schema::criteria_acceptances::dsl::*;
     let connection = &mut establish_connection();
 
@@ -47,11 +47,14 @@ pub fn update_criteria_acceptance(_id: i32, _backlog_id: i32, value: bool) {
             .filter(backlog_id.eq(_backlog_id)),
     )
     .set(status.eq(value))
-    .execute(connection);
+    .execute(connection)
+    .expect(&format!("CA with id #{} should be updated!", _id));
+
+    Ok(())
 }
 
 #[tauri::command]
-pub fn remove_criteria_acceptance(_id: i32, _backlog_id: i32) {
+pub fn remove_criteria_acceptance(_id: i32, _backlog_id: i32) -> Result<(), String> {
     use crate::schema::criteria_acceptances::dsl::*;
     let connection = &mut establish_connection();
 
@@ -60,5 +63,8 @@ pub fn remove_criteria_acceptance(_id: i32, _backlog_id: i32) {
             .filter(id.eq(_id))
             .filter(backlog_id.eq(_backlog_id)),
     )
-    .execute(connection);
+    .execute(connection)
+    .expect(&format!("CA with id #{} should be removed!", _id));
+
+    Ok(())
 }
