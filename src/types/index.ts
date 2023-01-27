@@ -3,6 +3,12 @@ export type MentionOption = SelectOption;
 export type BacklogType = SelectOption;
 export type ProgressOption = SelectOption;
 
+export type TaskCell = {
+  name: string;
+  date: number;
+  hours: number;
+};
+
 export type EditTaskProps = {
   id: number;
   type: 'name' | 'date' | 'hours' | 'pic';

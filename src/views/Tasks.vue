@@ -7,7 +7,7 @@
     useMessages,
     useNotifications,
   } from '../constants';
-  import { SnakeTask, EditTaskProps } from '../types';
+  import { SnakeTask, EditTaskProps, TaskCell } from '../types';
   import { useBacklogRoute } from '../store';
   import { onMounted, onUnmounted, reactive, ref, watch } from 'vue';
   import {
@@ -77,12 +77,6 @@
     );
   }
 
-  type TaskCell = {
-    name: string;
-    date: number;
-    hours: number;
-  };
-
   function updateTask(
     id: number,
     { name: cellName, date: cellDate, hours: cellHours }: Partial<TaskCell>,
@@ -102,7 +96,7 @@
     invoke<string>('update_task', {
       id,
       fields: {
-        name: cellName ?? name,
+        name: !cellName || (cellName as string).length <= 0 ? name : cellName,
         created_date,
         started_date: cellDate ?? started_date,
         hours: cellHours ?? hours,
@@ -112,9 +106,7 @@
         pic,
         backlog_id,
       },
-    })
-      .then((message) => notifySuccess(message))
-      .catch((message) => notifyError(message));
+    }).catch((message) => notifyError(message));
   }
 
   function removeTask(id: number) {
