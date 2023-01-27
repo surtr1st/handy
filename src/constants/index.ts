@@ -4,7 +4,9 @@ import { reactive } from 'vue';
 
 const DATE_FORMAT = 'DD-MM-YYYY';
 const POPUP_DURATION = 3000;
-const participant = reactive({ id: parseInt(sessionStorage.getItem("PARTICIPANT_ID") as string) })
+const participant = reactive({
+  id: parseInt(sessionStorage.getItem('PARTICIPANT_ID') as string),
+});
 
 export function useFormattedDate(date: number) {
   return useDateFormat(date, DATE_FORMAT).value;
