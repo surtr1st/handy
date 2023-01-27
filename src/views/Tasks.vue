@@ -1,9 +1,15 @@
 <script setup lang="ts">
   import TaskCreator from '../components/TaskCreator.vue';
   import Logwork from '../components/Logwork.vue';
-  import { useFormattedDate } from '../constants';
-  import { Task, EditTaskProps } from '../types';
-  import { reactive, ref } from 'vue';
+  import { invoke } from '@tauri-apps/api/tauri';
+  import {
+    useFormattedDate,
+    useMessages,
+    useNotifications,
+  } from '../constants';
+  import { SnakeTask, EditTaskProps } from '../types';
+  import { useBacklogRoute } from '../store';
+  import { onMounted, onUnmounted, reactive, ref, watch } from 'vue';
   import {
     NButton,
     NGrid,
@@ -16,9 +22,12 @@
     NInput,
     NDatePicker,
     NInputNumber,
-    NSelect,
     NSwitch,
   } from 'naive-ui';
+
+  const { notifySuccess, notifyError } = useNotifications();
+  const { onError } = useMessages();
+  const { backlogId: bid } = useBacklogRoute();
 
   const taskModal = reactive({
     open: false,
@@ -30,52 +39,88 @@
     name: '',
     date: 0,
     hours: 0,
-    pic: '',
   });
 
-  const task = reactive<Task>({
-    id: 0,
-    name: '',
-    createdDate: 0,
-    hours: 0,
-    actualHours: 0,
-    progress: '',
-    pic: '',
-  });
+  const tasks = ref<Array<SnakeTask>>([]);
 
-  const tasks = ref<Array<Task>>([
-    {
-      id: 1,
-      name: 'A du dark wa 123 456 Wy Seg',
-      createdDate: 1461110400000,
-      hours: 1,
-      actualHours: 0,
-      pic: '@chi.tr',
-      progress: 'Undone',
-    },
-    {
-      id: 2,
-      name: 'A du dark wa 13 46 Wy Seg',
-      createdDate: 1461110400000,
-      hours: 1,
-      actualHours: 0,
-      pic: '@chi.tr',
-      progress: 'Undone',
-    },
-  ]);
-
-  // Function
   const getTask = (id: number) =>
-    tasks.value.find((task: Task) => task.id === id);
+    tasks.value.find((task: SnakeTask) => task.id === id);
 
   function editTaskIndividually({ id, type, title }: EditTaskProps) {
     if (type === 'name') taskState.name = getTask(id)?.name as string;
-    if (type === 'date') taskState.date = getTask(id)?.createdDate as number;
+    if (type === 'date') taskState.date = getTask(id)?.created_date as number;
     if (type === 'hours') taskState.hours = getTask(id)?.hours as number;
-    if (type === 'pic') taskState.pic = getTask(id)?.pic as string;
     taskModal.open = !taskModal.open;
     taskModal.type = type;
     taskModal.title = title;
+
+    watch(
+      () => taskState.name,
+      (newName, oldName) =>
+        updateTask(id, {
+          name: newName,
+        }),
+    );
+    watch(
+      () => taskState.date,
+      (newDate, oldDate) =>
+        updateTask(id, {
+          date: newDate,
+        }),
+    );
+    watch(
+      () => taskState.hours,
+      (newHours, oldHours) =>
+        updateTask(id, {
+          hours: newHours,
+        }),
+    );
+  }
+
+  type TaskCell = {
+    name: string;
+    date: number;
+    hours: number;
+  };
+
+  function updateTask(
+    id: number,
+    { name: cellName, date: cellDate, hours: cellHours }: Partial<TaskCell>,
+  ) {
+    const {
+      name,
+      created_date,
+      started_date,
+      hours,
+      worked_hours,
+      status,
+      mode,
+      pic,
+      backlog_id,
+    } = getTask(id) as SnakeTask;
+
+    invoke<string>('update_task', {
+      id,
+      fields: {
+        name: cellName ?? name,
+        created_date,
+        started_date: cellDate ?? started_date,
+        hours: cellHours ?? hours,
+        worked_hours,
+        status,
+        mode,
+        pic,
+        backlog_id,
+      },
+    })
+      .then((message) => notifySuccess(message))
+      .catch((message) => notifyError(message));
+  }
+
+  function removeTask(id: number) {
+    invoke<string>('remove_task', { id })
+      .then((message) => notifySuccess(message))
+      .catch((message) => notifyError(message));
   }
 
   function onEnter(event: KeyboardEvent) {
@@ -85,6 +130,13 @@
       taskModal.open = false;
     }
   }
+
+  onMounted(() => {
+    invoke<Array<SnakeTask>>('get_tasks', { backlogId: bid })
+      .then((res) => (tasks.value = res))
+      .catch((e) => onError(e));
+  });
+  onUnmounted(() => (tasks.value = []));
 </script>
 
 <template>
@@ -124,7 +176,7 @@
       <tr>
         <th>Id</th>
         <th>Name</th>
-        <th>Created Date</th>
+        <th>Started Date</th>
         <th>Hours</th>
         <th>PIC</th>
         <th>Progress</th>
@@ -147,6 +199,7 @@
               title: 'Edit Name',
             })
           "
+          style="max-width: 100px; word-wrap: break-word"
         >
           <NText strong>{{ task.name }}</NText>
         </td>
@@ -159,7 +212,7 @@
             })
           "
         >
-          {{ useFormattedDate(task.createdDate) }}
+          {{ useFormattedDate(task.started_date) }}
         </td>
         <td
           @dblclick="
@@ -170,17 +223,9 @@
             })
           "
         >
-          {{ task.actualHours }}/{{ task.hours }}
+          {{ task.worked_hours }}/{{ task.hours }}
         </td>
-        <td
-          @dblclick="
-            editTaskIndividually({
-              id: task.id,
-              type: 'pic',
-              title: 'Edit Person-In-Charge',
-            })
-          "
-        >
+        <td>
           {{ task.pic }}
         </td>
         <td style="width: 100px">
@@ -189,8 +234,9 @@
         <td>
           <NButton
             primary
-            type="primary"
-            >Edit</NButton
+            type="error"
+            @click="removeTask(task.id)"
+            >Remove</NButton
           >
         </td>
       </tr>
@@ -216,10 +262,6 @@
         v-show="taskModal.type === 'hours'"
         v-model:value="taskState.hours"
         @keydown="onEnter"
-      />
-      <NSelect
-        v-show="taskModal.type === 'pic'"
-        :options="[{ label: taskState.pic, value: taskState.pic }]"
       />
     </NCard>
   </NModal>

@@ -1,3 +1,8 @@
+export type SelectOption = { label: string; value: number };
+export type MentionOption = SelectOption;
+export type BacklogType = SelectOption;
+export type ProgressOption = SelectOption;
+
 export type EditTaskProps = {
   id: number;
   type: 'name' | 'date' | 'hours' | 'pic';
@@ -39,7 +44,7 @@ export type Task = {
 };
 
 export type Logwork = {
-  pic: string;
+  pic: number;
   estimatedHours: number;
   workedHours: number;
   completedDate: number;

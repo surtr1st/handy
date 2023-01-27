@@ -112,14 +112,6 @@ diesel::table! {
 }
 
 diesel::table! {
-    users (id) {
-        id -> Int4,
-        username -> Text,
-        password -> Text,
-    }
-}
-
-diesel::table! {
     worklogs (id) {
         id -> Int4,
         description -> Text,
@@ -155,6 +147,5 @@ diesel::allow_tables_to_appear_in_same_query!(
     participants,
     progresses,
     tasks,
-    users,
     worklogs,
 );

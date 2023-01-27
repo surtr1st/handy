@@ -10,6 +10,7 @@ pub fn get_tasks(_backlog_id: i32) -> Vec<Task> {
     let connection = &mut establish_connection();
     tasks::table
         .filter(tasks::backlog_id.eq(_backlog_id))
+        .order_by(tasks::id.asc())
         .load::<Task>(connection)
         .expect("all task of backlog id should be returned!")
 }
@@ -40,12 +41,12 @@ pub fn create_task(fields: RequiredTaskFields) -> Result<String, String> {
 }
 
 #[tauri::command]
-pub fn update_task(fields: RequiredTaskFields) -> Result<String, String> {
+pub fn update_task(_id: i32, fields: RequiredTaskFields) -> Result<String, String> {
     use crate::schema::tasks;
     let connection = &mut establish_connection();
 
     let new_data = Task {
-        id: fields.id,
+        id: _id,
         name: fields.name,
         created_date: fields.created_date,
         started_date: fields.started_date,
@@ -57,25 +58,25 @@ pub fn update_task(fields: RequiredTaskFields) -> Result<String, String> {
         backlog_id: fields.backlog_id,
     };
 
-    diesel::update(tasks::table.find(fields.id))
+    diesel::update(tasks::table.find(_id))
         .set(&new_data)
         .execute(connection)
         .expect(&format!(
             "Task with id #{}, data entered should be updated!",
-            fields.id
+            _id
         ));
 
-    Ok(format!("Updated task #{} successfully", fields.id).into())
+    Ok(format!("Updated task #{} successfully", _id).into())
 }
 
 #[tauri::command]
-pub fn remove_task(task_id: i32) -> Result<String, String> {
+pub fn remove_task(_id: i32) -> Result<String, String> {
     use crate::schema::tasks;
     let connection = &mut establish_connection();
 
-    diesel::delete(tasks::table.find(task_id))
+    diesel::delete(tasks::table.find(_id))
         .execute(connection)
-        .expect(&format!("Task with id #{} should be removed!", task_id));
+        .expect(&format!("Task with id #{} should be removed!", _id));
 
-    Ok(format!("Removed Task #{} successfully!", task_id).into())
+    Ok(format!("Removed Task #{} successfully!", _id).into())
 }

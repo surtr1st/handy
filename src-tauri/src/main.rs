@@ -11,11 +11,16 @@ pub mod iteration;
 pub mod models;
 pub mod ops;
 pub mod participant;
+pub mod progress;
 pub mod schema;
 pub mod task;
 
 use auth::{authenticate, registrate};
-use backlog::{create_backlog, get_backlogs, import_backlog};
+use backlog::{create_backlog, get_backlog_types, get_backlogs, import_backlog};
+use criteria_acceptance::{
+    create_criteria_acceptance, get_criteria_acceptances, remove_criteria_acceptance,
+    update_criteria_acceptance,
+};
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use dotenvy::dotenv;
@@ -23,7 +28,8 @@ use iteration::{
     create_iteration, get_finished_iterations, get_iterations, get_joined_iterations,
     join_iteration,
 };
-use participant::get_participants;
+use participant::{find_participant_alias, get_participants};
+use progress::get_progress_options;
 use std::env;
 use task::{create_task, get_tasks, remove_task, update_task};
 
@@ -40,6 +46,7 @@ fn main() {
             authenticate,
             registrate,
             get_participants,
+            find_participant_alias,
             get_iterations,
             get_joined_iterations,
             get_finished_iterations,
@@ -51,7 +58,13 @@ fn main() {
             create_task,
             get_tasks,
             update_task,
-            remove_task
+            remove_task,
+            get_criteria_acceptances,
+            create_criteria_acceptance,
+            update_criteria_acceptance,
+            remove_criteria_acceptance,
+            get_progress_options,
+            get_backlog_types
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

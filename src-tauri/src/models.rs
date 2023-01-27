@@ -3,6 +3,12 @@ use crate::schema::tasks;
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 
+#[derive(Queryable, Serialize, Deserialize)]
+pub struct SelectOption {
+    value: i32,
+    label: String,
+}
+
 #[derive(Queryable, Debug, Serialize)]
 pub struct BacklogType {
     id: i32,

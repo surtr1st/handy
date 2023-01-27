@@ -1,6 +1,5 @@
 <script setup lang="ts">
   import { NEmpty } from 'naive-ui';
-
   defineProps({ description: String });
 </script>
 

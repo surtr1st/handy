@@ -33,10 +33,13 @@ export type SnakeTask = {
   id: number;
   name: string;
   created_date: number;
+  started_date: number,
   hours: number;
-  actual_hours: number;
-  progress: string;
-  pic: string;
+  worked_hours: number;
+  mode: boolean,
+  status: boolean,
+  pic: number;
+  backlog_id: number
 };
 
 export type SnakeLogwork = {

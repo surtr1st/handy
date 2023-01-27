@@ -27,7 +27,6 @@ pub struct RequiredBacklogFields {
 
 #[derive(Args, Serialize, Deserialize)]
 pub struct RequiredTaskFields {
-    pub id: i32,
     pub name: String,
     pub created_date: Option<i64>,
     pub started_date: Option<i64>,

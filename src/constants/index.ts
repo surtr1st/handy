@@ -1,8 +1,10 @@
 import { useDateFormat } from '@vueuse/core';
 import { useMessage, useNotification } from 'naive-ui';
+import { reactive } from 'vue';
 
 const DATE_FORMAT = 'DD-MM-YYYY';
 const POPUP_DURATION = 3000;
+const participant = reactive({ id: parseInt(sessionStorage.getItem("PARTICIPANT_ID") as string) })
 
 export function useFormattedDate(date: number) {
   return useDateFormat(date, DATE_FORMAT).value;
@@ -36,4 +38,4 @@ export function useMessages() {
   return { onSuccess, onError };
 }
 
-export { POPUP_DURATION };
+export { POPUP_DURATION, participant };

@@ -1,9 +1,18 @@
 use crate::args::RequiredBacklogFields;
 use crate::establish_connection;
-use crate::models::Backlog;
+use crate::models::{Backlog, SelectOption};
 use crate::ops::NewBacklog;
-
 use diesel::prelude::*;
+
+#[tauri::command]
+pub fn get_backlog_types() -> Vec<SelectOption> {
+    use crate::schema::backlog_types::dsl::*;
+    let connection = &mut establish_connection();
+    backlog_types
+        .select((id, name))
+        .load::<SelectOption>(connection)
+        .expect("all backlog types should be returned!")
+}
 
 #[tauri::command]
 pub fn get_backlogs(_iteration_id: i32) -> Vec<Backlog> {
