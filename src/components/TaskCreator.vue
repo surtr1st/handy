@@ -37,7 +37,7 @@
       worked_hours: 0,
       status: false,
       mode: false,
-      pic: participant.id,
+      participant_id: participant.id,
       backlog_id: backlogId,
     };
 

@@ -34,7 +34,7 @@ pub struct RequiredTaskFields {
     pub worked_hours: Option<i32>,
     pub status: bool,
     pub mode: bool,
-    pub pic: i32,
+    pub participant_id: i32,
     pub backlog_id: i32,
 }
 

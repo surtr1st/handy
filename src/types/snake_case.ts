@@ -38,13 +38,23 @@ export type SnakeTask = {
   worked_hours: number;
   mode: boolean;
   status: boolean;
-  pic: number;
+  participant_id: number;
   backlog_id: number;
+  pic: string;
 };
 
 export type SnakeLogwork = {
-  pic: string;
   estimated_hours: number;
   worked_hours: number;
   completed_date: number;
+  task_id: number;
+  pic: number;
+};
+
+export type SnakeWorklog = {
+  id: number;
+  completed_date: number;
+  description: string;
+  hour: number;
+  task_id: number;
 };

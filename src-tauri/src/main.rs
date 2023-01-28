@@ -3,6 +3,7 @@
     windows_subsystem = "windows"
 )]
 
+pub mod stats;
 pub mod args;
 pub mod auth;
 pub mod backlog;

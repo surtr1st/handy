@@ -46,7 +46,7 @@ pub struct NewTask<'a> {
     pub worked_hours: Option<i32>,
     pub mode: bool,
     pub status: bool,
-    pub pic: i32,
+    pub participant_id: i32,
     pub backlog_id: i32,
 }
 

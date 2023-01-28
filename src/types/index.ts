@@ -50,10 +50,11 @@ export type Task = {
 };
 
 export type Logwork = {
-  pic: number;
+  pic: string;
   estimatedHours: number;
   workedHours: number;
-  completedDate: number;
+  startedDate: number;
+  taskId: number;
 };
 
 export * from './snake_case';

@@ -1,17 +1,32 @@
 use crate::args::RequiredTaskFields;
 use crate::establish_connection;
-use crate::models::Task;
+use crate::models::{Task, TaskWithParticipantAlias};
 use crate::ops::NewTask;
 use diesel::prelude::*;
 
 #[tauri::command]
-pub fn get_tasks(_backlog_id: i32) -> Vec<Task> {
+pub fn get_tasks(_backlog_id: i32) -> Vec<TaskWithParticipantAlias> {
+    use crate::schema::participants;
     use crate::schema::tasks;
     let connection = &mut establish_connection();
     tasks::table
+        .inner_join(participants::table)
+        .select((
+            tasks::id,
+            tasks::name,
+            tasks::created_date,
+            tasks::started_date,
+            tasks::hours,
+            tasks::worked_hours,
+            tasks::mode,
+            tasks::status,
+            tasks::participant_id,
+            tasks::backlog_id,
+            participants::alias,
+        ))
         .filter(tasks::backlog_id.eq(_backlog_id))
         .order_by(tasks::id.asc())
-        .load::<Task>(connection)
+        .load::<TaskWithParticipantAlias>(connection)
         .expect("all task of backlog id should be returned!")
 }
 
@@ -28,7 +43,7 @@ pub fn create_task(fields: RequiredTaskFields) -> Result<String, String> {
         worked_hours: fields.worked_hours,
         status: fields.status,
         mode: fields.mode,
-        pic: fields.pic,
+        participant_id: fields.participant_id,
         backlog_id: fields.backlog_id,
     };
 
@@ -54,7 +69,7 @@ pub fn update_task(_id: i32, fields: RequiredTaskFields) -> Result<String, Strin
         worked_hours: fields.worked_hours,
         status: fields.status,
         mode: fields.mode,
-        pic: fields.pic,
+        participant_id: fields.participant_id,
         backlog_id: fields.backlog_id,
     };
 

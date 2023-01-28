@@ -65,7 +65,7 @@ CREATE TABLE
     worked_hours int,
     mode boolean not null,
     status boolean not null,
-    pic serial references participants (id),
+    participant_id serial references participants (id),
     backlog_id serial references backlogs (id)
   );
 
@@ -80,7 +80,7 @@ CREATE TABLE
   worklogs (
     id serial primary key not null,
     description text not null,
-    total_hour int not null,
+    worked_hours int not null,
     task_id serial references tasks (id),
     participant_id serial references participants (id)
   );
@@ -98,7 +98,7 @@ CREATE TABLE
     id serial primary key not null,
     ideal int not null,
     actual int not null,
-    from_day bigint not null,
+    from_day bigint,
     iteration_id serial references iterations (id)
   );
 

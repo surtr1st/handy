@@ -28,7 +28,7 @@ diesel::table! {
         id -> Int4,
         ideal -> Int4,
         actual -> Int4,
-        from_day -> Int8,
+        from_day -> Nullable<Int8>,
         iteration_id -> Int4,
     }
 }
@@ -106,7 +106,7 @@ diesel::table! {
         worked_hours -> Nullable<Int4>,
         mode -> Bool,
         status -> Bool,
-        pic -> Int4,
+        participant_id -> Int4,
         backlog_id -> Int4,
     }
 }
@@ -115,7 +115,7 @@ diesel::table! {
     worklogs (id) {
         id -> Int4,
         description -> Text,
-        total_hour -> Int4,
+        worked_hours -> Int4,
         task_id -> Int4,
         participant_id -> Int4,
     }
@@ -131,7 +131,7 @@ diesel::joinable!(criteria_acceptances -> backlogs (backlog_id));
 diesel::joinable!(iteration_rooms -> iterations (iteration_id));
 diesel::joinable!(iteration_rooms -> participants (participant_id));
 diesel::joinable!(tasks -> backlogs (backlog_id));
-diesel::joinable!(tasks -> participants (pic));
+diesel::joinable!(tasks -> participants (participant_id));
 diesel::joinable!(worklogs -> participants (participant_id));
 diesel::joinable!(worklogs -> tasks (task_id));
 

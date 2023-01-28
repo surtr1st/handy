@@ -75,8 +75,22 @@ pub struct Task {
     pub worked_hours: Option<i32>,
     pub mode: bool,
     pub status: bool,
-    pub pic: i32,
+    pub participant_id: i32,
     pub backlog_id: i32,
+}
+#[derive(Queryable, Debug, Serialize, Deserialize)]
+pub struct TaskWithParticipantAlias {
+    id: i32,
+    name: String,
+    created_date: Option<i64>,
+    started_date: Option<i64>,
+    hours: Option<i32>,
+    worked_hours: Option<i32>,
+    mode: bool,
+    status: bool,
+    participant_id: i32,
+    backlog_id: i32,
+    pic: String,
 }
 
 #[derive(Queryable, Debug, Serialize)]

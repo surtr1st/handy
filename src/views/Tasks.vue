@@ -6,6 +6,7 @@
     useFormattedDate,
     useMessages,
     useNotifications,
+    participant,
   } from '../constants';
   import { SnakeTask, EditTaskProps, TaskCell } from '../types';
   import { useBacklogRoute } from '../store';
@@ -89,7 +90,7 @@
       worked_hours,
       status,
       mode,
-      pic,
+      participant_id,
       backlog_id,
     } = getTask(id) as SnakeTask;
 
@@ -103,7 +104,7 @@
         worked_hours,
         status,
         mode,
-        pic,
+        participant_id,
         backlog_id,
       },
     }).catch((message) => notifyError(message));
@@ -171,8 +172,12 @@
         <th>Started Date</th>
         <th>Hours</th>
         <th>PIC</th>
-        <th>Progress</th>
-        <th></th>
+        <th
+          colspan="2"
+          style="text-align: center"
+        >
+          Progress
+        </th>
       </tr>
     </thead>
     <tbody>
@@ -220,16 +225,25 @@
         <td>
           {{ task.pic }}
         </td>
-        <td style="width: 100px">
-          <Logwork :props="{ pic: task.pic, estimatedHours: task.hours }" />
-        </td>
-        <td>
-          <NButton
-            primary
-            type="error"
-            @click="removeTask(task.id)"
-            >Remove</NButton
+        <td style="width: 190px">
+          <NSpace
+            justify="center"
+            align="center"
           >
+            <Logwork
+              :props="{
+                pic: task.pic,
+                estimatedHours: task.hours,
+                startedDate: task.started_date,
+              }"
+            />
+            <NButton
+              primary
+              type="error"
+              @click="removeTask(task.id)"
+              >Remove</NButton
+            >
+          </NSpace>
         </td>
       </tr>
     </tbody>

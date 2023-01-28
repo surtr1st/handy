@@ -1,7 +1,12 @@
 <script setup lang="ts">
+  import { invoke } from '@tauri-apps/api/tauri';
   import { CSSProperties, ref } from 'vue';
-  import { Logwork } from '../types';
-  import { useFormattedDate } from '../constants';
+  import { Logwork, SnakeLogwork } from '../types';
+  import {
+    participant,
+    useFormattedDate,
+    useNotifications,
+  } from '../constants';
   import {
     NGrid,
     NGi,
@@ -18,8 +23,11 @@
     NButton,
   } from 'naive-ui';
 
+  const { notifySuccess, notifyError } = useNotifications();
   const open = ref<boolean>(false);
-  const completedTime = ref<number>(new Date().getTime());
+  const description = ref<string>('');
+  const workedHours = ref<number>(0);
+  defineProps<{ props: Partial<Logwork> }>();
 
   const railStyle = ({ checked }: { checked: boolean }) => {
     const style: CSSProperties = {};
@@ -32,8 +40,20 @@
     return style;
   };
 
-  const logWork = () => (open.value = false);
-  defineProps<{ props: Partial<Logwork> }>();
+  function logWork(taskId: number, completedDate: number) {
+    const fields = {
+      completed_time: completedDate,
+      worked_hours: workedHours.value,
+      task_id: taskId,
+      participant_id: participant.id,
+    };
+    invoke<string>('log_work', { taskId, fields })
+      .then((message) => {
+        notifySuccess(message);
+        open.value = false;
+      })
+      .catch((message) => notifyError(message));
+  }
 </script>
 
 <template>
@@ -61,7 +81,7 @@
           <NDatePicker
             panel
             type="date"
-            v-model:value="completedTime"
+            v-model:value="props.startedDate"
           />
         </NGi>
         <NGi :span="3">
@@ -73,24 +93,47 @@
               <NText>{{ props.estimatedHours }}</NText>
             </NStatistic>
             <NStatistic label="Worked Time">
-              <NInputNumber placeholder="Total" />
+              <NInputNumber
+                placeholder="Total"
+                v-model:value="workedHours"
+              />
             </NStatistic>
             <NStatistic label="Completed Date">
               <NInput
                 disabled
-                :value="useFormattedDate(completedTime)"
+                :value="useFormattedDate(props.startedDate as number)"
               />
             </NStatistic>
-            <NSpace justify="end">
-              <NButton
-                primary
-                type="primary"
-                style="width: 150px"
-                @click="logWork()"
-              >
-                Log
-              </NButton>
-            </NSpace>
+          </NSpace>
+        </NGi>
+        <NGi :span="6">
+          <NStatistic label="Description">
+            <NInput
+              type="textarea"
+              v-model:value="description"
+              placeholder=""
+            />
+          </NStatistic>
+          <NSpace
+            justify="end"
+            align="center"
+          >
+            <NText
+              v-if="props.estimatedHours === 0"
+              type="error"
+              >You cannot logwork now. Your estimate hours haven't set!</NText
+            >
+            <NButton
+              primary
+              type="primary"
+              style="width: 150px"
+              :disabled="props.estimatedHours === 0"
+              @click="
+                logWork(props.taskId as number, props.startedDate as number)
+              "
+            >
+              Log
+            </NButton>
           </NSpace>
         </NGi>
       </NGrid>
