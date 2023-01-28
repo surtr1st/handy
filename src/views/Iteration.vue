@@ -3,10 +3,10 @@
   import BurndownChart from '../components/BurndownChart.vue';
   import Backlogs from '../components/Backlogs.vue';
   import BacklogCreator from '../components/BacklogCreator.vue';
-  import { ref, reactive, onMounted } from 'vue';
   import { invoke } from '@tauri-apps/api';
+  import { ref, reactive, onMounted, watch } from 'vue';
   import { RefreshCircle } from '@vicons/ionicons5';
-  import { useIterationRoute } from '../store';
+  import { targetInvoked, useIterationRoute } from '../store';
   import { SnakeBacklog } from '../types';
   import {
     TextBulletListSquare24Filled,
@@ -44,11 +44,17 @@
     UNDONE = 'rgb(225, 29, 72)',
   }
 
-  onMounted(() => {
+  function fetchBacklogs() {
     invoke<Array<SnakeBacklog>>('get_backlogs', { iterationId: iid })
       .then((res) => (backlogs.value = res))
       .catch();
-  });
+  }
+
+  watch(
+    () => targetInvoked.backlogAction,
+    () => fetchBacklogs(),
+  );
+  onMounted(() => fetchBacklogs());
 </script>
 
 <template>

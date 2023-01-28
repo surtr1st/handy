@@ -1,6 +1,6 @@
 <script setup lang="ts">
-  import { ref, onMounted, onUnmounted } from 'vue';
   import { invoke } from '@tauri-apps/api/tauri';
+  import { ref, onMounted, onUnmounted } from 'vue';
   import { DocumentAdd24Filled } from '@vicons/fluent';
   import { useDebounceFn } from '@vueuse/core';
   import { MentionOption } from '../types';
@@ -29,7 +29,6 @@
     goals: '',
     participants: [],
   });
-
   const mentions = ref<Array<MentionOption>>([]);
   const rules = ref<FormRules>({
     title: {

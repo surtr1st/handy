@@ -1,10 +1,9 @@
 <script setup lang="ts">
   import { ref } from 'vue';
   import { invoke } from '@tauri-apps/api';
-  import { useMessages } from '../constants';
   import { useRouter } from 'vue-router';
   import { useDebounceFn } from '@vueuse/core';
-
+  import { useMessages } from '../constants';
   import {
     NCard,
     NForm,
@@ -21,9 +20,9 @@
     useLoadingBar,
   } from 'naive-ui';
 
-  const loading = useLoadingBar();
   const { replace } = useRouter();
   const { onSuccess, onError } = useMessages();
+  const loading = useLoadingBar();
   const form = ref<FormInst | null>(null);
   const rPasswordFormItemRef = ref<FormItemInst | null>(null);
 

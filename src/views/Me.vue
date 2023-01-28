@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import { ref } from 'vue';
+  import { SnakeWorklog } from '../types';
   import {
     NButton,
     NForm,
@@ -10,8 +11,6 @@
     NInput,
     DataTableColumns,
   } from 'naive-ui';
-  import { useFormattedDate } from '../constants';
-  import { SnakeWorklog } from '../types';
 
   const worklogs = ref<Array<SnakeWorklog>>([]);
   const edit = ref({

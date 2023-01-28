@@ -1,9 +1,9 @@
 <script setup lang="ts">
-  import { onMounted, ref } from 'vue';
+  import { ref } from 'vue';
   import { invoke } from '@tauri-apps/api';
   import { useRouter } from 'vue-router';
-  import { useMessages, participant } from '../constants';
   import { useDebounceFn, useSessionStorage } from '@vueuse/core';
+  import { useMessages, participant } from '../constants';
   import { AuthenticationResult } from '../types';
   import {
     NCard,
@@ -19,9 +19,9 @@
     useLoadingBar,
   } from 'naive-ui';
 
-  const loading = useLoadingBar();
   const { replace } = useRouter();
   const { onError, onSuccess } = useMessages();
+  const loading = useLoadingBar();
 
   const authButton = ref<HTMLButtonElement | null>(null);
   const form = ref<FormInst | null>(null);

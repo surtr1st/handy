@@ -29,7 +29,6 @@
     DONE = 3,
   }
   const progressOptions = ref<Array<ProgressOption>>([]);
-
   const option = ref<string>('');
   const statusLabel = ref<string>('Undone');
   const statusColor = ref();

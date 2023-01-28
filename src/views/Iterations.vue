@@ -1,6 +1,6 @@
 <script setup lang="ts">
-  import { NTabs, NTabPane, NScrollbar } from 'naive-ui';
   import { defineAsyncComponent } from 'vue';
+  import { NTabs, NTabPane, NScrollbar } from 'naive-ui';
 
   const AvailableIteration = defineAsyncComponent(
     () => import('../components/AvailableIteration.vue'),

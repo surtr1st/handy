@@ -1,9 +1,9 @@
 <script setup lang="ts">
-  import { onMounted, ref } from 'vue';
   import { invoke } from '@tauri-apps/api';
-  import { useMessages } from '../constants';
-  import { useIterationRoute } from '../store';
   import { useDebounceFn } from '@vueuse/core';
+  import { onMounted, ref } from 'vue';
+  import { useMessages } from '../constants';
+  import { targetInvoked, useIterationRoute } from '../store';
   import { BacklogType } from '../types';
   import {
     NSelect,
@@ -52,6 +52,7 @@
       .then((message) => {
         onSuccess(message);
         open.value = false;
+        targetInvoked.backlogAction = !targetInvoked.backlogAction;
       })
       .catch((message) => onError(message));
   }

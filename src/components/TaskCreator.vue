@@ -1,10 +1,10 @@
 <script setup lang="ts">
-  import { nextTick, onMounted, onUnmounted, ref } from 'vue';
   import { invoke } from '@tauri-apps/api';
-  import { Add28Filled } from '@vicons/fluent';
-  import { useBacklogRoute } from '../store';
-  import { useMessages, participant } from '../constants';
+  import { onMounted, onUnmounted, ref } from 'vue';
   import { useDebounceFn } from '@vueuse/core';
+  import { Add28Filled } from '@vicons/fluent';
+  import { useBacklogRoute, targetInvoked } from '../store';
+  import { useMessages, participant } from '../constants';
   import {
     NSpace,
     NModal,
@@ -29,7 +29,7 @@
   });
 
   function addTask() {
-    const task = {
+    const fields = {
       name: model.value.name,
       created_date: new Date().getTime(),
       started_date: model.value.startedDate,
@@ -40,12 +40,16 @@
       participant_id: participant.id,
       backlog_id: backlogId,
     };
-
-    invoke<string>('create_task', { fields: task })
-      .then(async (message) => {
+    invoke<string>('create_task', { fields })
+      .then((message) => {
         onSuccess(message);
         open.value = false;
-        await nextTick();
+        targetInvoked.taskAction = !targetInvoked.taskAction;
+        model.value = {
+          name: '',
+          startedDate: new Date().getTime(),
+          hours: 0,
+        };
       })
       .catch((message) => onError(message));
   }

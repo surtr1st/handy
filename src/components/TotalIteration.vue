@@ -1,8 +1,10 @@
 <script setup lang="ts">
   import { invoke } from '@tauri-apps/api';
-  import { reactive, onMounted } from 'vue';
+  import { ref, onMounted } from 'vue';
   import { TaskListSquareLtr24Filled } from '@vicons/fluent';
   import { RefreshCircle } from '@vicons/ionicons5';
+  import { ParticipantStatistic } from '../types';
+  import { participant, useNotifications } from '../constants';
   import {
     NPageHeader,
     NGrid,
@@ -14,14 +16,21 @@
     NDivider,
   } from 'naive-ui';
 
-  const iterationStatus = reactive({
+  const { notifyError } = useNotifications();
+  const iterationStatus = ref<ParticipantStatistic>({
     current: 0,
     attended: 0,
     finished: 0,
     created: 0,
   });
 
-  onMounted(() => {});
+  onMounted(() => {
+    invoke<ParticipantStatistic>('load_stats_participant', {
+      id: participant.id,
+    })
+      .then((res) => (iterationStatus.value = res))
+      .catch((e) => notifyError(e));
+  });
 </script>
 
 <template>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-  import { defineAsyncComponent, h, onMounted, onUnmounted, ref } from 'vue';
   import { invoke } from '@tauri-apps/api';
+  import { defineAsyncComponent, h, onMounted, onUnmounted, ref } from 'vue';
   import { SnakeIteration } from '../types';
   import { RouterLink } from 'vue-router';
   import { participant, useFormattedDate } from '../constants';

@@ -2,15 +2,14 @@
   import TaskCreator from '../components/TaskCreator.vue';
   import Logwork from '../components/Logwork.vue';
   import { invoke } from '@tauri-apps/api/tauri';
+  import { onMounted, onUnmounted, reactive, ref, watch } from 'vue';
+  import { SnakeTask, EditTaskProps, TaskCell } from '../types';
+  import { useBacklogRoute, targetInvoked } from '../store';
   import {
     useFormattedDate,
     useMessages,
     useNotifications,
-    participant,
   } from '../constants';
-  import { SnakeTask, EditTaskProps, TaskCell } from '../types';
-  import { useBacklogRoute } from '../store';
-  import { onMounted, onUnmounted, reactive, ref, watch } from 'vue';
   import {
     NButton,
     NGrid,
@@ -112,8 +111,17 @@
 
   function removeTask(id: number) {
     invoke<string>('remove_task', { id })
-      .then((message) => notifySuccess(message))
+      .then((message) => {
+        notifySuccess(message);
+        targetInvoked.taskAction = !targetInvoked.backlogAction;
+      })
       .catch((message) => notifyError(message));
+  }
+
+  function fetchTasks() {
+    invoke<Array<SnakeTask>>('get_tasks', { backlogId: bid })
+      .then((res) => (tasks.value = res))
+      .catch((e) => onError(e));
   }
 
   function onEnter(event: KeyboardEvent) {
@@ -124,11 +132,11 @@
     }
   }
 
-  onMounted(() => {
-    invoke<Array<SnakeTask>>('get_tasks', { backlogId: bid })
-      .then((res) => (tasks.value = res))
-      .catch((e) => onError(e));
-  });
+  watch(
+    () => targetInvoked.taskAction,
+    () => fetchTasks(),
+  );
+  onMounted(() => fetchTasks());
   onUnmounted(() => (tasks.value = []));
 </script>
 
@@ -257,6 +265,7 @@
       <NInput
         v-show="taskModal.type === 'name'"
         v-model:value="taskState.name"
+        maxlength="50"
         @keydown="onEnter"
       />
       <NDatePicker
@@ -267,6 +276,8 @@
       <NInputNumber
         v-show="taskModal.type === 'hours'"
         v-model:value="taskState.hours"
+        min="0"
+        max="8"
         @keydown="onEnter"
       />
     </NCard>

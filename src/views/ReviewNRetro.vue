@@ -1,9 +1,8 @@
 <script setup lang="ts">
   import Review from '../components/Review.vue';
   import Retrospective from '../components/Retrospective.vue';
-  import { reactive, ref, shallowRef } from 'vue';
-  import { reviewStore, retroStore } from '../store';
   import { useRouter } from 'vue-router';
+  import { reactive, ref, shallowRef } from 'vue';
   import { TextDescription24Filled } from '@vicons/fluent';
   import {
     NSelect,
@@ -15,7 +14,6 @@
     NGi,
     NIcon,
     NDivider,
-    NInput,
   } from 'naive-ui';
 
   const { replace } = useRouter();

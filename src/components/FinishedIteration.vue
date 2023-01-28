@@ -1,6 +1,6 @@
 <script setup lang="ts">
-  import { defineAsyncComponent, h, onMounted, onUnmounted, ref } from 'vue';
   import { invoke } from '@tauri-apps/api';
+  import { defineAsyncComponent, h, onMounted, onUnmounted, ref } from 'vue';
   import { SnakeIteration } from '../types';
   import { RouterLink } from 'vue-router';
   import { useFormattedDate } from '../constants';
@@ -15,8 +15,8 @@
     NStatistic,
   } from 'naive-ui';
 
-  const Empty = defineAsyncComponent(() => import('../components/Empty.vue'));
   const { setIterationId } = useIterationRoute();
+  const Empty = defineAsyncComponent(() => import('../components/Empty.vue'));
   const iterations = ref<Array<SnakeIteration>>([]);
 
   onMounted(() => {
@@ -45,7 +45,7 @@
         bordered: true,
       })
     "
-    :item-tag="NListItem"
+    :item-tag="h(NListItem, null)"
   >
     <RouterLink
       :to="`/mainpage/iterations/${item.id}`"
