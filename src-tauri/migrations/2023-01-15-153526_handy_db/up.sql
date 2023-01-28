@@ -41,13 +41,6 @@ CREATE TABLE
   );
 
 CREATE TABLE
-  completed_backlogs (
-    id serial primary key not null,
-    completed_at bigint,
-    backlog_id serial references backlogs (id)
-  );
-
-CREATE TABLE
   participants (
     id serial primary key not null,
     alias text not null,
@@ -67,13 +60,6 @@ CREATE TABLE
     status boolean not null,
     participant_id serial references participants (id),
     backlog_id serial references backlogs (id)
-  );
-
-CREATE TABLE
-  completed_tasks (
-    id serial primary key not null,
-    completed_at bigint,
-    task_id serial references tasks (id)
   );
 
 CREATE TABLE
@@ -108,6 +94,36 @@ CREATE TABLE
     iteration_id serial references iterations (id),
     participant_id serial references participants (id)
   );
+
+CREATE TABLE
+  partial_done_backlogs (
+    id serial primary key not null,
+    backlog_id serial references backlogs (id),
+    progress_id serial references progresses (id)
+  );
+
+CREATE TABLE
+  completed_iterations (
+    id serial primary key not null,
+    completed_at bigint,
+    iteration_id serial references iterations (id),
+    participant_id serial references participants (id)
+  );
+
+CREATE TABLE
+  completed_backlogs (
+    id serial primary key not null,
+    completed_at bigint,
+    backlog_id serial references backlogs (id)
+  );
+
+CREATE TABLE
+  completed_tasks (
+    id serial primary key not null,
+    completed_at bigint,
+    task_id serial references tasks (id)
+  );
+
 
 INSERT INTO progresses (name) VALUES ('Undone'), ('Partially Done'), ('Done');
 INSERT INTO backlog_types (name) VALUES ('Fixed'), ('Flexible');

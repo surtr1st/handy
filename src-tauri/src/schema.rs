@@ -42,6 +42,15 @@ diesel::table! {
 }
 
 diesel::table! {
+    completed_iterations (id) {
+        id -> Int4,
+        completed_at -> Nullable<Int8>,
+        iteration_id -> Int4,
+        participant_id -> Int4,
+    }
+}
+
+diesel::table! {
     completed_tasks (id) {
         id -> Int4,
         completed_at -> Nullable<Int8>,
@@ -77,6 +86,14 @@ diesel::table! {
         created_date -> Int8,
         end_date -> Int8,
         status -> Nullable<Bool>,
+    }
+}
+
+diesel::table! {
+    partial_done_backlogs (id) {
+        id -> Int4,
+        backlog_id -> Int4,
+        progress_id -> Int4,
     }
 }
 
@@ -126,10 +143,14 @@ diesel::joinable!(backlogs -> iterations (iteration_id));
 diesel::joinable!(backlogs -> progresses (progress_id));
 diesel::joinable!(burndowns -> iterations (iteration_id));
 diesel::joinable!(completed_backlogs -> backlogs (backlog_id));
+diesel::joinable!(completed_iterations -> iterations (iteration_id));
+diesel::joinable!(completed_iterations -> participants (participant_id));
 diesel::joinable!(completed_tasks -> tasks (task_id));
 diesel::joinable!(criteria_acceptances -> backlogs (backlog_id));
 diesel::joinable!(iteration_rooms -> iterations (iteration_id));
 diesel::joinable!(iteration_rooms -> participants (participant_id));
+diesel::joinable!(partial_done_backlogs -> backlogs (backlog_id));
+diesel::joinable!(partial_done_backlogs -> progresses (progress_id));
 diesel::joinable!(tasks -> backlogs (backlog_id));
 diesel::joinable!(tasks -> participants (participant_id));
 diesel::joinable!(worklogs -> participants (participant_id));
@@ -140,10 +161,12 @@ diesel::allow_tables_to_appear_in_same_query!(
     backlogs,
     burndowns,
     completed_backlogs,
+    completed_iterations,
     completed_tasks,
     criteria_acceptances,
     iteration_rooms,
     iterations,
+    partial_done_backlogs,
     participants,
     progresses,
     tasks,
