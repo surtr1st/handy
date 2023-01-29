@@ -6,7 +6,7 @@
   import { useIterationRoute, backlogStore, useBacklogRoute } from '../store';
   import { colors } from '../configs/colors';
   import { ProgressOption, SnakeBacklog } from '../types';
-  import { useMessages } from '../constants';
+  import { useMessages } from '../helpers';
   import {
     NBadge,
     NPopselect,

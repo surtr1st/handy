@@ -1,4 +1,4 @@
-use crate::schema::{backlogs, criteria_acceptances, iteration_rooms, iterations, tasks};
+use crate::schema::{backlogs, criteria_acceptances, iteration_rooms, iterations, tasks, worklogs};
 use diesel::prelude::*;
 
 #[derive(Insertable)]
@@ -56,4 +56,13 @@ pub struct NewCriteriaAcceptance<'a> {
     pub title: &'a str,
     pub status: bool,
     pub backlog_id: i32,
+}
+
+#[derive(Insertable)]
+#[diesel(table_name = worklogs)]
+pub struct NewWorklog<'a> {
+    pub description: &'a str,
+    pub worked_hours: i32,
+    pub task_id: i32,
+    pub participant_id: i32,
 }

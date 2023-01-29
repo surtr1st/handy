@@ -1,6 +1,8 @@
 <script setup lang="ts">
-  import { ref } from 'vue';
-  import { SnakeWorklog } from '../types';
+  import { invoke } from '@tauri-apps/api';
+  import { ref, onMounted, onUnmounted } from 'vue';
+  import { participant, useFormattedDate, useNotifications } from '../helpers';
+  import { Personal, SnakeWorklog } from '../types';
   import {
     NButton,
     NForm,
@@ -12,7 +14,12 @@
     DataTableColumns,
   } from 'naive-ui';
 
+  const { notifyError } = useNotifications();
   const worklogs = ref<Array<SnakeWorklog>>([]);
+  const model = ref<Personal>({
+    alias: '',
+    password: '',
+  });
   const edit = ref({
     alias: false,
     password: false,
@@ -23,25 +30,40 @@
   const columns: DataTableColumns<SnakeWorklog> = [
     {
       title: 'Task Id',
-      key: 'task-id',
+      key: 'task_id',
       sorter: (a, b) => a.task_id - b.task_id,
     },
     {
-      title: 'Completed Date',
-      key: 'completed-date',
-      sorter: (a, b) => a.completed_date - b.completed_date,
-    },
-    {
       title: 'Description',
-      key: 'desc',
-      colSpan: (rowData, rowIndex) => (rowIndex === 2 ? 3 : 2),
+      key: 'description',
+      colSpan: (rowData, rowIndex) => (rowIndex === 2 ? 3 : 1),
     },
     {
       title: 'Worked Hours',
-      key: 'worked-hours',
-      sorter: (a, b) => a.hour - b.hour,
+      key: 'worked_hours',
+      sorter: (a, b) => a.worked_hours - b.worked_hours,
     },
   ];
+
+  function fetchAliasAndPassword() {
+    invoke<Personal>('get_personal_info', { id: participant.id })
+      .then((res) => (model.value = res))
+      .catch((e) => notifyError(e));
+  }
+
+  function fetchWorklogs() {
+    invoke<Array<SnakeWorklog>>('get_worklogs', {
+      participantId: participant.id,
+    })
+      .then((res) => (worklogs.value = res))
+      .catch((e) => notifyError(e));
+  }
+
+  onMounted(() => {
+    fetchAliasAndPassword();
+    fetchWorklogs();
+  });
+  onUnmounted(() => (worklogs.value = []));
 </script>
 
 <template>
@@ -58,7 +80,7 @@
       >
         <NInput
           :disabled="!edit.alias"
-          value="@"
+          v-model:value="model.alias"
         />
         <NButton
           v-if="!edit.alias"
@@ -81,6 +103,7 @@
         <NInput
           :disabled="!edit.password"
           type="password"
+          v-model:value="model.alias"
         />
         <NButton
           v-if="!edit.password"

@@ -4,12 +4,8 @@
   import { invoke } from '@tauri-apps/api/tauri';
   import { onMounted, onUnmounted, reactive, ref, watch } from 'vue';
   import { SnakeTask, EditTaskProps, TaskCell } from '../types';
-  import { useBacklogRoute, targetInvoked } from '../store';
-  import {
-    useFormattedDate,
-    useMessages,
-    useNotifications,
-  } from '../constants';
+  import { useBacklogRoute, targetInvoked, targetLogwork } from '../store';
+  import { useFormattedDate, useMessages, useNotifications } from '../helpers';
   import {
     NButton,
     NGrid,
@@ -106,7 +102,39 @@
         participant_id,
         backlog_id,
       },
-    }).catch((message) => notifyError(message));
+    })
+      .then(() => (targetInvoked.taskAction = !targetInvoked.taskAction))
+      .catch((message) => notifyError(message));
+  }
+
+  function updateTaskAfterLogwork() {
+    const id = targetLogwork.value.taskId;
+    const {
+      name,
+      created_date,
+      started_date,
+      hours,
+      mode,
+      participant_id,
+      backlog_id,
+    } = getTask(id) as SnakeTask;
+
+    invoke<string>('update_task', {
+      id,
+      fields: {
+        name,
+        created_date,
+        started_date,
+        hours,
+        worked_hours: targetLogwork.value.workedHours,
+        status: true,
+        mode,
+        participant_id,
+        backlog_id,
+      },
+    })
+      .then(() => (targetInvoked.taskAction = !targetInvoked.taskAction))
+      .catch((message) => notifyError(message));
   }
 
   function removeTask(id: number) {
@@ -135,6 +163,10 @@
   watch(
     () => targetInvoked.taskAction,
     () => fetchTasks(),
+  );
+  watch(
+    () => targetLogwork.value,
+    () => updateTaskAfterLogwork(),
   );
   onMounted(() => fetchTasks());
   onUnmounted(() => (tasks.value = []));
@@ -243,11 +275,14 @@
                 pic: task.pic,
                 estimatedHours: task.hours,
                 startedDate: task.started_date,
+                taskId: task.id,
+                taskStatus: task.status,
               }"
             />
             <NButton
               primary
               type="error"
+              :disabled="task.status"
               @click="removeTask(task.id)"
               >Remove</NButton
             >

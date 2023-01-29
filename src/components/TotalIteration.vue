@@ -4,7 +4,7 @@
   import { TaskListSquareLtr24Filled } from '@vicons/fluent';
   import { RefreshCircle } from '@vicons/ionicons5';
   import { ParticipantStatistic } from '../types';
-  import { participant, useNotifications } from '../constants';
+  import { participant, useNotifications } from '../helpers';
   import {
     NPageHeader,
     NGrid,

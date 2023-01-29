@@ -55,6 +55,6 @@ export type SnakeWorklog = {
   id: number;
   completed_date: number;
   description: string;
-  hour: number;
+  worked_hours: number;
   task_id: number;
 };

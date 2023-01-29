@@ -3,7 +3,7 @@
   import { invoke } from '@tauri-apps/api';
   import { useRouter } from 'vue-router';
   import { useDebounceFn, useSessionStorage } from '@vueuse/core';
-  import { useMessages, participant, DEBOUNCE_TIME } from '../constants';
+  import { useMessages, participant, DEBOUNCE_TIME } from '../helpers';
   import { AuthenticationResult } from '../types';
   import {
     NCard,

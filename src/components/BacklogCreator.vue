@@ -2,9 +2,9 @@
   import { invoke } from '@tauri-apps/api';
   import { useDebounceFn } from '@vueuse/core';
   import { onMounted, ref } from 'vue';
-  import { DEBOUNCE_TIME, useMessages } from '../constants';
+  import { DEBOUNCE_TIME, useMessages, useNotifications } from '../helpers';
   import { targetInvoked, useIterationRoute } from '../store';
-  import { BacklogType } from '../types';
+  import { BacklogType, SnakeBacklog } from '../types';
   import {
     NSelect,
     NCard,
@@ -21,9 +21,11 @@
 
   const { iterationId } = useIterationRoute();
   const { onSuccess, onError } = useMessages();
+  const { notifyError } = useNotifications();
 
   const open = ref(false);
   const form = ref();
+  const backlogTypes = ref<Array<BacklogType>>([]);
   const model = ref({
     title: '',
     priority: 0,
@@ -31,9 +33,8 @@
     description: '',
     hours: 0,
     points: 0,
-    type: 0,
+    type: 1,
   });
-  const backlogTypes = ref<Array<BacklogType>>([]);
 
   function createBacklog() {
     const fields = {
@@ -60,11 +61,11 @@
 
   onMounted(() => {
     invoke<Array<BacklogType>>('get_backlog_types')
-      .then((res) => {
-        backlogTypes.value = res;
-        console.log(res);
-      })
-      .catch((e) => console.log(e));
+      .then((res) => (backlogTypes.value = res))
+      .catch((e) => notifyError(e));
+    invoke<Array<SnakeBacklog>>('get_backlogs', { iterationId })
+      .then((res) => (model.value.priority = res.length + 1))
+      .catch((e) => notifyError(e));
   });
 </script>
 
@@ -99,6 +100,8 @@
           <NFormItemGi
             :span="6"
             label="Title"
+            :path="model.title"
+            required
           >
             <NInput
               v-model:value="model.title"
@@ -108,6 +111,7 @@
           <NFormItemGi
             :span="2"
             label="Priority"
+            required
           >
             <NInputNumber
               v-model:value="model.priority"
@@ -117,6 +121,7 @@
           <NFormItemGi
             :span="2"
             label="Hours"
+            required
           >
             <NInputNumber
               v-model:value="model.hours"
@@ -126,6 +131,7 @@
           <NFormItemGi
             :span="2"
             label="Points"
+            required
           >
             <NInputNumber
               v-model:value="model.points"
@@ -135,6 +141,8 @@
           <NFormItemGi
             :span="12"
             label="Goals"
+            :path="model.goals"
+            required
           >
             <NInput
               v-model:value="model.goals"
@@ -145,6 +153,8 @@
           <NFormItemGi
             :span="12"
             label="Description"
+            :path="model.description"
+            required
           >
             <NInput
               v-model:value="model.description"

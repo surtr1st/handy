@@ -1,6 +1,6 @@
 import { reactive } from 'vue';
 import { useSessionStorage } from '@vueuse/core';
-import { SnakeBacklog } from '../types';
+import { SnakeBacklog, SnakeTask } from '../types';
 
 export const targetInvoked = reactive({
   backlogAction: false,
@@ -18,4 +18,11 @@ export const retroStore = reactive({
 
 export const backlogStore = reactive(
   useSessionStorage('backlog', {} as SnakeBacklog),
+);
+
+export const targetLogwork = reactive(
+  useSessionStorage('targetLogwork', {
+    taskId: 0,
+    workedHours: 0,
+  }),
 );

@@ -4,7 +4,7 @@
   import { useDebounceFn } from '@vueuse/core';
   import { Add28Filled } from '@vicons/fluent';
   import { useBacklogRoute, targetInvoked } from '../store';
-  import { useMessages, participant, DEBOUNCE_TIME } from '../constants';
+  import { useMessages, participant, DEBOUNCE_TIME } from '../helpers';
   import {
     NSpace,
     NModal,

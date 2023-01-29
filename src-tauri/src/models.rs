@@ -9,6 +9,12 @@ pub struct SelectOption {
     label: String,
 }
 
+#[derive(Queryable, Clone, Serialize, Deserialize)]
+pub struct Personal {
+    alias: String,
+    password: String,
+}
+
 #[derive(Queryable, Debug, Serialize)]
 pub struct BacklogType {
     id: i32,
@@ -97,7 +103,9 @@ pub struct TaskWithParticipantAlias {
 pub struct Worklog {
     id: i32,
     description: String,
-    total_hour: i32,
+    worked_hours: i32,
+    task_id: i32,
+    started_date: Option<i64>,
 }
 
 #[derive(Queryable, Debug, Serialize, Deserialize)]

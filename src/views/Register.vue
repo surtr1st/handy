@@ -3,7 +3,7 @@
   import { invoke } from '@tauri-apps/api';
   import { useRouter } from 'vue-router';
   import { useDebounceFn } from '@vueuse/core';
-  import { DEBOUNCE_TIME, useMessages } from '../constants';
+  import { DEBOUNCE_TIME, useMessages } from '../helpers';
   import {
     NCard,
     NForm,

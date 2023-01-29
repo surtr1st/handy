@@ -3,7 +3,7 @@
   import { defineAsyncComponent, h, onMounted, onUnmounted, ref } from 'vue';
   import { SnakeIteration } from '../types';
   import { RouterLink } from 'vue-router';
-  import { participant, useFormattedDate } from '../constants';
+  import { participant, useFormattedDate } from '../helpers';
   import { RecycleScroller } from 'vue-virtual-scroller';
   import { useIterationRoute } from '../store';
   import {

@@ -55,12 +55,18 @@ export type Logwork = {
   workedHours: number;
   startedDate: number;
   taskId: number;
+  taskStatus: boolean;
 };
 
 export type CriteriaAcceptance = {
   id: number;
   title: string;
   status: boolean;
+};
+
+export type Personal = {
+  alias: string;
+  password: string;
 };
 
 export * from './snake_case';

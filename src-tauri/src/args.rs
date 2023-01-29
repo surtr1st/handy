@@ -43,3 +43,11 @@ pub struct RequiredCAFields {
     pub title: String,
     pub backlog_id: i32,
 }
+
+#[derive(Args, Serialize, Deserialize)]
+pub struct RequiredWorklogFields {
+    pub description: String,
+    pub worked_hours: i32,
+    pub task_id: i32,
+    pub participant_id: i32,
+}

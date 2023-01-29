@@ -1,12 +1,14 @@
 <script setup lang="ts">
   import { invoke } from '@tauri-apps/api/tauri';
   import { CSSProperties, ref } from 'vue';
-  import { Logwork, SnakeLogwork } from '../types';
+  import { useDebounceFn } from '@vueuse/core';
+  import { Logwork } from '../types';
   import {
+    DEBOUNCE_TIME,
     participant,
     useFormattedDate,
     useNotifications,
-  } from '../constants';
+  } from '../helpers';
   import {
     NGrid,
     NGi,
@@ -22,6 +24,7 @@
     NDatePicker,
     NButton,
   } from 'naive-ui';
+  import { targetLogwork } from '../store';
 
   const { notifySuccess, notifyError } = useNotifications();
   const open = ref<boolean>(false);
@@ -40,28 +43,41 @@
     return style;
   };
 
-  function logWork(taskId: number, completedDate: number) {
+  function handleModal(status: boolean) {
+    if (status) return;
+    return (open.value = true);
+  }
+
+  function logWork(taskId: number) {
     const fields = {
-      completed_time: completedDate,
+      description: description.value,
       worked_hours: workedHours.value,
       task_id: taskId,
       participant_id: participant.id,
     };
-    invoke<string>('log_work', { taskId, fields })
+    invoke<string>('log_work', { fields })
       .then((message) => {
         notifySuccess(message);
         open.value = false;
+        targetLogwork.value = {
+          taskId,
+          workedHours: workedHours.value,
+        };
       })
       .catch((message) => notifyError(message));
   }
+
+  const debounceLogWork = useDebounceFn(logWork, DEBOUNCE_TIME);
 </script>
 
 <template>
-  <NThing @click="open = true">
+  <NThing>
     <NSwitch
       size="large"
+      :disabled="props.taskStatus"
       :rail-style="railStyle"
-      :value="open"
+      :value="props.taskStatus || open"
+      @click="handleModal(props.taskStatus as boolean)"
     >
       <template #checked> Done </template>
       <template #unchecked> Undone </template>
@@ -128,9 +144,7 @@
               type="primary"
               style="width: 150px"
               :disabled="props.estimatedHours === 0"
-              @click="
-                logWork(props.taskId as number, props.startedDate as number)
-              "
+              @click="debounceLogWork(props.taskId as number)"
             >
               Log
             </NButton>

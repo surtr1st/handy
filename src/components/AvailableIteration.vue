@@ -2,10 +2,14 @@
   import { invoke } from '@tauri-apps/api';
   import { defineAsyncComponent, onMounted, onUnmounted, ref } from 'vue';
   import { SnakeIteration } from '../types';
-  import { DEBOUNCE_TIME, useFormattedDate } from '../constants';
   import { useDebounceFn } from '@vueuse/core';
   import { useIterationRoute } from '../store';
-  import { useMessages, participant } from '../constants';
+  import {
+    DEBOUNCE_TIME,
+    useFormattedDate,
+    useMessages,
+    participant,
+  } from '../helpers';
   import {
     NCard,
     NThing,
@@ -16,10 +20,10 @@
     NGi,
     NScrollbar,
   } from 'naive-ui';
-  const Empty = defineAsyncComponent(() => import('../components/Empty.vue'));
 
   const { onSuccess, onError } = useMessages();
   const { iterationId: iid } = useIterationRoute();
+  const Empty = defineAsyncComponent(() => import('../components/Empty.vue'));
   const iterations = ref<Array<SnakeIteration>>([]);
 
   function joinIteration(id: number) {
