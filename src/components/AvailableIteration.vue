@@ -2,7 +2,7 @@
   import { invoke } from '@tauri-apps/api';
   import { defineAsyncComponent, onMounted, onUnmounted, ref } from 'vue';
   import { SnakeIteration } from '../types';
-  import { useFormattedDate } from '../constants';
+  import { DEBOUNCE_TIME, useFormattedDate } from '../constants';
   import { useDebounceFn } from '@vueuse/core';
   import { useIterationRoute } from '../store';
   import { useMessages, participant } from '../constants';
@@ -31,7 +31,7 @@
       .catch((message) => onError(message));
   }
 
-  const debounceJoin = useDebounceFn(joinIteration);
+  const debounceJoin = useDebounceFn(joinIteration, DEBOUNCE_TIME);
 
   onMounted(() => {
     invoke<Array<SnakeIteration>>('get_iterations', {

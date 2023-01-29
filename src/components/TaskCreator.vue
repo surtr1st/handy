@@ -4,7 +4,7 @@
   import { useDebounceFn } from '@vueuse/core';
   import { Add28Filled } from '@vicons/fluent';
   import { useBacklogRoute, targetInvoked } from '../store';
-  import { useMessages, participant } from '../constants';
+  import { useMessages, participant, DEBOUNCE_TIME } from '../constants';
   import {
     NSpace,
     NModal,
@@ -54,7 +54,7 @@
       .catch((message) => onError(message));
   }
 
-  const debounceAddTask = useDebounceFn(addTask, 300);
+  const debounceAddTask = useDebounceFn(addTask, DEBOUNCE_TIME);
 
   onMounted(() => {
     invoke<string>('find_participant_alias', { id: participant.id })

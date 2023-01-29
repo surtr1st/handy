@@ -57,5 +57,11 @@ export type Logwork = {
   taskId: number;
 };
 
+export type CriteriaAcceptance = {
+  id: number;
+  title: string;
+  status: boolean;
+};
+
 export * from './snake_case';
 export * from './stats';

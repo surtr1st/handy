@@ -1,5 +1,15 @@
 <script setup lang="ts">
-  import { useIterationRoute, backlogStore } from '../store';
+  import { invoke } from '@tauri-apps/api';
+  import { useDebounceFn } from '@vueuse/core';
+  import { onMounted, onUnmounted, ref, watch } from 'vue';
+  import {
+    useIterationRoute,
+    useBacklogRoute,
+    backlogStore,
+    targetInvoked,
+  } from '../store';
+  import { CriteriaAcceptance } from '../types';
+  import { DEBOUNCE_TIME, useMessages, useNotifications } from '../constants';
   import {
     CheckmarkCircle24Filled,
     ClipboardTaskListRtl24Filled,
@@ -19,7 +29,84 @@
     NDivider,
     NInput,
   } from 'naive-ui';
+
   const { iterationId: iid } = useIterationRoute();
+  const { backlogId } = useBacklogRoute();
+  const { notifyError } = useNotifications();
+  const { onSuccess, onError } = useMessages();
+
+  const cas = ref<Array<CriteriaAcceptance>>([]);
+  const caTitle = ref<string>('');
+
+  function addCriteriaAcceptance() {
+    const fields = {
+      title: caTitle.value,
+      status: false,
+      backlog_id: backlogId,
+    };
+    invoke<string>('create_criteria_acceptance', { fields })
+      .then((message) => {
+        onSuccess(message);
+        targetInvoked.criteriaAcceptanceAction =
+          !targetInvoked.criteriaAcceptanceAction;
+        caTitle.value = '';
+      })
+      .catch((message) => onError(message));
+  }
+
+  function markAsDoneCriteria(id: number, value: boolean) {
+    console.log(id, value);
+    invoke<string>('update_criteria_acceptance', {
+      id,
+      backlogId,
+      value,
+    })
+      .then(
+        () =>
+          (targetInvoked.criteriaAcceptanceAction =
+            !targetInvoked.criteriaAcceptanceAction),
+      )
+      .catch((message) => onError(message));
+  }
+
+  function removeCriteriaAcceptance(id: number) {
+    invoke<string>('remove_criteria_acceptance', { id, backlogId })
+      .then(
+        () =>
+          (targetInvoked.criteriaAcceptanceAction =
+            !targetInvoked.criteriaAcceptanceAction),
+      )
+      .catch((message) => onError(message));
+  }
+
+  const debounceAddCriteriaAcceptance = useDebounceFn(
+    addCriteriaAcceptance,
+    DEBOUNCE_TIME,
+  );
+
+  const debounceUpdateCriteriaAcceptance = useDebounceFn(
+    markAsDoneCriteria,
+    DEBOUNCE_TIME,
+  );
+
+  function fetchCriteriaAcceptances() {
+    invoke<Array<CriteriaAcceptance>>('get_criteria_acceptances', {
+      backlogId,
+    })
+      .then((res) => (cas.value = res))
+      .catch((e) => notifyError(e));
+  }
+
+  function onEnter(event: KeyboardEvent) {
+    if (event.key === 'Enter') debounceAddCriteriaAcceptance();
+  }
+
+  watch(
+    () => targetInvoked.criteriaAcceptanceAction,
+    () => fetchCriteriaAcceptances(),
+  );
+  onMounted(() => fetchCriteriaAcceptances());
+  onUnmounted(() => (cas.value = []));
 </script>
 
 <template>
@@ -66,13 +153,34 @@
         <NCard title="Criteria Acceptances">
           <NScrollbar style="height: 21.2vh; width: 100%">
             <NSpace vertical>
-              <NCheckbox></NCheckbox>
+              <NSpace
+                justify="space-between"
+                align="center"
+                v-for="ca in cas"
+                :key="ca.id"
+              >
+                <NCheckbox
+                  :value="ca.id"
+                  :checked="ca.status"
+                  @update:checked="(value: boolean) => debounceUpdateCriteriaAcceptance(ca.id, value)"
+                >
+                  {{ ca.title }}
+                </NCheckbox>
+                <NButton
+                  secondary
+                  type="error"
+                  @click="removeCriteriaAcceptance(ca.id)"
+                  >Remove</NButton
+                >
+              </NSpace>
             </NSpace>
           </NScrollbar>
           <template #action>
             <NInput
               type="text"
+              v-model:value="caTitle"
               placeholder="Enter new CA"
+              @keydown="onEnter"
             />
           </template>
         </NCard>

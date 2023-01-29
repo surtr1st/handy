@@ -2,6 +2,7 @@ import { useDateFormat } from '@vueuse/core';
 import { useMessage, useNotification } from 'naive-ui';
 import { reactive } from 'vue';
 
+const DEBOUNCE_TIME = 300;
 const DATE_FORMAT = 'DD-MM-YYYY';
 const POPUP_DURATION = 3000;
 const participant = reactive({
@@ -40,4 +41,4 @@ export function useMessages() {
   return { onSuccess, onError };
 }
 
-export { POPUP_DURATION, participant };
+export { DEBOUNCE_TIME, POPUP_DURATION, participant };
