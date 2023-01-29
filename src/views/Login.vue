@@ -3,7 +3,7 @@
   import { invoke } from '@tauri-apps/api';
   import { useRouter } from 'vue-router';
   import { useDebounceFn, useSessionStorage } from '@vueuse/core';
-  import { useMessages, participant } from '../constants';
+  import { useMessages, participant, DEBOUNCE_TIME } from '../constants';
   import { AuthenticationResult } from '../types';
   import {
     NCard,
@@ -69,10 +69,10 @@
     }, 300);
   }
 
-  const handleAuthentication = useDebounceFn(signin);
+  const debounceAuthentication = useDebounceFn(signin, DEBOUNCE_TIME);
 
   function onEnter(event: KeyboardEvent) {
-    if (event.key === 'Enter') handleAuthentication();
+    if (event.key === 'Enter') debounceAuthentication();
   }
 </script>
 
@@ -130,7 +130,7 @@
           primary
           type="primary"
           style="margin-top: 1rem"
-          @click="handleAuthentication"
+          @click="debounceAuthentication"
           >Log In
         </NButton>
       </NSpace>

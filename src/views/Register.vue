@@ -3,7 +3,7 @@
   import { invoke } from '@tauri-apps/api';
   import { useRouter } from 'vue-router';
   import { useDebounceFn } from '@vueuse/core';
-  import { useMessages } from '../constants';
+  import { DEBOUNCE_TIME, useMessages } from '../constants';
   import {
     NCard,
     NForm,
@@ -107,7 +107,7 @@
     }, 300);
   }
 
-  const handleRegistration = useDebounceFn(signup);
+  const debounceRegistration = useDebounceFn(signup, DEBOUNCE_TIME);
 </script>
 
 <template>
@@ -174,7 +174,7 @@
           :disabled="model.reEnterPassword !== model.password"
           type="primary"
           style="margin-top: 1rem"
-          @click="handleRegistration"
+          @click="debounceRegistration"
           >Registrate</NButton
         >
       </NSpace>

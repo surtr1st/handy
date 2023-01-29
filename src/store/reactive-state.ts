@@ -5,6 +5,7 @@ import { SnakeBacklog } from '../types';
 export const targetInvoked = reactive({
   backlogAction: false,
   taskAction: false,
+  criteriaAcceptanceAction: false,
 });
 
 export const reviewStore = reactive({

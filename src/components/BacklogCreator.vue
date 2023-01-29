@@ -2,7 +2,7 @@
   import { invoke } from '@tauri-apps/api';
   import { useDebounceFn } from '@vueuse/core';
   import { onMounted, ref } from 'vue';
-  import { useMessages } from '../constants';
+  import { DEBOUNCE_TIME, useMessages } from '../constants';
   import { targetInvoked, useIterationRoute } from '../store';
   import { BacklogType } from '../types';
   import {
@@ -56,7 +56,7 @@
       })
       .catch((message) => onError(message));
   }
-  const debounceCreateBacklog = useDebounceFn(createBacklog, 300);
+  const debounceCreateBacklog = useDebounceFn(createBacklog, DEBOUNCE_TIME);
 
   onMounted(() => {
     invoke<Array<BacklogType>>('get_backlog_types')

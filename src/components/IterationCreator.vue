@@ -4,7 +4,12 @@
   import { DocumentAdd24Filled } from '@vicons/fluent';
   import { useDebounceFn } from '@vueuse/core';
   import { MentionOption } from '../types';
-  import { participant, useNotifications, useMessages } from '../constants';
+  import {
+    participant,
+    useNotifications,
+    useMessages,
+    DEBOUNCE_TIME,
+  } from '../constants';
   import {
     NIcon,
     NButton,
@@ -68,7 +73,7 @@
       .catch((e) => notifyError(e));
   }
 
-  const debounceCreateIteration = useDebounceFn(createIteration, 300);
+  const debounceCreateIteration = useDebounceFn(createIteration, DEBOUNCE_TIME);
 
   onMounted(() => {
     invoke<Array<MentionOption>>('get_participants')
