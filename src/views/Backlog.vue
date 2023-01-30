@@ -1,6 +1,20 @@
 <script setup lang="ts">
-  import { ref, watch } from 'vue';
-  import { useIterationRoute, backlogStore } from '../store';
+  import { invoke } from '@tauri-apps/api';
+  import { useDebounceFn } from '@vueuse/core';
+  import { onMounted, onUnmounted, ref, watch } from 'vue';
+  import { CriteriaAcceptance, SnakeTask } from '../types';
+  import { DEBOUNCE_TIME, useMessages, useNotifications } from '../helpers';
+  import {
+    CheckmarkCircle24Filled,
+    ClipboardTaskListRtl24Filled,
+    ArrowStepInRight12Regular,
+  } from '@vicons/fluent';
+  import {
+    useIterationRoute,
+    useBacklogRoute,
+    backlogStore,
+    targetInvoked,
+  } from '../store';
   import {
     NGrid,
     NGi,
@@ -15,22 +29,103 @@
     NDivider,
     NInput,
   } from 'naive-ui';
-  import {
-    CheckmarkCircle24Filled,
-    ClipboardTaskListRtl24Filled,
-    ArrowStepInRight12Regular,
-  } from '@vicons/fluent';
-  import { useWindowSize } from '@vueuse/core';
 
-  const { height } = useWindowSize();
   const { iterationId: iid } = useIterationRoute();
+  const { backlogId } = useBacklogRoute();
+  const { notifyError } = useNotifications();
+  const { onSuccess, onError } = useMessages();
 
-  const flexHeight = ref(20);
+  const cas = ref<Array<CriteriaAcceptance>>([]);
+  const caTitle = ref<string>('');
+  const totalTask = ref(0);
+  const totalTaskDone = ref(0);
 
-  watch(height, (newHeight) => {
-    if (newHeight > 700) flexHeight.value = 30;
-    else flexHeight.value = 20;
+  function addCriteriaAcceptance() {
+    const fields = {
+      title: caTitle.value,
+      status: false,
+      backlog_id: backlogId,
+    };
+    invoke<string>('create_criteria_acceptance', { fields })
+      .then((message) => {
+        onSuccess(message);
+        targetInvoked.criteriaAcceptanceAction =
+          !targetInvoked.criteriaAcceptanceAction;
+        caTitle.value = '';
+      })
+      .catch((message) => onError(message));
+  }
+
+  function markAsDoneCriteria(id: number, value: boolean) {
+    console.log(id, value);
+    invoke<string>('update_criteria_acceptance', {
+      id,
+      backlogId,
+      value,
+    })
+      .then(
+        () =>
+          (targetInvoked.criteriaAcceptanceAction =
+            !targetInvoked.criteriaAcceptanceAction),
+      )
+      .catch((message) => onError(message));
+  }
+
+  function removeCriteriaAcceptance(id: number) {
+    invoke<string>('remove_criteria_acceptance', { id, backlogId })
+      .then(
+        () =>
+          (targetInvoked.criteriaAcceptanceAction =
+            !targetInvoked.criteriaAcceptanceAction),
+      )
+      .catch((message) => onError(message));
+  }
+
+  const debounceAddCriteriaAcceptance = useDebounceFn(
+    addCriteriaAcceptance,
+    DEBOUNCE_TIME,
+  );
+
+  const debounceUpdateCriteriaAcceptance = useDebounceFn(
+    markAsDoneCriteria,
+    DEBOUNCE_TIME,
+  );
+
+  function fetchCriteriaAcceptances() {
+    invoke<Array<CriteriaAcceptance>>('get_criteria_acceptances', {
+      backlogId,
+    })
+      .then((res) => (cas.value = res))
+      .catch((e) => notifyError(e));
+  }
+
+  function fetchTaskLength() {
+    invoke<Array<SnakeTask>>('get_tasks', { backlogId })
+      .then((res) => (totalTask.value = res.length))
+      .catch((e) => onError(e));
+  }
+
+  function fetchTotalTaskDone() {
+    invoke<number>('get_tasks_done', { backlogId })
+      .then((res) => (totalTaskDone.value = res))
+      .catch((e) => onError(e));
+  }
+
+  function onEnter(event: KeyboardEvent) {
+    if (event.key === 'Enter') debounceAddCriteriaAcceptance();
+  }
+
+  watch(
+    () => targetInvoked.criteriaAcceptanceAction,
+    () => fetchCriteriaAcceptances(),
+  );
+
+  onMounted(() => {
+    fetchCriteriaAcceptances();
+    fetchTaskLength();
+    fetchTotalTaskDone();
   });
+  onUnmounted(() => (cas.value = []));
 </script>
 
 <template>
@@ -77,13 +172,34 @@
         <NCard title="Criteria Acceptances">
           <NScrollbar style="height: 21.2vh; width: 100%">
             <NSpace vertical>
-              <NCheckbox></NCheckbox>
+              <NSpace
+                justify="space-between"
+                align="center"
+                v-for="ca in cas"
+                :key="ca.id"
+              >
+                <NCheckbox
+                  :value="ca.id"
+                  :checked="ca.status"
+                  @update:checked="(value: boolean) => debounceUpdateCriteriaAcceptance(ca.id, value)"
+                >
+                  {{ ca.title }}
+                </NCheckbox>
+                <NButton
+                  secondary
+                  type="error"
+                  @click="removeCriteriaAcceptance(ca.id)"
+                  >Remove</NButton
+                >
+              </NSpace>
             </NSpace>
           </NScrollbar>
           <template #action>
             <NInput
               type="text"
+              v-model:value="caTitle"
               placeholder="Enter new CA"
+              @keydown="onEnter"
             />
           </template>
         </NCard>
@@ -96,7 +212,7 @@
           <NSpace justify="space-evenly">
             <NStatistic
               label="Total"
-              value="0"
+              :value="totalTask"
             >
               <template #prefix>
                 <NIcon>
@@ -106,7 +222,7 @@
             </NStatistic>
             <NStatistic
               label="Done"
-              value="0"
+              :value="totalTaskDone"
             >
               <template #prefix>
                 <NIcon>

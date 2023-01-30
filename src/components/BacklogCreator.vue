@@ -1,9 +1,10 @@
 <script setup lang="ts">
-  import { ref } from 'vue';
   import { invoke } from '@tauri-apps/api';
-  import { useMessages } from '../constants';
-  import { useIterationRoute } from '../store';
   import { useDebounceFn } from '@vueuse/core';
+  import { onMounted, ref } from 'vue';
+  import { DEBOUNCE_TIME, useMessages, useNotifications } from '../helpers';
+  import { targetInvoked, useIterationRoute } from '../store';
+  import { BacklogType, SnakeBacklog } from '../types';
   import {
     NSelect,
     NCard,
@@ -20,9 +21,11 @@
 
   const { iterationId } = useIterationRoute();
   const { onSuccess, onError } = useMessages();
+  const { notifyError } = useNotifications();
 
   const open = ref(false);
   const form = ref();
+  const backlogTypes = ref<Array<BacklogType>>([]);
   const model = ref({
     title: '',
     priority: 0,
@@ -30,19 +33,8 @@
     description: '',
     hours: 0,
     points: 0,
-    type: 0,
+    type: 1,
   });
-
-  const options = [
-    {
-      label: 'Fixed',
-      value: 1,
-    },
-    {
-      label: 'Flexible',
-      value: 2,
-    },
-  ];
 
   function createBacklog() {
     const fields = {
@@ -51,7 +43,9 @@
       goals: model.value.goals,
       description: model.value.description,
       hours: model.value.hours,
+      current_hour: 0,
       points: model.value.points,
+      current_point: 0,
       created_date: new Date().getTime(),
       iteration_id: iterationId,
       progress_id: 1, // default: Undone
@@ -61,36 +55,25 @@
       .then((message) => {
         onSuccess(message);
         open.value = false;
+        targetInvoked.backlogAction = !targetInvoked.backlogAction;
       })
       .catch((message) => onError(message));
   }
+  const debounceCreateBacklog = useDebounceFn(createBacklog, DEBOUNCE_TIME);
 
-  const debounceCreateBacklog = useDebounceFn(createBacklog, 300);
+  onMounted(() => {
+    invoke<Array<BacklogType>>('get_backlog_types')
+      .then((res) => (backlogTypes.value = res))
+      .catch((e) => notifyError(e));
+    invoke<Array<SnakeBacklog>>('get_backlogs', { iterationId })
+      .then((res) => (model.value.priority = res.length + 1))
+      .catch((e) => notifyError(e));
+  });
 </script>
 
 <template>
   <NGrid :cols="12">
     <NGi :span="12">
-      <NButton
-        primary
-        type="primary"
-        size="large"
-        @click="open = true"
-      >
-        Create
-      </NButton>
-    </NGi>
-    <NGi :span="6">
-      <NButton
-        primary
-        type="primary"
-        size="large"
-        @click="open = true"
-      >
-        Create
-      </NButton>
-    </NGi>
-    <NGi :span="6">
       <NButton
         primary
         type="primary"
@@ -119,6 +102,8 @@
           <NFormItemGi
             :span="6"
             label="Title"
+            :path="model.title"
+            required
           >
             <NInput
               v-model:value="model.title"
@@ -128,6 +113,7 @@
           <NFormItemGi
             :span="2"
             label="Priority"
+            required
           >
             <NInputNumber
               v-model:value="model.priority"
@@ -137,6 +123,7 @@
           <NFormItemGi
             :span="2"
             label="Hours"
+            required
           >
             <NInputNumber
               v-model:value="model.hours"
@@ -146,6 +133,7 @@
           <NFormItemGi
             :span="2"
             label="Points"
+            required
           >
             <NInputNumber
               v-model:value="model.points"
@@ -155,6 +143,8 @@
           <NFormItemGi
             :span="12"
             label="Goals"
+            :path="model.goals"
+            required
           >
             <NInput
               v-model:value="model.goals"
@@ -165,6 +155,8 @@
           <NFormItemGi
             :span="12"
             label="Description"
+            :path="model.description"
+            required
           >
             <NInput
               v-model:value="model.description"
@@ -178,7 +170,7 @@
           >
             <NSelect
               v-model:value="model.type"
-              :options="options"
+              :options="backlogTypes"
             />
           </NFormItemGi>
           <NFormItemGi

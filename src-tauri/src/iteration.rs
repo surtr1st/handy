@@ -1,18 +1,55 @@
 use crate::args::RequiredIterationFields;
 use crate::establish_connection;
-use crate::models::Iteration;
+use crate::models::{Iteration, IterationKey, ReviewRetroIteration};
 use crate::ops::{NewIteration, NewIterationRoom};
 
 use diesel::prelude::*;
 
 #[tauri::command]
-pub fn get_iterations(_participant_id: i32) -> Vec<Iteration> {
+pub fn get_iteration_keys(_participant_id: i32) -> Vec<IterationKey> {
+    use crate::schema::iteration_rooms;
     use crate::schema::iterations;
+    use crate::schema::participants;
 
     let connection = &mut establish_connection();
-    iterations::table
+    iteration_rooms::table
+        .inner_join(iterations::table)
+        .inner_join(participants::table)
+        .select((iterations::id, iterations::title))
+        .filter(iteration_rooms::participant_id.eq(_participant_id))
+        .group_by(iterations::id)
+        .load::<IterationKey>(connection)
+        .expect("all joined iteration should be returned!")
+}
+
+#[tauri::command]
+pub fn get_iterations(_iteration_id: i32, _participant_id: i32) -> Vec<Iteration> {
+    use crate::schema::iteration_rooms;
+    use crate::schema::iterations;
+    use crate::schema::participants;
+
+    let connection = &mut establish_connection();
+    iteration_rooms::table
+        .inner_join(iterations::table)
+        .inner_join(participants::table)
+        .select(iterations::all_columns)
+        .filter(iteration_rooms::iteration_id.ne(_iteration_id))
+        .filter(iteration_rooms::participant_id.ne(_participant_id))
+        .group_by(iterations::id)
         .load::<Iteration>(connection)
-        .expect("all iteration should be returned!")
+        .expect("all iteration beside joined iterations should be returned!")
+}
+
+#[tauri::command]
+pub fn get_iteration_data_when_review_retro(_id: i32) -> ReviewRetroIteration {
+    use crate::schema::iterations::dsl::*;
+
+    let connection = &mut establish_connection();
+    iterations
+        .select((created_date, end_date, total_point))
+        .filter(id.eq(_id))
+        .get_result(connection)
+        .expect(&format!("iteration with id #{} should be returned!", _id))
 }
 
 #[tauri::command]
@@ -27,6 +64,7 @@ pub fn get_joined_iterations(_participant_id: i32) -> Vec<Iteration> {
         .inner_join(participants::table)
         .select(iterations::all_columns)
         .filter(iteration_rooms::participant_id.eq(_participant_id))
+        .filter(iterations::status.eq(false))
         .group_by(iterations::id)
         .load::<Iteration>(connection)
         .expect("all joined iteration should be returned!")
@@ -124,4 +162,25 @@ fn create_iteration_room(iteration_id: i32, participants: Vec<i32>) {
     }
 }
 
-pub fn end_iteration(_iteration_id: i32) {}
+#[tauri::command]
+pub fn end_iteration(
+    _iteration_id: i32,
+    review_content: String,
+    retro_content: String,
+) -> Result<String, String> {
+    use crate::schema::iterations::dsl::{iterations, status};
+
+    let connection = &mut establish_connection();
+    diesel::update(iterations.find(_iteration_id))
+        .set(status.eq(true))
+        .execute(connection)
+        .expect(&format!(
+            "Iteration with id #{} should be ended!",
+            _iteration_id
+        ));
+    // read content
+    // write file
+    // save
+
+    Ok(format!("Successfully ended iteration #{}!", _iteration_id).into())
+}

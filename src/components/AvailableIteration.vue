@@ -1,10 +1,15 @@
 <script setup lang="ts">
-  import { defineAsyncComponent, onMounted, onUnmounted, ref } from 'vue';
   import { invoke } from '@tauri-apps/api';
+  import { defineAsyncComponent, onMounted, onUnmounted, ref } from 'vue';
   import { SnakeIteration } from '../types';
-  import { useFormattedDate } from '../constants';
   import { useDebounceFn } from '@vueuse/core';
-  import { useMessages } from '../constants';
+  import { useIterationRoute } from '../store';
+  import {
+    DEBOUNCE_TIME,
+    useFormattedDate,
+    useMessages,
+    participant,
+  } from '../helpers';
   import {
     NCard,
     NThing,
@@ -16,27 +21,29 @@
     NScrollbar,
   } from 'naive-ui';
 
+  const { onSuccess, onError } = useMessages();
+  const { iterationId: iid } = useIterationRoute();
   const Empty = defineAsyncComponent(() => import('../components/Empty.vue'));
   const iterations = ref<Array<SnakeIteration>>([]);
-  const { onSuccess, onError } = useMessages();
 
   function joinIteration(id: number) {
     invoke<string>('join_iteration', {
       iterationId: id,
-      participantId: parseInt(localStorage.getItem('PARTICIPANT_ID') as string),
+      participantId: participant.id,
     })
       .then((message) => onSuccess(message))
       .catch((message) => onError(message));
   }
 
-  const debounceJoin = useDebounceFn(joinIteration);
+  const debounceJoin = useDebounceFn(joinIteration, DEBOUNCE_TIME);
 
   onMounted(() => {
     invoke<Array<SnakeIteration>>('get_iterations', {
-      participantId: parseInt(localStorage.getItem('PARTICIPANT_ID') as string),
+      iterationId: iid,
+      participantId: participant.id,
     })
       .then((res) => (iterations.value = res))
-      .catch((e) => console.log(e));
+      .catch((e) => onError(e));
   });
   onUnmounted(() => (iterations.value = []));
 </script>

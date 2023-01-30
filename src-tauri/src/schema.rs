@@ -15,7 +15,9 @@ diesel::table! {
         goals -> Text,
         priority -> Int4,
         hours -> Int4,
+        current_hour -> Int4,
         points -> Int4,
+        current_point -> Int4,
         created_date -> Int8,
         iteration_id -> Int4,
         progress_id -> Int4,
@@ -26,10 +28,35 @@ diesel::table! {
 diesel::table! {
     burndowns (id) {
         id -> Int4,
-        ideal -> Nullable<Int4>,
-        actual -> Nullable<Int4>,
+        ideal -> Int4,
+        actual -> Int4,
         from_day -> Nullable<Int8>,
         iteration_id -> Int4,
+    }
+}
+
+diesel::table! {
+    completed_backlogs (id) {
+        id -> Int4,
+        completed_at -> Nullable<Int8>,
+        backlog_id -> Int4,
+    }
+}
+
+diesel::table! {
+    completed_iterations (id) {
+        id -> Int4,
+        completed_at -> Nullable<Int8>,
+        iteration_id -> Int4,
+        participant_id -> Int4,
+    }
+}
+
+diesel::table! {
+    completed_tasks (id) {
+        id -> Int4,
+        completed_at -> Nullable<Int8>,
+        task_id -> Int4,
     }
 }
 
@@ -37,7 +64,7 @@ diesel::table! {
     criteria_acceptances (id) {
         id -> Int4,
         title -> Text,
-        status -> Nullable<Bool>,
+        status -> Bool,
         backlog_id -> Int4,
     }
 }
@@ -65,6 +92,14 @@ diesel::table! {
 }
 
 diesel::table! {
+    partial_done_backlogs (id) {
+        id -> Int4,
+        backlog_id -> Int4,
+        progress_id -> Int4,
+    }
+}
+
+diesel::table! {
     participants (id) {
         id -> Int4,
         alias -> Text,
@@ -85,21 +120,13 @@ diesel::table! {
         id -> Int4,
         name -> Text,
         created_date -> Nullable<Int8>,
+        started_date -> Nullable<Int8>,
         hours -> Nullable<Int4>,
         worked_hours -> Nullable<Int4>,
-        progress -> Text,
         mode -> Bool,
-        status -> Nullable<Bool>,
-        pic -> Int4,
+        status -> Bool,
+        participant_id -> Int4,
         backlog_id -> Int4,
-    }
-}
-
-diesel::table! {
-    users (id) {
-        id -> Int4,
-        username -> Text,
-        password -> Text,
     }
 }
 
@@ -107,7 +134,7 @@ diesel::table! {
     worklogs (id) {
         id -> Int4,
         description -> Text,
-        total_hour -> Int4,
+        worked_hours -> Int4,
         task_id -> Int4,
         participant_id -> Int4,
     }
@@ -117,11 +144,17 @@ diesel::joinable!(backlogs -> backlog_types (type_id));
 diesel::joinable!(backlogs -> iterations (iteration_id));
 diesel::joinable!(backlogs -> progresses (progress_id));
 diesel::joinable!(burndowns -> iterations (iteration_id));
+diesel::joinable!(completed_backlogs -> backlogs (backlog_id));
+diesel::joinable!(completed_iterations -> iterations (iteration_id));
+diesel::joinable!(completed_iterations -> participants (participant_id));
+diesel::joinable!(completed_tasks -> tasks (task_id));
 diesel::joinable!(criteria_acceptances -> backlogs (backlog_id));
 diesel::joinable!(iteration_rooms -> iterations (iteration_id));
 diesel::joinable!(iteration_rooms -> participants (participant_id));
+diesel::joinable!(partial_done_backlogs -> backlogs (backlog_id));
+diesel::joinable!(partial_done_backlogs -> progresses (progress_id));
 diesel::joinable!(tasks -> backlogs (backlog_id));
-diesel::joinable!(tasks -> participants (pic));
+diesel::joinable!(tasks -> participants (participant_id));
 diesel::joinable!(worklogs -> participants (participant_id));
 diesel::joinable!(worklogs -> tasks (task_id));
 
@@ -129,12 +162,15 @@ diesel::allow_tables_to_appear_in_same_query!(
     backlog_types,
     backlogs,
     burndowns,
+    completed_backlogs,
+    completed_iterations,
+    completed_tasks,
     criteria_acceptances,
     iteration_rooms,
     iterations,
+    partial_done_backlogs,
     participants,
     progresses,
     tasks,
-    users,
     worklogs,
 );

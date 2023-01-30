@@ -1,10 +1,13 @@
 <script setup lang="ts">
   import Review from '../components/Review.vue';
   import Retrospective from '../components/Retrospective.vue';
-  import { reactive, ref, shallowRef } from 'vue';
-  import { reviewStore, retroStore } from '../store';
+  import { invoke } from '@tauri-apps/api';
   import { useRouter } from 'vue-router';
+  import { reactive, ref, shallowRef, onMounted, onUnmounted } from 'vue';
+  import { IterationKey, ReviewRetroIteration } from '../types';
+  import { participant, useNotifications, useFormattedDate } from '../helpers';
   import { TextDescription24Filled } from '@vicons/fluent';
+  import { retroStore, reviewStore, useIterationRoute } from '../store';
   import {
     NSelect,
     NPageHeader,
@@ -15,12 +18,19 @@
     NGi,
     NIcon,
     NDivider,
-    NInput,
   } from 'naive-ui';
 
   const { replace } = useRouter();
+  const { notifySuccess, notifyError } = useNotifications();
   const current = shallowRef(Review);
   const title = ref('Review Iteration');
+  const iterationId = ref(0);
+  const iterationKeys = ref<Array<IterationKey>>([]);
+  const iteration = ref<ReviewRetroIteration>({
+    end_date: 0,
+    start_date: 0,
+    total_point: 0,
+  });
 
   const components = shallowRef({
     prev: Review,
@@ -31,12 +41,13 @@
     stepped: false,
     finish: false,
   });
-  const options = [
-    {
-      label: '[id] Iteration Name',
-      value: 'id',
-    },
-  ];
+
+  function chooseIteration(id: number) {
+    invoke<ReviewRetroIteration>('get_iteration_data_when_review_retro', { id })
+      .then((res) => (iteration.value = res))
+      .catch((e) => notifyError(e));
+    iterationId.value = id;
+  }
 
   function onStepBack() {
     stepFurther.stepped = false;
@@ -50,11 +61,30 @@
     stepFurther.finish = true;
     current.value = components.value.next;
     title.value = 'Retrospective';
+    console.log(iteration.value);
   }
 
   function finish() {
-    replace('/review/retro/completed/200');
+    invoke<string>('end_iteration', {
+      iterationId,
+      reviewContent: reviewStore.content,
+      retroContent: retroStore.content,
+    })
+      .then((message) => {
+        notifySuccess(message);
+        replace('/mainpage/review/retro/completed/200');
+      })
+      .catch((message) => notifyError(message));
   }
+
+  onMounted(() => {
+    invoke<Array<IterationKey>>('get_iteration_keys', {
+      participantId: participant.id,
+    })
+      .then((res) => (iterationKeys.value = res))
+      .catch((e) => notifyError(e));
+  });
+  onUnmounted(() => (iterationKeys.value = []));
 </script>
 <template>
   <NPageHeader subtitle="What do you feel about this iteration?">
@@ -65,7 +95,8 @@
       <NGi>
         <NStatistic label="Which Iteration">
           <NSelect
-            :options="options"
+            :options="iterationKeys"
+            @update:value="(id: number) => chooseIteration(id)"
             style="width: 80%"
           />
         </NStatistic>
@@ -73,19 +104,19 @@
       <NGi>
         <NStatistic
           label="Start Date"
-          value="11/11/2023"
+          :value="useFormattedDate(iteration?.start_date as number)"
         />
       </NGi>
       <NGi>
         <NStatistic
           label="End Date"
-          value="11/11/2023"
+          :value="useFormattedDate(iteration?.end_date as number)"
         />
       </NGi>
       <NGi>
         <NStatistic
           label="Total Point"
-          value="0"
+          :value="(iteration?.total_point as number)"
         />
       </NGi>
     </NGrid>

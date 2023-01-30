@@ -1,26 +1,67 @@
 <script setup lang="ts">
-  import { ref } from 'vue';
+  import { invoke } from '@tauri-apps/api';
+  import { onMounted, onUnmounted, ref } from 'vue';
+  import { useDebounceFn } from '@vueuse/core';
   import { Add28Filled } from '@vicons/fluent';
+  import { useBacklogRoute, targetInvoked } from '../store';
+  import { useMessages, participant, DEBOUNCE_TIME } from '../helpers';
   import {
     NSpace,
     NModal,
     NInput,
+    NInputNumber,
     NGrid,
     NGi,
     NDatePicker,
-    NSelect,
     NButton,
     NIcon,
     NCard,
   } from 'naive-ui';
 
+  const { backlogId } = useBacklogRoute();
+  const { onSuccess, onError } = useMessages();
   const open = ref(false);
-  const options = [
-    {
-      label: '@chi.tr',
-      value: '@chi.tr',
-    },
-  ];
+  const picAlias = ref('');
+  const model = ref({
+    name: '',
+    startedDate: new Date().getTime(),
+    hours: 0,
+  });
+
+  function addTask() {
+    const fields = {
+      name: model.value.name,
+      created_date: new Date().getTime(),
+      started_date: model.value.startedDate,
+      hours: model.value.hours,
+      worked_hours: 0,
+      status: false,
+      mode: false,
+      participant_id: participant.id,
+      backlog_id: backlogId,
+    };
+    invoke<string>('create_task', { fields })
+      .then((message) => {
+        onSuccess(message);
+        open.value = false;
+        targetInvoked.taskAction = !targetInvoked.taskAction;
+        model.value = {
+          name: '',
+          startedDate: new Date().getTime(),
+          hours: 0,
+        };
+      })
+      .catch((message) => onError(message));
+  }
+
+  const debounceAddTask = useDebounceFn(addTask, DEBOUNCE_TIME);
+
+  onMounted(() => {
+    invoke<string>('find_participant_alias', { id: participant.id })
+      .then((res) => (picAlias.value = res))
+      .catch((e) => onError(e));
+  });
+  onUnmounted(() => {});
 </script>
 
 <template>
@@ -47,22 +88,31 @@
   >
     <NCard style="width: 500px">
       <NSpace vertical>
-        <NInput placeholder="Task Name" />
+        <NInput
+          v-model:value="model.name"
+          placeholder="Task Name"
+        />
         <NGrid
           responsive="self"
           :cols="12"
           :x-gap="12"
         >
           <NGi :span="6">
-            <NDatePicker placeholder="Created Date" />
+            <NDatePicker
+              v-model:value="model.startedDate"
+              placeholder="Started Date"
+            />
           </NGi>
           <NGi :span="6">
-            <NInput placeholder="Hour" />
+            <NInputNumber
+              v-model:value="model.hours"
+              placeholder="Hour"
+            />
           </NGi>
         </NGrid>
-        <NSelect
-          :options="options"
-          placeholder="PIC"
+        <NInput
+          :value="picAlias"
+          readonly
         />
         <NSpace justify="center">
           <NButton
@@ -70,6 +120,7 @@
             size="large"
             style="width: 150px"
             type="primary"
+            @click="debounceAddTask"
           >
             Add
           </NButton>

@@ -25,7 +25,9 @@ export type SnakeBacklog = {
   goals: string;
   priority: number;
   hours: number;
+  current_hour: number;
   points: number;
+  current_point: number;
   created_date: number;
 };
 
@@ -33,15 +35,34 @@ export type SnakeTask = {
   id: number;
   name: string;
   created_date: number;
+  started_date: number;
   hours: number;
-  actual_hours: number;
-  progress: string;
+  worked_hours: number;
+  mode: boolean;
+  status: boolean;
+  participant_id: number;
+  backlog_id: number;
   pic: string;
 };
 
 export type SnakeLogwork = {
-  pic: string;
   estimated_hours: number;
   worked_hours: number;
   completed_date: number;
+  task_id: number;
+  pic: number;
+};
+
+export type SnakeWorklog = {
+  id: number;
+  completed_date: number;
+  description: string;
+  worked_hours: number;
+  task_id: number;
+};
+
+export type ReviewRetroIteration = {
+  start_date: number;
+  end_date: number;
+  total_point: number;
 };

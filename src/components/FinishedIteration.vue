@@ -1,9 +1,9 @@
 <script setup lang="ts">
-  import { defineAsyncComponent, h, onMounted, onUnmounted, ref } from 'vue';
   import { invoke } from '@tauri-apps/api';
+  import { defineAsyncComponent, h, onMounted, onUnmounted, ref } from 'vue';
   import { SnakeIteration } from '../types';
   import { RouterLink } from 'vue-router';
-  import { useFormattedDate } from '../constants';
+  import { participant, useFormattedDate } from '../helpers';
   import { RecycleScroller } from 'vue-virtual-scroller';
   import { useIterationRoute } from '../store';
   import {
@@ -15,12 +15,14 @@
     NStatistic,
   } from 'naive-ui';
 
-  const Empty = defineAsyncComponent(() => import('../components/Empty.vue'));
   const { setIterationId } = useIterationRoute();
+  const Empty = defineAsyncComponent(() => import('../components/Empty.vue'));
   const iterations = ref<Array<SnakeIteration>>([]);
 
   onMounted(() => {
-    invoke<Array<SnakeIteration>>('get_finished_iterations')
+    invoke<Array<SnakeIteration>>('get_finished_iterations', {
+      participantId: participant.id,
+    })
       .then((res) => (iterations.value = res))
       .catch((e) => console.log(e));
   });
@@ -45,7 +47,7 @@
         bordered: true,
       })
     "
-    :item-tag="NListItem"
+    :item-tag="h(NListItem, null)"
   >
     <RouterLink
       :to="`/mainpage/iterations/${item.id}`"

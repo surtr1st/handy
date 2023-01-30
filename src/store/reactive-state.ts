@@ -1,6 +1,13 @@
 import { reactive } from 'vue';
-import { useLocalStorage } from '@vueuse/core';
-import { SnakeBacklog } from '../types';
+import { useSessionStorage } from '@vueuse/core';
+import { SnakeBacklog, SnakeTask } from '../types';
+
+export const targetInvoked = reactive({
+  backlogAction: false,
+  taskAction: false,
+  criteriaAcceptanceAction: false,
+  logwork: false,
+});
 
 export const reviewStore = reactive({
   content: '',
@@ -11,5 +18,5 @@ export const retroStore = reactive({
 });
 
 export const backlogStore = reactive(
-  useLocalStorage('backlog', {} as SnakeBacklog),
+  useSessionStorage('backlog', {} as SnakeBacklog),
 );

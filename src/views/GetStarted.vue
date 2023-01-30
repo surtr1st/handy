@@ -11,7 +11,7 @@
         <NButton
           size="large"
           type="primary"
-          @click="$router.replace('/mainpage/getting-started')"
+          @click="$router.replace('/mainpage/create-iteration')"
         >
           Create Iteration
         </NButton>

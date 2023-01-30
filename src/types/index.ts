@@ -1,3 +1,15 @@
+export type SelectOption = { label: string; value: number };
+export type MentionOption = SelectOption;
+export type BacklogType = SelectOption;
+export type ProgressOption = SelectOption;
+export type IterationKey = SelectOption;
+
+export type TaskCell = {
+  name: string;
+  date: number;
+  hours: number;
+};
+
 export type EditTaskProps = {
   id: number;
   type: 'name' | 'date' | 'hours' | 'pic';
@@ -42,7 +54,21 @@ export type Logwork = {
   pic: string;
   estimatedHours: number;
   workedHours: number;
-  completedDate: number;
+  startedDate: number;
+  taskId: number;
+  taskStatus: boolean;
+};
+
+export type CriteriaAcceptance = {
+  id: number;
+  title: string;
+  status: boolean;
+};
+
+export type Personal = {
+  alias: string;
+  password: string;
 };
 
 export * from './snake_case';
+export * from './stats';

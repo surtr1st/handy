@@ -3,7 +3,6 @@
   import { NInput, NText, NCard, NButton, NSpace } from 'naive-ui';
 
   const switchToInput = ref<boolean>(false);
-
   const props = defineProps({
     content: {
       type: String,

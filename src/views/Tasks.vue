@@ -1,9 +1,11 @@
 <script setup lang="ts">
   import TaskCreator from '../components/TaskCreator.vue';
   import Logwork from '../components/Logwork.vue';
-  import { useFormattedDate } from '../constants';
-  import { Task, EditTaskProps } from '../types';
-  import { reactive, ref } from 'vue';
+  import { invoke } from '@tauri-apps/api/tauri';
+  import { onMounted, onUnmounted, reactive, ref, watch } from 'vue';
+  import { SnakeTask, EditTaskProps } from '../types';
+  import { useBacklogRoute, targetInvoked } from '../store';
+  import { useFormattedDate, useMessages, useNotifications } from '../helpers';
   import {
     NButton,
     NGrid,
@@ -16,9 +18,12 @@
     NInput,
     NDatePicker,
     NInputNumber,
-    NSelect,
     NSwitch,
   } from 'naive-ui';
+
+  const { notifySuccess, notifyError } = useNotifications();
+  const { onError } = useMessages();
+  const { backlogId } = useBacklogRoute();
 
   const taskModal = reactive({
     open: false,
@@ -30,52 +35,99 @@
     name: '',
     date: 0,
     hours: 0,
-    pic: '',
   });
 
-  const task = reactive<Task>({
-    id: 0,
-    name: '',
-    createdDate: 0,
-    hours: 0,
-    actualHours: 0,
-    progress: '',
-    pic: '',
-  });
+  const tasks = ref<Array<SnakeTask>>([]);
 
-  const tasks = ref<Array<Task>>([
-    {
-      id: 1,
-      name: 'A du dark wa 123 456 Wy Seg',
-      createdDate: 1461110400000,
-      hours: 1,
-      actualHours: 0,
-      pic: '@chi.tr',
-      progress: 'Undone',
-    },
-    {
-      id: 2,
-      name: 'A du dark wa 13 46 Wy Seg',
-      createdDate: 1461110400000,
-      hours: 1,
-      actualHours: 0,
-      pic: '@chi.tr',
-      progress: 'Undone',
-    },
-  ]);
-
-  // Function
   const getTask = (id: number) =>
-    tasks.value.find((task: Task) => task.id === id);
+    tasks.value.find((task: SnakeTask) => task.id === id);
+
+  enum CellChosen {
+    NAME = 'name',
+    STARTED_DATE = 'date',
+    HOURS = 'hours',
+  }
 
   function editTaskIndividually({ id, type, title }: EditTaskProps) {
     if (type === 'name') taskState.name = getTask(id)?.name as string;
-    if (type === 'date') taskState.date = getTask(id)?.createdDate as number;
+    if (type === 'date') taskState.date = getTask(id)?.created_date as number;
     if (type === 'hours') taskState.hours = getTask(id)?.hours as number;
-    if (type === 'pic') taskState.pic = getTask(id)?.pic as string;
     taskModal.open = !taskModal.open;
     taskModal.type = type;
     taskModal.title = title;
+
+    watch(
+      () => taskState.name,
+      (newName, oldName) => updateTask(id, newName, CellChosen.NAME),
+    );
+    watch(
+      () => taskState.date,
+      (newDate, oldDate) => updateTask(id, newDate, CellChosen.STARTED_DATE),
+    );
+    watch(
+      () => taskState.hours,
+      (newHours, oldHours) => updateTask(id, newHours, CellChosen.HOURS),
+    );
+  }
+
+  function updateTaskName(id: number, value: string) {
+    invoke<string>('update_task_name', { id, value })
+      .then(() => (targetInvoked.taskAction = !targetInvoked.taskAction))
+      .catch((message) => notifyError(message));
+  }
+
+  function updateTaskStartedDate(id: number, value: number) {
+    invoke<string>('update_task_started_date', { id, value })
+      .then(() => (targetInvoked.taskAction = !targetInvoked.taskAction))
+      .catch((message) => notifyError(message));
+  }
+
+  function updateTaskHours(id: number, value: number) {
+    invoke<string>('update_task_hours', { id, value })
+      .then(() => (targetInvoked.taskAction = !targetInvoked.taskAction))
+      .catch((message) => notifyError(message));
+  }
+
+  function updateTask(
+    id: number,
+    updatedValue: string | number,
+    cell: CellChosen,
+  ) {
+    const { name } = getTask(id) as SnakeTask;
+
+    switch (cell) {
+      case CellChosen.STARTED_DATE:
+        updateTaskStartedDate(id, updatedValue as number);
+        break;
+
+      case CellChosen.HOURS:
+        updateTaskHours(id, updatedValue as number);
+        break;
+
+      default:
+        updateTaskName(
+          id,
+          !updatedValue || updatedValue.toString().length <= 0
+            ? name
+            : updatedValue.toString(),
+        );
+        break;
+    }
+  }
+
+  function removeTask(id: number) {
+    invoke<string>('remove_task', { id })
+      .then((message) => {
+        notifySuccess(message);
+        targetInvoked.taskAction = !targetInvoked.backlogAction;
+      })
+      .catch((message) => notifyError(message));
+  }
+
+  function fetchTasks() {
+    invoke<Array<SnakeTask>>('get_tasks', { backlogId })
+      .then((res) => (tasks.value = res))
+      .catch((e) => onError(e));
   }
 
   function onEnter(event: KeyboardEvent) {
@@ -85,6 +137,14 @@
       taskModal.open = false;
     }
   }
+
+  watch(
+    () => targetInvoked.taskAction || targetInvoked.logwork,
+    () => fetchTasks(),
+  );
+
+  onMounted(() => fetchTasks());
+  onUnmounted(() => (tasks.value = []));
 </script>
 
 <template>
@@ -124,11 +184,15 @@
       <tr>
         <th>Id</th>
         <th>Name</th>
-        <th>Created Date</th>
+        <th>Started Date</th>
         <th>Hours</th>
         <th>PIC</th>
-        <th>Progress</th>
-        <th></th>
+        <th
+          colspan="2"
+          style="text-align: center"
+        >
+          Progress
+        </th>
       </tr>
     </thead>
     <tbody>
@@ -147,6 +211,7 @@
               title: 'Edit Name',
             })
           "
+          style="max-width: 100px; word-wrap: break-word"
         >
           <NText strong>{{ task.name }}</NText>
         </td>
@@ -159,7 +224,7 @@
             })
           "
         >
-          {{ useFormattedDate(task.createdDate) }}
+          {{ useFormattedDate(task.started_date) }}
         </td>
         <td
           @dblclick="
@@ -170,28 +235,33 @@
             })
           "
         >
-          {{ task.actualHours }}/{{ task.hours }}
-        </td>
-        <td
-          @dblclick="
-            editTaskIndividually({
-              id: task.id,
-              type: 'pic',
-              title: 'Edit Person-In-Charge',
-            })
-          "
-        >
-          {{ task.pic }}
-        </td>
-        <td style="width: 100px">
-          <Logwork :props="{ pic: task.pic, estimatedHours: task.hours }" />
+          {{ task.worked_hours }}/{{ task.hours }}
         </td>
         <td>
-          <NButton
-            primary
-            type="primary"
-            >Edit</NButton
+          {{ task.pic }}
+        </td>
+        <td style="width: 190px">
+          <NSpace
+            justify="center"
+            align="center"
           >
+            <Logwork
+              :props="{
+                pic: task.pic,
+                estimatedHours: task.hours,
+                startedDate: task.started_date,
+                taskId: task.id,
+                taskStatus: task.status,
+              }"
+            />
+            <NButton
+              primary
+              type="error"
+              :disabled="task.status"
+              @click="removeTask(task.id)"
+              >Remove</NButton
+            >
+          </NSpace>
         </td>
       </tr>
     </tbody>
@@ -205,6 +275,7 @@
       <NInput
         v-show="taskModal.type === 'name'"
         v-model:value="taskState.name"
+        maxlength="50"
         @keydown="onEnter"
       />
       <NDatePicker
@@ -215,11 +286,9 @@
       <NInputNumber
         v-show="taskModal.type === 'hours'"
         v-model:value="taskState.hours"
+        min="0"
+        max="8"
         @keydown="onEnter"
-      />
-      <NSelect
-        v-show="taskModal.type === 'pic'"
-        :options="[{ label: taskState.pic, value: taskState.pic }]"
       />
     </NCard>
   </NModal>

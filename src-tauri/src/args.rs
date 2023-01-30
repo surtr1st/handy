@@ -18,9 +18,38 @@ pub struct RequiredBacklogFields {
     pub description: String,
     pub priority: i32,
     pub hours: i32,
+    pub current_hour: i32,
     pub points: i32,
+    pub current_point: i32,
     pub created_date: i64,
     pub iteration_id: i32,
     pub progress_id: i32,
     pub type_id: i32,
+}
+
+#[derive(Args, Serialize, Deserialize)]
+pub struct RequiredTaskFields {
+    pub name: String,
+    pub created_date: Option<i64>,
+    pub started_date: Option<i64>,
+    pub hours: Option<i32>,
+    pub worked_hours: Option<i32>,
+    pub status: bool,
+    pub mode: bool,
+    pub participant_id: i32,
+    pub backlog_id: i32,
+}
+
+#[derive(Args, Serialize, Deserialize)]
+pub struct RequiredCAFields {
+    pub title: String,
+    pub backlog_id: i32,
+}
+
+#[derive(Args, Serialize, Deserialize)]
+pub struct RequiredWorklogFields {
+    pub description: String,
+    pub worked_hours: i32,
+    pub task_id: i32,
+    pub participant_id: i32,
 }

@@ -2,7 +2,6 @@
   import { h, ref, Component } from 'vue';
   import { NIcon, NMenu, NSpace, NLayout, NLayoutSider } from 'naive-ui';
   import { RouterLink } from 'vue-router';
-  import type { MenuOption } from 'naive-ui';
   import { Home } from '@vicons/ionicons5';
   import {
     ClipboardTaskListRtl24Filled,
@@ -10,6 +9,7 @@
     PersonCircle24Filled,
     NotepadPerson24Filled,
   } from '@vicons/fluent';
+  import type { MenuOption } from 'naive-ui';
 
   function renderIcon(icon: Component) {
     return () => h(NIcon, { size: 'large' }, { default: () => h(icon) });

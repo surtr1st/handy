@@ -3,11 +3,11 @@
   import BurndownChart from '../components/BurndownChart.vue';
   import Backlogs from '../components/Backlogs.vue';
   import BacklogCreator from '../components/BacklogCreator.vue';
-  import { ref, reactive, onMounted } from 'vue';
   import { invoke } from '@tauri-apps/api';
+  import { ref, reactive, onMounted, watch } from 'vue';
   import { RefreshCircle } from '@vicons/ionicons5';
-  import { useIterationRoute } from '../store';
-  import { SnakeBacklog } from '../types';
+  import { targetInvoked, useIterationRoute } from '../store';
+  import { IterationStatistic, SnakeBacklog } from '../types';
   import {
     TextBulletListSquare24Filled,
     DocumentBulletList24Filled,
@@ -29,13 +29,14 @@
     NIcon,
   } from 'naive-ui';
 
-  const { iterationId: iid, getIteration } = useIterationRoute();
+  const { iterationId, getIteration } = useIterationRoute();
   const backlogs = ref<Array<SnakeBacklog>>([]);
-  const backlogStatus = reactive({
-    total: 0,
-    done: 0,
-    partiallyDone: 0,
-    undone: 0,
+  const iterationStats = ref<IterationStatistic>({
+    backlog: 0,
+    backlog_done: 0,
+    backlog_partially_done: 0,
+    backlog_undone: 0,
+    sprint_velocity: 0,
   });
 
   enum StatusColors {
@@ -44,10 +45,25 @@
     UNDONE = 'rgb(225, 29, 72)',
   }
 
-  onMounted(() => {
-    invoke<Array<SnakeBacklog>>('get_backlogs', { iterationId: iid })
+  function fetchBacklogs() {
+    invoke<Array<SnakeBacklog>>('get_backlogs', { iterationId })
       .then((res) => (backlogs.value = res))
       .catch();
+  }
+
+  function fetchIterationStats() {
+    invoke<IterationStatistic>('load_stats_of_iteration', { id: iterationId })
+      .then((res) => (iterationStats.value = res))
+      .catch((e) => console.log(e));
+  }
+
+  watch(
+    () => targetInvoked.backlogAction,
+    () => fetchBacklogs(),
+  );
+  onMounted(() => {
+    fetchBacklogs();
+    fetchIterationStats();
   });
 </script>
 
@@ -60,7 +76,7 @@
       <NGi>
         <NStatistic
           label="Backlogs"
-          v-model:value="backlogStatus.total"
+          v-model:value="iterationStats.backlog"
         >
           <template #prefix>
             <NIcon> <DocumentBulletList24Filled /> </NIcon>
@@ -70,7 +86,7 @@
       <NGi>
         <NStatistic
           label="Done"
-          v-model:value="backlogStatus.done"
+          v-model:value="iterationStats.backlog_done"
         >
           <template #prefix>
             <NIcon :color="StatusColors.DONE">
@@ -82,7 +98,7 @@
       <NGi>
         <NStatistic
           label="Partially Done"
-          v-model:value="backlogStatus.partiallyDone"
+          v-model:value="iterationStats.backlog_partially_done"
         >
           <template #prefix>
             <NIcon :color="StatusColors.PARTIALLY_DONE">
@@ -94,7 +110,7 @@
       <NGi>
         <NStatistic
           label="Undone"
-          v-model:value="backlogStatus.undone"
+          v-model:value="iterationStats.backlog_undone"
         >
           <template #prefix>
             <NIcon :color="StatusColors.UNDONE">
@@ -106,7 +122,7 @@
       <NGi>
         <NStatistic
           label="Velocity"
-          value="0"
+          :value="iterationStats.sprint_velocity"
         >
           <template #prefix>
             <NIcon color="rgb(79, 70, 229)">
@@ -118,7 +134,7 @@
     </NGrid>
     <template #title>
       <h2 style="text-decoration: none; color: inherit">
-        [{{ iid }}] Iteration
+        [{{ iterationId }}] {{ getIteration.title }}
       </h2>
     </template>
     <template #avatar>

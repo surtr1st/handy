@@ -33,7 +33,9 @@ CREATE TABLE
     goals text not null,
     priority int not null,
     hours int not null,
+    current_hour int not null,
     points int not null,
+    current_point int not null,
     created_date bigint not null,
     iteration_id serial references iterations (id),
     progress_id serial references progresses (id),
@@ -53,12 +55,12 @@ CREATE TABLE
     id serial primary key not null,
     name text not null,
     created_date bigint,
+    started_date bigint,
     hours int,
     worked_hours int,
-    progress text not null,
     mode boolean not null,
-    status boolean,
-    pic serial references participants (id),
+    status boolean not null,
+    participant_id serial references participants (id),
     backlog_id serial references backlogs (id)
   );
 
@@ -66,7 +68,7 @@ CREATE TABLE
   worklogs (
     id serial primary key not null,
     description text not null,
-    total_hour int not null,
+    worked_hours int not null,
     task_id serial references tasks (id),
     participant_id serial references participants (id)
   );
@@ -75,15 +77,15 @@ CREATE TABLE
   criteria_acceptances (
     id serial primary key not null,
     title text not null,
-    status boolean,
+    status boolean not null,
     backlog_id serial references backlogs (id)
   );
 
 CREATE TABLE
   burndowns (
     id serial primary key not null,
-    ideal int,
-    actual int,
+    ideal int not null,
+    actual int not null,
     from_day bigint,
     iteration_id serial references iterations (id)
   );
@@ -94,6 +96,36 @@ CREATE TABLE
     iteration_id serial references iterations (id),
     participant_id serial references participants (id)
   );
+
+CREATE TABLE
+  partial_done_backlogs (
+    id serial primary key not null,
+    backlog_id serial references backlogs (id),
+    progress_id serial references progresses (id)
+  );
+
+CREATE TABLE
+  completed_iterations (
+    id serial primary key not null,
+    completed_at bigint,
+    iteration_id serial references iterations (id),
+    participant_id serial references participants (id)
+  );
+
+CREATE TABLE
+  completed_backlogs (
+    id serial primary key not null,
+    completed_at bigint,
+    backlog_id serial references backlogs (id)
+  );
+
+CREATE TABLE
+  completed_tasks (
+    id serial primary key not null,
+    completed_at bigint,
+    task_id serial references tasks (id)
+  );
+
 
 INSERT INTO progresses (name) VALUES ('Undone'), ('Partially Done'), ('Done');
 INSERT INTO backlog_types (name) VALUES ('Fixed'), ('Flexible');

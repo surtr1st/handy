@@ -1,9 +1,9 @@
 <script setup lang="ts">
-  import { defineAsyncComponent, h, onMounted, onUnmounted, ref } from 'vue';
   import { invoke } from '@tauri-apps/api';
+  import { defineAsyncComponent, h, onMounted, onUnmounted, ref } from 'vue';
   import { SnakeIteration } from '../types';
   import { RouterLink } from 'vue-router';
-  import { useFormattedDate } from '../constants';
+  import { participant, useFormattedDate } from '../helpers';
   import { RecycleScroller } from 'vue-virtual-scroller';
   import { useIterationRoute } from '../store';
   import {
@@ -27,7 +27,7 @@
 
   onMounted(() => {
     invoke<Array<SnakeIteration>>('get_joined_iterations', {
-      participantId: parseInt(localStorage.getItem('PARTICIPANT_ID') as string),
+      participantId: participant.id,
     })
       .then((res) => (iterations.value = res))
       .catch((e) => console.log(e));

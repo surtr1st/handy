@@ -1,9 +1,9 @@
 <script setup lang="ts">
-  import { onMounted, ref } from 'vue';
+  import { ref } from 'vue';
   import { invoke } from '@tauri-apps/api';
   import { useRouter } from 'vue-router';
-  import { useMessages } from '../constants';
-  import { useDebounceFn, useLocalStorage } from '@vueuse/core';
+  import { useDebounceFn, useSessionStorage } from '@vueuse/core';
+  import { useMessages, participant, DEBOUNCE_TIME } from '../helpers';
   import { AuthenticationResult } from '../types';
   import {
     NCard,
@@ -19,9 +19,9 @@
     useLoadingBar,
   } from 'naive-ui';
 
-  const loading = useLoadingBar();
   const { replace } = useRouter();
   const { onError, onSuccess } = useMessages();
+  const loading = useLoadingBar();
 
   const authButton = ref<HTMLButtonElement | null>(null);
   const form = ref<FormInst | null>(null);
@@ -53,7 +53,10 @@
           const message = auth[0];
           const participantId = auth[1];
           onSuccess(message);
-          useLocalStorage('PARTICIPANT_ID', participantId);
+          useSessionStorage('PARTICIPANT_ID', participantId);
+          participant.id = parseInt(
+            sessionStorage.getItem('PARTICIPANT_ID') as string,
+          );
           loading.finish();
           setTimeout(() => {
             replace('/mainpage/getting-started');
@@ -66,10 +69,10 @@
     }, 300);
   }
 
-  const handleAuthentication = useDebounceFn(signin);
+  const debounceAuthentication = useDebounceFn(signin, DEBOUNCE_TIME);
 
   function onEnter(event: KeyboardEvent) {
-    if (event.key === 'Enter') handleAuthentication();
+    if (event.key === 'Enter') debounceAuthentication();
   }
 </script>
 
@@ -127,9 +130,9 @@
           primary
           type="primary"
           style="margin-top: 1rem"
-          @click="handleAuthentication"
-          >Log In</NButton
-        >
+          @click="debounceAuthentication"
+          >Log In
+        </NButton>
       </NSpace>
     </NCard>
   </NSpace>
