@@ -15,6 +15,19 @@ pub struct Personal {
     password: String,
 }
 
+#[derive(Queryable, Serialize, Deserialize)]
+pub struct IterationKey {
+    value: i32,
+    label: String 
+}
+
+#[derive(Queryable, Clone, Serialize, Deserialize)]
+pub struct ReviewRetroIteration {
+    start_date: i64,
+    end_date: i64,
+    total_point: Option<i32>
+}
+
 #[derive(Queryable, Debug, Serialize)]
 pub struct BacklogType {
     id: i32,

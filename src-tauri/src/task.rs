@@ -1,6 +1,6 @@
 use crate::args::RequiredTaskFields;
 use crate::establish_connection;
-use crate::models::{Task, TaskWithParticipantAlias};
+use crate::models::TaskWithParticipantAlias;
 use crate::ops::NewTask;
 use diesel::prelude::*;
 
@@ -56,25 +56,51 @@ pub fn create_task(fields: RequiredTaskFields) -> Result<String, String> {
 }
 
 #[tauri::command]
-pub fn update_task(_id: i32, fields: RequiredTaskFields) -> Result<String, String> {
-    use crate::schema::tasks;
+pub fn update_task_name(_id: i32, value: String) {
+    use crate::schema::tasks::dsl::{name, tasks};
+    let connection = &mut establish_connection();
+    diesel::update(tasks.find(_id))
+        .set(name.eq(value))
+        .execute(connection)
+        .expect(&format!(
+            "Task with id #{}, new name entered should be updated!",
+            _id
+        ));
+}
+
+#[tauri::command]
+pub fn update_task_started_date(_id: i32, value: i64) {
+    use crate::schema::tasks::dsl::{started_date, tasks};
+    let connection = &mut establish_connection();
+    diesel::update(tasks.find(_id))
+        .set(started_date.eq(value))
+        .execute(connection)
+        .expect(&format!(
+            "Task with id #{}, new started date entered should be updated!",
+            _id
+        ));
+}
+
+#[tauri::command]
+pub fn update_task_hours(_id: i32, value: i32) {
+    use crate::schema::tasks::dsl::{hours, tasks};
+    let connection = &mut establish_connection();
+    diesel::update(tasks.find(_id))
+        .set(hours.eq(value))
+        .execute(connection)
+        .expect(&format!(
+            "Task with id #{}, new hours entered should be updated!",
+            _id
+        ));
+}
+
+#[tauri::command]
+pub fn update_task_after_logwork(_id: i32, _worked_hours: i32) -> Result<String, String> {
+    use crate::schema::tasks::dsl::{status, tasks, worked_hours};
     let connection = &mut establish_connection();
 
-    let new_data = Task {
-        id: _id,
-        name: fields.name,
-        created_date: fields.created_date,
-        started_date: fields.started_date,
-        hours: fields.hours,
-        worked_hours: fields.worked_hours,
-        status: fields.status,
-        mode: fields.mode,
-        participant_id: fields.participant_id,
-        backlog_id: fields.backlog_id,
-    };
-
-    diesel::update(tasks::table.find(_id))
-        .set(&new_data)
+    diesel::update(tasks.find(_id))
+        .set((worked_hours.eq(_worked_hours), status.eq(true)))
         .execute(connection)
         .expect(&format!(
             "Task with id #{}, data entered should be updated!",

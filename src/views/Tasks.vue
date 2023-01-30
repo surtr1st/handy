@@ -42,6 +42,12 @@
   const getTask = (id: number) =>
     tasks.value.find((task: SnakeTask) => task.id === id);
 
+  enum CellChosen {
+    NAME = 'name',
+    STARTED_DATE = 'date',
+    HOURS = 'hours',
+  }
+
   function editTaskIndividually({ id, type, title }: EditTaskProps) {
     if (type === 'name') taskState.name = getTask(id)?.name as string;
     if (type === 'date') taskState.date = getTask(id)?.created_date as number;
@@ -52,86 +58,70 @@
 
     watch(
       () => taskState.name,
-      (newName, oldName) =>
-        updateTask(id, {
-          name: newName,
-        }),
+      (newName, oldName) => updateTask(id, newName, CellChosen.NAME),
     );
     watch(
       () => taskState.date,
-      (newDate, oldDate) =>
-        updateTask(id, {
-          date: newDate,
-        }),
+      (newDate, oldDate) => updateTask(id, newDate, CellChosen.STARTED_DATE),
     );
     watch(
       () => taskState.hours,
-      (newHours, oldHours) =>
-        updateTask(id, {
-          hours: newHours,
-        }),
+      (newHours, oldHours) => updateTask(id, newHours, CellChosen.HOURS),
     );
   }
 
-  function updateTask(
-    id: number,
-    { name: cellName, date: cellDate, hours: cellHours }: Partial<TaskCell>,
-  ) {
-    const {
-      name,
-      created_date,
-      started_date,
-      hours,
-      worked_hours,
-      status,
-      mode,
-      participant_id,
-      backlog_id,
-    } = getTask(id) as SnakeTask;
-
-    invoke<string>('update_task', {
-      id,
-      fields: {
-        name: !cellName || (cellName as string).length <= 0 ? name : cellName,
-        created_date,
-        started_date: cellDate ?? started_date,
-        hours: cellHours ?? hours,
-        worked_hours,
-        status,
-        mode,
-        participant_id,
-        backlog_id,
-      },
-    })
+  function updateTaskName(id: number, value: string) {
+    invoke<string>('update_task_name', { id, value })
       .then(() => (targetInvoked.taskAction = !targetInvoked.taskAction))
       .catch((message) => notifyError(message));
   }
 
+  function updateTaskStartedDate(id: number, value: number) {
+    invoke<string>('update_task_started_date', { id, value })
+      .then(() => (targetInvoked.taskAction = !targetInvoked.taskAction))
+      .catch((message) => notifyError(message));
+  }
+
+  function updateTaskHours(id: number, value: number) {
+    invoke<string>('update_task_hours', { id, value })
+      .then(() => (targetInvoked.taskAction = !targetInvoked.taskAction))
+      .catch((message) => notifyError(message));
+  }
+
+  function updateTask(
+    id: number,
+    updatedValue: string | number,
+    cell: CellChosen,
+  ) {
+    const { name } = getTask(id) as SnakeTask;
+
+    switch (cell) {
+      case CellChosen.STARTED_DATE:
+        updateTaskStartedDate(id, updatedValue as number);
+        break;
+
+      case CellChosen.HOURS:
+        updateTaskHours(id, updatedValue as number);
+        break;
+
+      default:
+        updateTaskName(
+          id,
+          !updatedValue || updatedValue.toString().length <= 0
+            ? name
+            : updatedValue.toString(),
+        );
+        break;
+    }
+  }
+
   function updateTaskAfterLogwork() {
     const id = targetLogwork.value.taskId;
-    const {
-      name,
-      created_date,
-      started_date,
-      hours,
-      mode,
-      participant_id,
-      backlog_id,
-    } = getTask(id) as SnakeTask;
+    const workedHours = targetLogwork.value.workedHours;
 
-    invoke<string>('update_task', {
+    invoke<string>('update_task_after_logwork', {
       id,
-      fields: {
-        name,
-        created_date,
-        started_date,
-        hours,
-        worked_hours: targetLogwork.value.workedHours,
-        status: true,
-        mode,
-        participant_id,
-        backlog_id,
-      },
+      workedHours,
     })
       .then(() => (targetInvoked.taskAction = !targetInvoked.taskAction))
       .catch((message) => notifyError(message));

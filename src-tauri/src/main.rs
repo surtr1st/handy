@@ -28,12 +28,15 @@ use diesel::prelude::*;
 use dotenvy::dotenv;
 use iteration::{
     create_iteration, get_finished_iterations, get_iterations, get_joined_iterations,
-    join_iteration,
+    join_iteration, get_iteration_keys, get_iteration_data_when_review_retro
 };
 use participant::{find_participant_alias, get_participants, get_personal_info};
 use progress::get_progress_options;
 use std::env;
-use task::{create_task, get_tasks, remove_task, update_task};
+use task::{
+    create_task, get_tasks, remove_task, update_task_after_logwork, update_task_hours,
+    update_task_name, update_task_started_date,
+};
 use worklog::{get_worklogs, log_work};
 
 pub fn establish_connection() -> PgConnection {
@@ -54,6 +57,8 @@ fn main() {
             get_iterations,
             get_joined_iterations,
             get_finished_iterations,
+            get_iteration_keys,
+            get_iteration_data_when_review_retro,
             create_iteration,
             join_iteration,
             create_backlog,
@@ -61,7 +66,10 @@ fn main() {
             get_backlogs,
             create_task,
             get_tasks,
-            update_task,
+            update_task_name,
+            update_task_started_date,
+            update_task_hours,
+            update_task_after_logwork,
             remove_task,
             get_criteria_acceptances,
             create_criteria_acceptance,

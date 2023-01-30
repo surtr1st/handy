@@ -58,3 +58,9 @@ export type SnakeWorklog = {
   worked_hours: number;
   task_id: number;
 };
+
+export type ReviewRetroIteration = {
+  start_date: number;
+  end_date: number;
+  total_point: number;
+};

@@ -2,6 +2,7 @@ export type SelectOption = { label: string; value: number };
 export type MentionOption = SelectOption;
 export type BacklogType = SelectOption;
 export type ProgressOption = SelectOption;
+export type IterationKey = SelectOption;
 
 export type TaskCell = {
   name: string;
