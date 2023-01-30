@@ -11,12 +11,3 @@ services:
       POSTGRES_DB:        $POSTGRES_DB
     ports:
       - 5432:5432
-
-  sqlpad:
-    image: sqlpad/sqlpad
-    restart: always
-    environment:
-      SQLPAD_ADMIN:           $SQLPAD_ADMIN_USER
-      SQLPAD_ADMIN_PASSWORD:  $SQLPAD_ADMIN_PASSWORD
-    ports:
-      - 3000:3000
