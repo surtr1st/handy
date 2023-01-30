@@ -3,7 +3,7 @@ use crate::schema::participants::dsl::*;
 use diesel::*;
 
 #[tauri::command]
-pub fn authenticate(_username: String, _password: String) -> Result<(String, String), String> {
+pub fn authenticate(_username: String, _password: String) -> Result<(String, i32), String> {
     let connection = &mut establish_connection();
 
     if _username.is_empty() {
@@ -15,18 +15,19 @@ pub fn authenticate(_username: String, _password: String) -> Result<(String, Str
 
     let participant_id = participants
         .select(id)
-        .filter(username.eq(_username))
+        .filter(username.eq(&_username))
         .filter(password.eq(_password))
         .load::<i32>(connection)
-        .unwrap_or_else(|_| panic!("Couldn't authenticate!"));
+        .expect(&format!(
+            "participant with username: '{}' should be logged in!",
+            &_username
+        ));
+
     if participant_id.is_empty() {
         return Err("Wrong username or password!".into());
     }
 
-    Ok((
-        "Login successfully!".into(),
-        participant_id[0].to_string().into(),
-    ))
+    Ok(("Login successfully!".into(), participant_id[0] as i32))
 }
 
 #[tauri::command]
@@ -48,13 +49,13 @@ pub fn registrate(_username: String, _password: String) -> Result<String, String
 
     let new_user = (
         alias.eq(format!("@{}", _username)),
-        username.eq(_username),
+        username.eq(&_username),
         password.eq(_password),
     );
     insert_into(participants)
         .values(&new_user)
         .execute(connection)
-        .unwrap_or_else(|_| panic!("Couldn't Registrate!"));
+        .expect(&format!("username: {} should be registrated", &_username));
 
     Ok("Registrated successfully!".into())
 }

@@ -3,7 +3,7 @@
   import { defineAsyncComponent, h, onMounted, onUnmounted, ref } from 'vue';
   import { SnakeIteration } from '../types';
   import { RouterLink } from 'vue-router';
-  import { useFormattedDate } from '../helpers';
+  import { participant, useFormattedDate } from '../helpers';
   import { RecycleScroller } from 'vue-virtual-scroller';
   import { useIterationRoute } from '../store';
   import {
@@ -20,7 +20,9 @@
   const iterations = ref<Array<SnakeIteration>>([]);
 
   onMounted(() => {
-    invoke<Array<SnakeIteration>>('get_finished_iterations')
+    invoke<Array<SnakeIteration>>('get_finished_iterations', {
+      participantId: participant.id,
+    })
       .then((res) => (iterations.value = res))
       .catch((e) => console.log(e));
   });

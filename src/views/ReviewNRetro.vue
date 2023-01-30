@@ -7,6 +7,7 @@
   import { IterationKey, ReviewRetroIteration } from '../types';
   import { participant, useNotifications, useFormattedDate } from '../helpers';
   import { TextDescription24Filled } from '@vicons/fluent';
+  import { retroStore, reviewStore, useIterationRoute } from '../store';
   import {
     NSelect,
     NPageHeader,
@@ -20,9 +21,10 @@
   } from 'naive-ui';
 
   const { replace } = useRouter();
-  const { notifyError } = useNotifications();
+  const { notifySuccess, notifyError } = useNotifications();
   const current = shallowRef(Review);
   const title = ref('Review Iteration');
+  const iterationId = ref(0);
   const iterationKeys = ref<Array<IterationKey>>([]);
   const iteration = ref<ReviewRetroIteration>({
     end_date: 0,
@@ -44,6 +46,7 @@
     invoke<ReviewRetroIteration>('get_iteration_data_when_review_retro', { id })
       .then((res) => (iteration.value = res))
       .catch((e) => notifyError(e));
+    iterationId.value = id;
   }
 
   function onStepBack() {
@@ -62,7 +65,16 @@
   }
 
   function finish() {
-    replace('/review/retro/completed/200');
+    invoke<string>('end_iteration', {
+      iterationId,
+      reviewContent: reviewStore.content,
+      retroContent: retroStore.content,
+    })
+      .then((message) => {
+        notifySuccess(message);
+        replace('/mainpage/review/retro/completed/200');
+      })
+      .catch((message) => notifyError(message));
   }
 
   onMounted(() => {

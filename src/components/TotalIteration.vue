@@ -25,7 +25,7 @@
   });
 
   onMounted(() => {
-    invoke<ParticipantStatistic>('load_stats_participant', {
+    invoke<ParticipantStatistic>('load_stats_of_participant', {
       id: participant.id,
     })
       .then((res) => (iterationStatus.value = res))

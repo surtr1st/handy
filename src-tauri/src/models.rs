@@ -18,14 +18,14 @@ pub struct Personal {
 #[derive(Queryable, Serialize, Deserialize)]
 pub struct IterationKey {
     value: i32,
-    label: String 
+    label: String,
 }
 
 #[derive(Queryable, Clone, Serialize, Deserialize)]
 pub struct ReviewRetroIteration {
     start_date: i64,
     end_date: i64,
-    total_point: Option<i32>
+    total_point: Option<i32>,
 }
 
 #[derive(Queryable, Debug, Serialize)]
@@ -135,4 +135,12 @@ pub struct Burndown {
     ideal: i32,
     actual: i32,
     from_day: i64,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ParticipantStatistic {
+    pub current: i64,
+    pub attended: i64,
+    pub finished: i64,
+    pub created: i64,
 }

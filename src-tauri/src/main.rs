@@ -27,11 +27,12 @@ use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use dotenvy::dotenv;
 use iteration::{
-    create_iteration, get_finished_iterations, get_iterations, get_joined_iterations,
-    join_iteration, get_iteration_keys, get_iteration_data_when_review_retro
+    create_iteration, end_iteration, get_finished_iterations, get_iteration_data_when_review_retro,
+    get_iteration_keys, get_iterations, get_joined_iterations, join_iteration,
 };
 use participant::{find_participant_alias, get_participants, get_personal_info};
 use progress::get_progress_options;
+use stats::{load_stats_of_backlog, load_stats_of_iteration, load_stats_of_participant};
 use std::env;
 use task::{
     create_task, get_tasks, remove_task, update_task_after_logwork, update_task_hours,
@@ -61,6 +62,7 @@ fn main() {
             get_iteration_data_when_review_retro,
             create_iteration,
             join_iteration,
+            end_iteration,
             create_backlog,
             import_backlog,
             get_backlogs,
@@ -78,7 +80,10 @@ fn main() {
             get_progress_options,
             get_backlog_types,
             get_worklogs,
-            log_work
+            log_work,
+            load_stats_of_participant,
+            load_stats_of_iteration,
+            load_stats_of_backlog
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
