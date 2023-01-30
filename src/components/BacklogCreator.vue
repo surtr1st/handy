@@ -43,7 +43,9 @@
       goals: model.value.goals,
       description: model.value.description,
       hours: model.value.hours,
+      current_hour: 0,
       points: model.value.points,
+      current_point: 0,
       created_date: new Date().getTime(),
       iteration_id: iterationId,
       progress_id: 1, // default: Undone

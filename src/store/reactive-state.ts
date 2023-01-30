@@ -6,6 +6,7 @@ export const targetInvoked = reactive({
   backlogAction: false,
   taskAction: false,
   criteriaAcceptanceAction: false,
+  logwork: false,
 });
 
 export const reviewStore = reactive({
@@ -18,11 +19,4 @@ export const retroStore = reactive({
 
 export const backlogStore = reactive(
   useSessionStorage('backlog', {} as SnakeBacklog),
-);
-
-export const targetLogwork = reactive(
-  useSessionStorage('targetLogwork', {
-    taskId: 0,
-    workedHours: 0,
-  }),
 );

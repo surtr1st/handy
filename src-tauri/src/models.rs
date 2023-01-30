@@ -76,7 +76,9 @@ pub struct Backlog {
     goals: String,
     priority: i32,
     hours: i32,
+    current_hour: i32,
     points: i32,
+    current_point: i32,
     created_date: i64,
     iteration_id: i32,
     progress_id: i32,
@@ -143,4 +145,13 @@ pub struct ParticipantStatistic {
     pub attended: i64,
     pub finished: i64,
     pub created: i64,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct IterationStatistic {
+    pub backlog: i64,
+    pub backlog_done: i64,
+    pub backlog_partially_done: i64,
+    pub backlog_undone: i64,
+    pub sprint_velocity: i64,
 }

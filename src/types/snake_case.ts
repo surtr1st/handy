@@ -25,7 +25,9 @@ export type SnakeBacklog = {
   goals: string;
   priority: number;
   hours: number;
+  current_hour: number;
   points: number;
+  current_point: number;
   created_date: number;
 };
 

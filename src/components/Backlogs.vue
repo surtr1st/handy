@@ -1,11 +1,16 @@
 <script setup lang="ts">
   import { invoke } from '@tauri-apps/api/tauri';
-  import { onMounted, ref } from 'vue';
+  import { onMounted, ref, watch } from 'vue';
   import { RouterLink } from 'vue-router';
   import { Status20Filled } from '@vicons/fluent';
-  import { useIterationRoute, backlogStore, useBacklogRoute } from '../store';
+  import {
+    useIterationRoute,
+    backlogStore,
+    useBacklogRoute,
+    targetInvoked,
+  } from '../store';
   import { colors } from '../configs/colors';
-  import { ProgressOption, SnakeBacklog } from '../types';
+  import { ProgressOption, SnakeBacklog, SnakeTask } from '../types';
   import { useMessages } from '../helpers';
   import {
     NBadge,
@@ -20,8 +25,10 @@
   } from 'naive-ui';
 
   const { iterationId: iid } = useIterationRoute();
-  const { setBacklogId } = useBacklogRoute();
+  const { backlogId, setBacklogId } = useBacklogRoute();
   const { onError } = useMessages();
+  const totalTask = ref(0);
+  const totalTaskDone = ref(0);
 
   enum StatusOptions {
     UNDONE = 1,
@@ -64,10 +71,32 @@
     Object.assign(backlogStore.value, backlog);
   }
 
-  onMounted(() => {
+  function fetchProgressOption() {
     invoke<Array<ProgressOption>>('get_progress_options')
       .then((res) => (progressOptions.value = res))
       .catch((e) => onError(e));
+  }
+
+  function fetchTaskLength() {
+    invoke<Array<SnakeTask>>('get_tasks', { backlogId: props.id })
+      .then((res) => (totalTask.value = res.length))
+      .catch((e) => onError(e));
+  }
+
+  function fetchTotalTaskDone() {
+    invoke<number>('get_tasks_done', { backlogId: props.id })
+      .then((res) => (totalTaskDone.value = res))
+      .catch((e) => onError(e));
+  }
+
+  watch(
+    () => targetInvoked.logwork,
+    () => fetchTotalTaskDone(),
+  );
+  onMounted(() => {
+    fetchProgressOption();
+    fetchTaskLength();
+    fetchTotalTaskDone();
   });
 </script>
 
@@ -99,13 +128,13 @@
         <NSpace justify="space-evenly">
           <NStatistic
             label="Tasks"
-            value="0"
+            :value="totalTaskDone"
           >
-            <template #suffix>/ 0</template>
+            <template #suffix>/ {{ totalTask }}</template>
           </NStatistic>
           <NStatistic
             label="Hours"
-            value="0"
+            :value="props.current_hour"
           >
             <template #suffix>/ {{ props.hours }}</template>
           </NStatistic>

@@ -2,7 +2,7 @@
   import { invoke } from '@tauri-apps/api';
   import { useDebounceFn } from '@vueuse/core';
   import { onMounted, onUnmounted, ref, watch } from 'vue';
-  import { CriteriaAcceptance } from '../types';
+  import { CriteriaAcceptance, SnakeTask } from '../types';
   import { DEBOUNCE_TIME, useMessages, useNotifications } from '../helpers';
   import {
     CheckmarkCircle24Filled,
@@ -37,6 +37,8 @@
 
   const cas = ref<Array<CriteriaAcceptance>>([]);
   const caTitle = ref<string>('');
+  const totalTask = ref(0);
+  const totalTaskDone = ref(0);
 
   function addCriteriaAcceptance() {
     const fields = {
@@ -97,6 +99,18 @@
       .catch((e) => notifyError(e));
   }
 
+  function fetchTaskLength() {
+    invoke<Array<SnakeTask>>('get_tasks', { backlogId })
+      .then((res) => (totalTask.value = res.length))
+      .catch((e) => onError(e));
+  }
+
+  function fetchTotalTaskDone() {
+    invoke<number>('get_tasks_done', { backlogId })
+      .then((res) => (totalTaskDone.value = res))
+      .catch((e) => onError(e));
+  }
+
   function onEnter(event: KeyboardEvent) {
     if (event.key === 'Enter') debounceAddCriteriaAcceptance();
   }
@@ -105,7 +119,12 @@
     () => targetInvoked.criteriaAcceptanceAction,
     () => fetchCriteriaAcceptances(),
   );
-  onMounted(() => fetchCriteriaAcceptances());
+
+  onMounted(() => {
+    fetchCriteriaAcceptances();
+    fetchTaskLength();
+    fetchTotalTaskDone();
+  });
   onUnmounted(() => (cas.value = []));
 </script>
 
@@ -193,7 +212,7 @@
           <NSpace justify="space-evenly">
             <NStatistic
               label="Total"
-              value="0"
+              :value="totalTask"
             >
               <template #prefix>
                 <NIcon>
@@ -203,7 +222,7 @@
             </NStatistic>
             <NStatistic
               label="Done"
-              value="0"
+              :value="totalTaskDone"
             >
               <template #prefix>
                 <NIcon>

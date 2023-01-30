@@ -18,7 +18,10 @@ pub mod task;
 pub mod worklog;
 
 use auth::{authenticate, registrate};
-use backlog::{create_backlog, get_backlog_types, get_backlogs, import_backlog};
+use backlog::{
+    create_backlog, get_backlog_types, get_backlogs, import_backlog, update_backlog_current_hour,
+    update_backlog_current_point, update_backlog_hours, update_backlog_points,
+};
 use criteria_acceptance::{
     create_criteria_acceptance, get_criteria_acceptances, remove_criteria_acceptance,
     update_criteria_acceptance,
@@ -32,10 +35,10 @@ use iteration::{
 };
 use participant::{find_participant_alias, get_participants, get_personal_info};
 use progress::get_progress_options;
-use stats::{load_stats_of_backlog, load_stats_of_iteration, load_stats_of_participant};
+use stats::{load_stats_of_iteration, load_stats_of_participant};
 use std::env;
 use task::{
-    create_task, get_tasks, remove_task, update_task_after_logwork, update_task_hours,
+    create_task, get_tasks, get_tasks_done, remove_task, update_task_after_logwork, update_task_hours,
     update_task_name, update_task_started_date,
 };
 use worklog::{get_worklogs, log_work};
@@ -50,11 +53,13 @@ pub fn establish_connection() -> PgConnection {
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
+            // Participant
             authenticate,
             registrate,
             get_participants,
-            find_participant_alias,
             get_personal_info,
+            find_participant_alias,
+            // Iteration
             get_iterations,
             get_joined_iterations,
             get_finished_iterations,
@@ -63,27 +68,37 @@ fn main() {
             create_iteration,
             join_iteration,
             end_iteration,
+            // Backlog
+            get_backlog_types,
+            get_backlogs,
             create_backlog,
             import_backlog,
-            get_backlogs,
-            create_task,
+            update_backlog_hours,
+            update_backlog_points,
+            update_backlog_current_hour,
+            update_backlog_current_point,
+            // Task
             get_tasks,
+            get_tasks_done,
+            create_task,
             update_task_name,
             update_task_started_date,
             update_task_hours,
             update_task_after_logwork,
             remove_task,
+            // Criteria Acceptance
             get_criteria_acceptances,
             create_criteria_acceptance,
             update_criteria_acceptance,
             remove_criteria_acceptance,
+            // Progress
             get_progress_options,
-            get_backlog_types,
+            // Worklog
             get_worklogs,
             log_work,
+            // Synthetic Statistic
             load_stats_of_participant,
             load_stats_of_iteration,
-            load_stats_of_backlog
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -1,8 +1,9 @@
 <script setup lang="ts">
   import { invoke } from '@tauri-apps/api/tauri';
-  import { CSSProperties, ref } from 'vue';
+  import { CSSProperties, ref, watch } from 'vue';
   import { useDebounceFn } from '@vueuse/core';
   import { Logwork } from '../types';
+  import { targetInvoked, useBacklogRoute } from '../store';
   import {
     DEBOUNCE_TIME,
     participant,
@@ -24,8 +25,8 @@
     NDatePicker,
     NButton,
   } from 'naive-ui';
-  import { targetLogwork } from '../store';
 
+  const { backlogId } = useBacklogRoute();
   const { notifySuccess, notifyError } = useNotifications();
   const open = ref<boolean>(false);
   const description = ref<string>('');
@@ -48,6 +49,33 @@
     return (open.value = true);
   }
 
+  function updateBacklogCurrentHour(id: number, current: number) {
+    invoke('update_backlog_current_hour', {
+      id,
+      current,
+    })
+      .then(() => (targetInvoked.backlogAction = !targetInvoked.backlogAction))
+      .catch((e) => notifyError(e));
+  }
+
+  function updateBacklogCurrentPoint(id: number, current: number) {
+    invoke('update_backlog_current_hour', {
+      id,
+      current,
+    })
+      .then(() => (targetInvoked.backlogAction = !targetInvoked.backlogAction))
+      .catch((e) => notifyError(e));
+  }
+
+  function updateTaskAfterLogwork(id: number, workedHours: number) {
+    invoke<string>('update_task_after_logwork', {
+      id,
+      workedHours,
+    })
+      .then(() => (targetInvoked.taskAction = !targetInvoked.taskAction))
+      .catch((message) => notifyError(message));
+  }
+
   function logWork(taskId: number) {
     const fields = {
       description: description.value,
@@ -57,12 +85,11 @@
     };
     invoke<string>('log_work', { fields })
       .then((message) => {
-        notifySuccess(message);
         open.value = false;
-        targetLogwork.value = {
-          taskId,
-          workedHours: workedHours.value,
-        };
+        notifySuccess(message);
+        updateTaskAfterLogwork(taskId, workedHours.value);
+        updateBacklogCurrentHour(backlogId, workedHours.value);
+        targetInvoked.logwork = !targetInvoked.logwork;
       })
       .catch((message) => notifyError(message));
   }

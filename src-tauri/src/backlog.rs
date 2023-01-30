@@ -36,7 +36,9 @@ pub fn create_backlog(fields: RequiredBacklogFields) -> Result<String, String> {
         description: &fields.description,
         priority: fields.priority,
         hours: fields.hours,
+        current_hour: fields.current_hour,
         points: fields.points,
+        current_point: fields.current_point,
         created_date: fields.created_date,
         iteration_id: fields.iteration_id,
         progress_id: fields.progress_id,
@@ -49,6 +51,66 @@ pub fn create_backlog(fields: RequiredBacklogFields) -> Result<String, String> {
         .expect("new backlog should be inserted!");
 
     Ok("Created backlog successfully".into())
+}
+
+#[tauri::command]
+pub fn update_backlog_hours(_id: i32, _hours: i32) -> Result<(), String> {
+    use crate::schema::backlogs::dsl::*;
+
+    let connection = &mut establish_connection();
+    diesel::update(backlogs.find(_id))
+        .set(hours.eq(_hours))
+        .execute(connection)
+        .expect(&format!(
+            "hours of backlog with id #{} should be updated!",
+            _id
+        ));
+    Ok(())
+}
+
+#[tauri::command]
+pub fn update_backlog_current_hour(_id: i32, current: i32) -> Result<(), String> {
+    use crate::schema::backlogs::dsl::*;
+
+    let connection = &mut establish_connection();
+    diesel::update(backlogs.find(_id))
+        .set(current_hour.eq(current))
+        .execute(connection)
+        .expect(&format!(
+            "current hour of backlog with id #{} should be updated!",
+            _id
+        ));
+    Ok(())
+}
+
+#[tauri::command]
+pub fn update_backlog_points(_id: i32, _point: i32) -> Result<(), String> {
+    use crate::schema::backlogs::dsl::*;
+
+    let connection = &mut establish_connection();
+    diesel::update(backlogs.find(_id))
+        .set(points.eq(_point))
+        .execute(connection)
+        .expect(&format!(
+            "points of backlog with id #{} should be updated!",
+            _id
+        ));
+    Ok(())
+}
+
+#[tauri::command]
+pub fn update_backlog_current_point(_id: i32, current: i32) -> Result<(), String> {
+    use crate::schema::backlogs::dsl::*;
+
+    let connection = &mut establish_connection();
+    diesel::update(backlogs.find(_id))
+        .set(current_point.eq(current))
+        .execute(connection)
+        .expect(&format!(
+            "current point of backlog with id #{} should be updated!",
+            _id
+        ));
+    Ok(())
 }
 
 fn get_first_arg() -> Result<std::ffi::OsString, Box<dyn std::error::Error>> {

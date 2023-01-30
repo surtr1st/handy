@@ -5,9 +5,10 @@ export type ParticipantStatistic = {
   created: number;
 };
 
-export type BacklogStatistic = {
-  total: number;
-  done: number;
-  partially_done: number;
-  undone: number;
+export type IterationStatistic = {
+  backlog: number;
+  backlog_done: number;
+  backlog_partially_done: number;
+  backlog_undone: number;
+  sprint_velocity: number;
 };

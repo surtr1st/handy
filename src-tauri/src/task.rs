@@ -31,6 +31,20 @@ pub fn get_tasks(_backlog_id: i32) -> Vec<TaskWithParticipantAlias> {
 }
 
 #[tauri::command]
+pub fn get_tasks_done(_backlog_id: i32) -> i64 {
+    use crate::schema::participants;
+    use crate::schema::tasks;
+    let connection = &mut establish_connection();
+    tasks::table
+        .count()
+        .inner_join(participants::table)
+        .filter(tasks::backlog_id.eq(_backlog_id))
+        .filter(tasks::status.eq(true))
+        .get_result(connection)
+        .unwrap_or(0)
+}
+
+#[tauri::command]
 pub fn create_task(fields: RequiredTaskFields) -> Result<String, String> {
     use crate::schema::tasks::dsl::*;
     let connection = &mut establish_connection();

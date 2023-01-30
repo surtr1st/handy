@@ -3,8 +3,8 @@
   import Logwork from '../components/Logwork.vue';
   import { invoke } from '@tauri-apps/api/tauri';
   import { onMounted, onUnmounted, reactive, ref, watch } from 'vue';
-  import { SnakeTask, EditTaskProps, TaskCell } from '../types';
-  import { useBacklogRoute, targetInvoked, targetLogwork } from '../store';
+  import { SnakeTask, EditTaskProps } from '../types';
+  import { useBacklogRoute, targetInvoked } from '../store';
   import { useFormattedDate, useMessages, useNotifications } from '../helpers';
   import {
     NButton,
@@ -23,7 +23,7 @@
 
   const { notifySuccess, notifyError } = useNotifications();
   const { onError } = useMessages();
-  const { backlogId: bid } = useBacklogRoute();
+  const { backlogId } = useBacklogRoute();
 
   const taskModal = reactive({
     open: false,
@@ -115,18 +115,6 @@
     }
   }
 
-  function updateTaskAfterLogwork() {
-    const id = targetLogwork.value.taskId;
-    const workedHours = targetLogwork.value.workedHours;
-
-    invoke<string>('update_task_after_logwork', {
-      id,
-      workedHours,
-    })
-      .then(() => (targetInvoked.taskAction = !targetInvoked.taskAction))
-      .catch((message) => notifyError(message));
-  }
-
   function removeTask(id: number) {
     invoke<string>('remove_task', { id })
       .then((message) => {
@@ -137,7 +125,7 @@
   }
 
   function fetchTasks() {
-    invoke<Array<SnakeTask>>('get_tasks', { backlogId: bid })
+    invoke<Array<SnakeTask>>('get_tasks', { backlogId })
       .then((res) => (tasks.value = res))
       .catch((e) => onError(e));
   }
@@ -151,13 +139,10 @@
   }
 
   watch(
-    () => targetInvoked.taskAction,
+    () => targetInvoked.taskAction || targetInvoked.logwork,
     () => fetchTasks(),
   );
-  watch(
-    () => targetLogwork.value,
-    () => updateTaskAfterLogwork(),
-  );
+
   onMounted(() => fetchTasks());
   onUnmounted(() => (tasks.value = []));
 </script>
