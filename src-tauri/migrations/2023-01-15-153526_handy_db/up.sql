@@ -12,7 +12,7 @@ CREATE TABLE
     title text not null,
     goals text not null,
     current_point int,
-    total_point int,
+    total_point int not null,
     created_by text not null,
     created_date bigint not null,
     end_date bigint not null,
@@ -86,7 +86,7 @@ CREATE TABLE
     id serial primary key not null,
     ideal int not null,
     actual int not null,
-    from_day bigint,
+    from_day text not null,
     iteration_id serial references iterations (id)
   );
 

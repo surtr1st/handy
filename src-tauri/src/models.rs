@@ -25,7 +25,7 @@ pub struct IterationKey {
 pub struct ReviewRetroIteration {
     start_date: i64,
     end_date: i64,
-    total_point: Option<i32>,
+    total_point: i32,
 }
 
 #[derive(Queryable, Debug, Serialize)]
@@ -54,7 +54,7 @@ pub struct Iteration {
     title: String,
     goals: String,
     current_point: Option<i32>,
-    total_point: Option<i32>,
+    total_point: i32,
     created_by: String,
     created_date: i64,
     end_date: i64,

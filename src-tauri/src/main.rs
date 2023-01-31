@@ -6,6 +6,7 @@
 pub mod args;
 pub mod auth;
 pub mod backlog;
+pub mod burndown;
 pub mod criteria_acceptance;
 pub mod iteration;
 pub mod models;
@@ -21,6 +22,9 @@ use auth::{authenticate, registrate};
 use backlog::{
     create_backlog, get_backlog_types, get_backlogs, import_backlog, update_backlog_current_hour,
     update_backlog_current_point, update_backlog_hours, update_backlog_points,
+};
+use burndown::{
+    get_current_points, get_days, get_ideal_points, get_total_point, update_burndown_actual_point,
 };
 use criteria_acceptance::{
     create_criteria_acceptance, get_criteria_acceptances, remove_criteria_acceptance,
@@ -38,8 +42,8 @@ use progress::get_progress_options;
 use stats::{load_stats_of_iteration, load_stats_of_participant};
 use std::env;
 use task::{
-    create_task, get_tasks, get_tasks_done, remove_task, update_task_after_logwork, update_task_hours,
-    update_task_name, update_task_started_date,
+    create_task, get_tasks, get_tasks_done, remove_task, update_task_after_logwork,
+    update_task_hours, update_task_name, update_task_started_date,
 };
 use worklog::{get_worklogs, log_work};
 
@@ -99,6 +103,12 @@ fn main() {
             // Synthetic Statistic
             load_stats_of_participant,
             load_stats_of_iteration,
+            // Burndown
+            update_burndown_actual_point,
+            get_days,
+            get_current_points,
+            get_total_point,
+            get_ideal_points
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

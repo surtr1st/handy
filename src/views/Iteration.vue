@@ -1,10 +1,10 @@
 <script setup lang="ts">
   import Goals from '../components/Goals.vue';
   import BurndownChart from '../components/BurndownChart.vue';
-  import Backlogs from '../components/Backlogs.vue';
+  import BacklogCard from '../components/BacklogCard.vue';
   import BacklogCreator from '../components/BacklogCreator.vue';
   import { invoke } from '@tauri-apps/api';
-  import { ref, reactive, onMounted, watch } from 'vue';
+  import { ref, onMounted, watch } from 'vue';
   import { RefreshCircle } from '@vicons/ionicons5';
   import { targetInvoked, useIterationRoute } from '../store';
   import { IterationStatistic, SnakeBacklog } from '../types';
@@ -192,7 +192,7 @@
         <NGi :span="3">
           <NThing>
             <NScrollbar style="max-height: 69.5vh">
-              <Backlogs
+              <BacklogCard
                 v-for="backlog in backlogs"
                 :props="{ ...backlog, list: backlogs }"
               />

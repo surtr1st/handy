@@ -1,8 +1,9 @@
-use crate::args::RequiredIterationFields;
+use crate::args::{RequiredBurndownFields, RequiredIterationFields};
+use crate::burndown::create_burndown;
 use crate::establish_connection;
 use crate::models::{Iteration, IterationKey, ReviewRetroIteration};
 use crate::ops::{NewIteration, NewIterationRoom};
-
+use chrono::{Duration, NaiveDate}; // 0.4.23
 use diesel::prelude::*;
 
 #[tauri::command]
@@ -105,18 +106,18 @@ pub fn create_iteration(fields: RequiredIterationFields) -> Result<String, Strin
         return Err("Timeline isn't set!".into());
     }
 
-    let owner = participants
+    let owner: String = participants
         .select(alias)
         .filter(pid.eq(fields.created_by))
-        .load::<String>(connection)
+        .get_result(connection)
         .expect("alias owner of chosen iteration should be returned!");
 
     let iteration = NewIteration {
         title: &fields.title,
         goals: &fields.goals,
         current_point: 0,
-        total_point: 0,
-        created_by: &owner[0],
+        total_point: fields.points,
+        created_by: &owner,
         created_date: fields.created_date,
         end_date: fields.end_date,
         status: false,
@@ -127,17 +128,93 @@ pub fn create_iteration(fields: RequiredIterationFields) -> Result<String, Strin
         .execute(connection)
         .expect("new iteration value should be inserted!");
 
-    let latest_iteration_id_created = iterations
+    let latest_iteration_id_created: i32 = iterations
         .select(id)
-        .filter(created_by.eq(&owner[0]))
+        .filter(created_by.eq(&owner))
         .order_by(id.desc())
         .limit(1)
-        .load::<i32>(connection)
+        .get_result(connection)
         .expect("latest iteration inserted should be returned!");
 
-    create_iteration_room(latest_iteration_id_created[0], fields.participants);
+    let latest_iteration_point_created: i32 = iterations
+        .select(total_point)
+        .filter(created_by.eq(&owner))
+        .order_by(id.desc())
+        .limit(1)
+        .get_result(connection)
+        .expect("latest iteration point inserted should be returned!");
+
+    create_iteration_room(latest_iteration_id_created, fields.participants);
+    make_burndown(
+        latest_iteration_id_created,
+        fields.start_day,
+        fields.end_day,
+        latest_iteration_point_created,
+    );
 
     Ok("Created iteration successfully!".into())
+}
+
+fn days_between_dates(_start: String, _end: String) -> i32 {
+    let start = from_1971_01_01(_start);
+    let end = from_1971_01_01(_end);
+    (start - end).abs()
+}
+
+fn from_1971_01_01(date: String) -> i32 {
+    let m_d = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+    let date = &date
+        .split('-')
+        .map(|s| s.parse().unwrap())
+        .collect::<Vec<i32>>();
+
+    let mut days = date[2] - 1 + m_d[date[1] as usize - 1];
+    if date[0] % 4 == 0 && date[0] != 2100 && date[1] > 2 {
+        days += 1;
+    }
+    days += 365 * (date[0] - 1971) + (date[0] - 1969) / 4;
+    days
+}
+
+fn sum_array_up_to(arr: Vec<i32>, index: i32) -> i32 {
+    let mut total = 0;
+    for i in 0..=index {
+        if arr.len() > i as usize {
+            total += arr[i as usize];
+        }
+    }
+    total
+}
+
+fn calculate_ideal_point(days: i32, point: i32, scope_change: Vec<i32>, index: i32) -> i32 {
+    let total_hours_in_sprint = point;
+    let ideal_hours_per_day = total_hours_in_sprint / days;
+    total_hours_in_sprint - ideal_hours_per_day * (index + 1) + sum_array_up_to(scope_change, index)
+}
+
+fn make_burndown(iteration_id: i32, start: String, end: String, points: i32) {
+    let days = days_between_dates(start.clone(), end.clone()) + 1;
+
+    create_burndown(RequiredBurndownFields {
+        ideal: points,
+        actual: points,
+        from_day: start.clone(),
+        iteration_id,
+    })
+    .unwrap();
+
+    for day in 1..days {
+        let date =
+            NaiveDate::parse_from_str(&start, "%Y-%m-%d").unwrap() + Duration::days(day as i64);
+        let ideal = calculate_ideal_point(days, points, vec![0; days as usize], day);
+        create_burndown(RequiredBurndownFields {
+            ideal,
+            actual: 0,
+            from_day: date.to_string(),
+            iteration_id,
+        })
+        .unwrap();
+    }
 }
 
 #[tauri::command]
@@ -165,8 +242,8 @@ fn create_iteration_room(iteration_id: i32, participants: Vec<i32>) {
 #[tauri::command]
 pub fn end_iteration(
     _iteration_id: i32,
-    review_content: String,
-    retro_content: String,
+    _review_content: String,
+    _retro_content: String,
 ) -> Result<String, String> {
     use crate::schema::iterations::dsl::{iterations, status};
 

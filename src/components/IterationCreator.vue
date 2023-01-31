@@ -9,12 +9,15 @@
     useNotifications,
     useMessages,
     DEBOUNCE_TIME,
+    useFormattedDate,
+    DATE_FORMAT_YMD,
   } from '../helpers';
   import {
     NIcon,
     NButton,
     NCard,
     NInput,
+    NInputNumber,
     NSelect,
     NDatePicker,
     NForm,
@@ -33,6 +36,7 @@
     title: '',
     goals: '',
     participants: [],
+    points: 0,
   });
   const mentions = ref<Array<MentionOption>>([]);
   const rules = ref<FormRules>({
@@ -55,10 +59,13 @@
     const fields = {
       title: model.value.title,
       goals: model.value.goals,
+      points: model.value.points ?? 0,
       created_by: participant.id,
       participants: participants.value,
       created_date: range.value?.at(0) ?? -1,
       end_date: range.value?.at(1) ?? -1,
+      start_day: useFormattedDate(range.value?.at(0) ?? -1, DATE_FORMAT_YMD),
+      end_day: useFormattedDate(range.value?.at(1) ?? -1, DATE_FORMAT_YMD),
     };
     invoke<string>('create_iteration', { fields })
       .then((msg) => {
@@ -67,6 +74,7 @@
           title: '',
           goals: '',
           participants: [],
+          points: 0,
         };
         range.value = [-1, -1];
       })
@@ -130,7 +138,7 @@
           />
         </NFormItemGi>
         <NFormItemGi
-          span="4"
+          span="2"
           label="Timeline"
           size="large"
         >
@@ -140,6 +148,19 @@
             size="large"
             clearable
             style="width: 100%"
+          />
+        </NFormItemGi>
+        <NFormItemGi
+          span="2"
+          label="Story Point"
+          path="points"
+          size="large"
+        >
+          <NInputNumber
+            v-model:value="model.points"
+            placeholder="Points"
+            style="width: 100%"
+            clearable
           />
         </NFormItemGi>
         <NFormItemGi

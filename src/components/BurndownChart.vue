@@ -1,6 +1,8 @@
 <script setup lang="ts">
-  import { onMounted, ref } from 'vue';
+  import { invoke } from '@tauri-apps/api/tauri';
+  import { onMounted, reactive, ref } from 'vue';
   import { colors } from '../configs/colors';
+  import { useIterationRoute } from '../store';
   import {
     Chart,
     ChartData,
@@ -8,66 +10,33 @@
     ChartOptions,
   } from 'chart.js/auto';
 
+  const { iterationId } = useIterationRoute();
   const canvas = ref();
+  const burndown = reactive({
+    days: [] as string[],
+    totalPoint: 0,
+    currentPoints: [] as number[],
+    idealPoints: [] as number[],
+  });
 
-  function sumArrayUpTo(arrData: Array<number>, index: number) {
-    let total = 0;
-    for (let i = 0; i <= index; i++) {
-      if (arrData.length > i) {
-        total += arrData[i];
-      }
-    }
-    return total;
-  }
-
-  function calculateIdeal(
-    burndownData: Array<number>,
-    scopeChange: Array<number>,
-    index: number,
-  ): number {
-    const totalHoursInSprint = burndownData[0];
-    const idealHoursPerDay = totalHoursInSprint / 9;
-    return Math.round(
-      totalHoursInSprint -
-        idealHoursPerDay * index++ +
-        sumArrayUpTo(scopeChange, index),
-    );
-  }
-
-  function showBurnDown(
-    burndownData: Array<number>,
-    scopeChange: Array<number>,
-  ) {
+  function showBurndown() {
     const speedData: ChartData = {
-      labels: [
-        'Day 1',
-        'Day 2',
-        'Day 3',
-        'Day 4',
-        'Day 5',
-        'Day 6',
-        'Day 7',
-        'Day 8',
-        'Day 9',
-        'Day 10',
-      ],
+      labels: burndown.days,
       datasets: [
         {
-          label: 'Reality',
-          data: burndownData,
+          label: 'Actual',
+          data: burndown.currentPoints,
           fill: false,
           borderColor: colors.primary,
           backgroundColor: colors.primary,
         },
         {
-          label: 'Ideally',
+          label: 'Ideal',
           borderColor: '#6C8893',
           backgroundColor: '#6C8893',
           borderDash: [2, 2],
           fill: false,
-          data: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((item, index) =>
-            calculateIdeal(burndownData, scopeChange, index),
-          ),
+          data: burndown.idealPoints,
         },
       ],
     };
@@ -77,7 +46,7 @@
         yAxes: {
           ticks: {
             minRotation: 0,
-            maxRotation: Math.round(burndownData[0] * 1.1),
+            maxRotation: Math.round(burndown.totalPoint * 1.1),
           },
         },
       },
@@ -92,17 +61,41 @@
     new Chart(canvas.value, chartConfig);
   }
 
+  function fetchTotalPoint() {
+    invoke<number>('get_total_point', { iterationId })
+      .then((res) => (burndown.totalPoint = res))
+      .catch((e) => console.log(e));
+  }
+
+  function fetchTotalDay() {
+    invoke<Array<string>>('get_days', { iterationId })
+      .then((res) => (burndown.days = res))
+      .catch((e) => console.log(e));
+  }
+
+  function fetchCurrentPointOfDay() {
+    invoke<Array<number>>('get_current_points', { iterationId })
+      .then((res) => (burndown.currentPoints = res))
+      .catch((e) => console.log(e));
+  }
+
+  function fetchIdealPoints() {
+    invoke<Array<number>>('get_ideal_points', { iterationId })
+      .then((res) => (burndown.idealPoints = res))
+      .catch((e) => console.log(e));
+  }
+
   onMounted(() => {
-    showBurnDown(
-      [200, 160, 160, 140, 90, 90, 80],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    );
+    fetchTotalPoint();
+    fetchTotalDay();
+    fetchCurrentPointOfDay();
+    fetchIdealPoints();
+    setTimeout(() => {
+      showBurndown();
+    }, 250);
   });
 </script>
 
 <template>
-  <canvas
-    v-once
-    ref="canvas"
-  />
+  <canvas ref="canvas" />
 </template>

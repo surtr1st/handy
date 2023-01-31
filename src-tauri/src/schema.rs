@@ -30,7 +30,7 @@ diesel::table! {
         id -> Int4,
         ideal -> Int4,
         actual -> Int4,
-        from_day -> Nullable<Int8>,
+        from_day -> Text,
         iteration_id -> Int4,
     }
 }
@@ -83,7 +83,7 @@ diesel::table! {
         title -> Text,
         goals -> Text,
         current_point -> Nullable<Int4>,
-        total_point -> Nullable<Int4>,
+        total_point -> Int4,
         created_by -> Text,
         created_date -> Int8,
         end_date -> Int8,
